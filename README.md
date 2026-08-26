@@ -131,3 +131,46 @@ En **Plan Elaboradora** también se reposiciona automáticamente para no mezclar
 
 La pantalla inicial de MIGA ya no muestra códigos, nombres de sucursal ni zona durante la carga.
 Los mensajes son generales: inicialización, configuración, parámetros, padrón, cálculo y preparación de interfaz.
+
+## Ajustes para celular
+
+Se mejoró la experiencia móvil con:
+
+- desplazamiento táctil reforzado en tablas anchas;
+- barra superior y herramientas con mejor acomodo en pantallas chicas;
+- pestañas inferiores con desplazamiento horizontal;
+- botón de MIGA más chico y reubicado en móvil para no tapar la parte inferior;
+- ventana del asistente reposicionada en móvil.
+
+## Firebase · Fase 1
+
+Proyecto Firebase conectado:
+
+- Project ID: `miga-panaderia-region-centro`
+- Authentication: correo/contraseña
+- Administrador técnico: `admin@miga-panaderia.app`
+- Firestore: base `(default)`
+
+### Antes de probar
+
+1. En Firebase → Firestore → **Reglas**, pegá el contenido de `firebase/firestore.rules` y publicalo.
+2. En Firebase → Authentication → **Settings / Configuración** → **Dominios autorizados**, agregá:
+   `miga-panaderia.github.io`
+3. Subí esta versión de MIGA a GitHub Pages.
+
+### Primera inicialización
+
+Ingresá como **Administrador General** usando la contraseña que creaste en Firebase.
+
+Después abrí:
+
+**Menú Admin → Firebase · Sincronización → Subir datos actuales a Firebase**
+
+Hacelo desde la PC/navegador que tenga la configuración correcta. Esta operación inicializa la nube.
+
+Después podés abrir MIGA en otro dispositivo, entrar como Admin General y elegir **Traer datos desde Firebase**. Una vez conectada, la sincronización queda activa mientras dure la sesión del Admin.
+
+### Importante
+
+Esta es la **Fase 1**: solamente el Administrador General tiene permiso de Firestore.  
+La siguiente etapa será crear la autenticación de las sucursales y reglas para que cada una pueda leer/escribir únicamente lo que le corresponde.

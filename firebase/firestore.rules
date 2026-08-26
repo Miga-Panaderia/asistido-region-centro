@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isMigaAdmin() {
+      return request.auth != null
+        && request.auth.uid == 'tuyN3gsxvWRAuQqqeKQXbcn7lY93';
+    }
+
+    match /miga_branches/{branchId} {
+      allow read, write: if isMigaAdmin();
+    }
+
+    match /miga_sales/{branchId} {
+      allow read, write: if isMigaAdmin();
+    }
+
+    match /miga_system/{documentId} {
+      allow read, write: if isMigaAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
