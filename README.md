@@ -233,3 +233,68 @@ El cambio de contraseña no modifica:
 - repositorio de GitHub
 
 No es necesario modificar ni volver a publicar las reglas de Firestore por esta función.
+
+## Firebase por sucursal · tiempo real
+
+Esta versión habilita el esquema definitivo:
+
+**Sucursal + contraseña → Firebase → sincronización automática**
+
+Cada sucursal utiliza internamente una cuenta técnica de Firebase. El usuario no necesita conocer ni escribir ningún correo.
+
+### Accesos de sucursal
+
+Desde **Administrador General → Accesos Firebase por Sucursal**:
+
+- una clave en una sucursal sin acceso crea su cuenta Firebase;
+- una nueva clave en una sucursal activa restablece su acceso;
+- el acceso anterior queda deshabilitado;
+- el botón `✕` deshabilita el acceso online.
+
+### Sincronización
+
+Una vez autenticada una sucursal:
+
+- carga su configuración desde Firebase;
+- Coef. y Cronograma se guardan automáticamente;
+- otro dispositivo con la misma sucursal recibe los cambios sin recargar;
+- el indicador superior muestra **☁ Sincronizado**.
+
+Si esa sucursal es elaboradora, MIGA escucha también las sucursales asignadas en **Plan Elaboradora**, por lo que sus modificaciones se reflejan en tiempo real.
+
+### Móvil
+
+En pantallas pequeñas:
+
+- Panadería Suc y Hoja del Panadero ya no dejan Artículo/Descripción inmovilizados;
+- toda la tabla puede desplazarse horizontalmente;
+- Plan Elaboradora compacta las columnas iniciales y oculta Marca, Aptitud y Bto para acercar las columnas de sucursal.
+
+### Reglas de Firestore
+
+Antes de usar esta versión, volver a publicar el archivo:
+
+`firebase/firestore.rules`
+
+en **Firebase → Firestore → Reglas**.
+
+## MIGA · modo guiado
+
+MIGA deja de aceptar preguntas libres.
+
+El campo de texto se habilita solamente cuando MIGA pregunta:
+
+**¿Con quién tengo el gusto?**
+
+Después de guardar el nombre, el campo desaparece y se muestran exclusivamente botones de preguntas que MIGA tiene programadas para responder.
+
+Las preguntas están agrupadas en:
+
+- **En esta sección**: cambia automáticamente según la solapa activa.
+- **Mi sucursal**
+- **Ayuda y acceso**
+- **Un poco de MIGA**
+
+Si se elige **No soy [nombre]**, vuelve a habilitarse temporalmente el campo para escribir el nuevo nombre.
+
+Esto evita que el usuario escriba consultas fuera del alcance del asistente local.

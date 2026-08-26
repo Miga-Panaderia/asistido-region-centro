@@ -8,20 +8,75 @@ service cloud.firestore {
         && request.auth.uid == 'tuyN3gsxvWRAuQqqeKQXbcn7lY93';
     }
 
-    match /miga_branches/{branchId} {
-      allow read, write: if isMigaAdmin();
+    function profilePath() {
+      return /databases/$(database)/documents/miga_users/$(request.auth.uid);
     }
 
-    match /miga_zone_refs/{zoneId} {
-      allow read, write: if isMigaAdmin();
+    function hasActiveBranchProfile() {
+      return request.auth != null
+        && exists(profilePath())
+        && get(profilePath()).data.role == 'branch'
+        && get(profilePath()).data.enabled == true;
+    }
+
+    function branchCode() {
+      return get(profilePath()).data.branch;
+    }
+
+    function isOwnBranch(branchId) {
+      return hasActiveBranchProfile() && branchCode() == branchId;
+    }
+
+    function elaboratorPath() {
+      return /databases/$(database)/documents/miga_elaborators/$(branchCode());
+    }
+
+    function canReadAsElaborator(branchId) {
+      return hasActiveBranchProfile()
+        && exists(elaboratorPath())
+        && get(elaboratorPath()).data.enabled == true
+        && branchId in get(elaboratorPath()).data.destinations;
+    }
+
+    match /miga_login_directory/{branchId} {
+      allow read: if true;
+      allow write: if isMigaAdmin();
+    }
+
+    match /miga_users/{uid} {
+      allow read: if isMigaAdmin()
+        || (request.auth != null && request.auth.uid == uid);
+      allow write: if isMigaAdmin();
+    }
+
+    match /miga_branches/{branchId} {
+      allow read: if isMigaAdmin()
+        || isOwnBranch(branchId)
+        || canReadAsElaborator(branchId);
+      allow write: if isMigaAdmin() || isOwnBranch(branchId);
     }
 
     match /miga_sales/{branchId} {
-      allow read, write: if isMigaAdmin();
+      allow read: if isMigaAdmin()
+        || isOwnBranch(branchId)
+        || canReadAsElaborator(branchId);
+      allow write: if isMigaAdmin();
+    }
+
+    match /miga_zone_refs/{zoneId} {
+      allow read: if isMigaAdmin() || hasActiveBranchProfile();
+      allow write: if isMigaAdmin();
+    }
+
+    match /miga_elaborators/{branchId} {
+      allow read: if isMigaAdmin()
+        || (hasActiveBranchProfile() && branchCode() == branchId);
+      allow write: if isMigaAdmin();
     }
 
     match /miga_system/{documentId} {
-      allow read, write: if isMigaAdmin();
+      allow read: if isMigaAdmin() || hasActiveBranchProfile();
+      allow write: if isMigaAdmin();
     }
 
     match /{document=**} {

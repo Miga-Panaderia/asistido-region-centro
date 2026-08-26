@@ -3298,6 +3298,157 @@ body.mother-sheet-active .mini-assistant{
     grid-template-columns:1fr;
   }
 }
+
+/* =========================================================
+   V56 - FIREBASE POR SUCURSAL + MÓVIL
+   ========================================================= */
+.admin-branch-cloud-state{
+  display:inline-flex;align-items:center;justify-content:center;min-width:72px;
+  padding:2px 6px;border:1px solid #b7c3ca;border-radius:999px;
+  background:#f2f5f6;color:#596b76;font-size:8.5px;font-weight:800;white-space:nowrap;
+}
+.admin-branch-cloud-state.online{background:#e4f1e8;border-color:#83a890;color:#285b40}
+.admin-branch-cloud-state.offline{background:#fff1cc;border-color:#c9ab55;color:#6a5518}
+.admin-branch-password-row{
+  grid-template-columns:46px minmax(150px,1fr) 90px minmax(150px,220px) !important;
+}
+.branch-cloud-login-note{margin-top:6px;color:#526773;font-size:9.5px}
+body.firebase-branch-online #firebaseTopStatus{
+  background:#e4f1e8 !important;border-color:#82a88f !important;color:#285b40 !important;
+}
+@media(max-width:700px){
+  #sheet-plan .big-grid .sticky-art,
+  #sheet-plan .big-grid .sticky-desc,
+  #sheet-baker .big-grid .sticky-art,
+  #sheet-baker .big-grid .sticky-desc{
+    position:static !important;left:auto !important;z-index:auto !important;box-shadow:none !important;
+  }
+  #sheet-plan .big-grid .sticky-art,#sheet-baker .big-grid .sticky-art{
+    min-width:64px !important;width:64px !important;
+  }
+  #sheet-plan .big-grid .sticky-desc,#sheet-baker .big-grid .sticky-desc{
+    min-width:170px !important;width:170px !important;max-width:170px !important;
+  }
+  #motherTableWrap{overflow-x:auto !important;touch-action:pan-x pan-y !important}
+  .mother-grid .article{width:66px !important;min-width:66px !important}
+  .mother-grid .description{width:165px !important;min-width:165px !important;max-width:165px !important}
+  .mother-grid .brand{width:78px !important;min-width:78px !important}
+  .mother-grid .aptitude{width:48px !important;min-width:48px !important}
+  .mother-grid .um{width:40px !important;min-width:40px !important}
+  .mother-grid .bto{width:38px !important;min-width:38px !important}
+  .mother-grid .branch-col{width:58px !important;min-width:58px !important}
+  .mother-grid .product-total{width:86px !important;min-width:86px !important}
+  .mobile-hide-mother{display:none !important}
+}
+
+/* =========================================================
+   V57 - MIGA GUIADA · SOLO PREGUNTAS DISPONIBLES
+   ========================================================= */
+.assistant-question-menu{
+  border-top:1px solid #c9d2d8;
+  background:#f7f9fa;
+  padding:8px;
+  overflow:auto;
+  max-height:215px;
+}
+.assistant-question-menu-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:7px;
+  color:#3d5565;
+  font-size:9.5px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.18px;
+}
+.assistant-guided-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:2px 6px;
+  border:1px solid #86a996;
+  border-radius:999px;
+  background:#e7f2eb;
+  color:#295b41;
+  font-size:8px;
+  font-weight:900;
+  text-transform:none;
+  white-space:nowrap;
+}
+.assistant-question-group{
+  margin-bottom:8px;
+}
+.assistant-question-group:last-child{
+  margin-bottom:0;
+}
+.assistant-question-group-title{
+  margin:0 0 4px;
+  color:#667783;
+  font-size:8.5px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.25px;
+}
+.assistant-question-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px;
+}
+.assistant-question-btn{
+  min-height:31px;
+  padding:5px 7px;
+  border:1px solid #aab9c2;
+  border-radius:5px;
+  background:#fff;
+  color:#294658;
+  text-align:left;
+  font-size:9.5px;
+  line-height:1.15;
+  font-weight:700;
+  cursor:pointer;
+}
+.assistant-question-btn:hover{
+  background:#edf4f0;
+  border-color:#7da08e;
+  color:#23553e;
+}
+.assistant-question-btn.context{
+  background:#e8f2ec;
+  border-color:#86aa96;
+  color:#24563e;
+}
+.assistant-name-form{
+  display:none !important;
+}
+.assistant-awaiting-name .assistant-name-form{
+  display:grid !important;
+}
+.assistant-awaiting-name .assistant-question-menu{
+  display:none !important;
+}
+.assistant-guided-note{
+  display:block;
+  margin-top:7px;
+  padding:6px 7px;
+  border-left:3px solid #6f9482;
+  background:#f1f6f3;
+  color:#5a6c76;
+  font-size:9px;
+  line-height:1.3;
+}
+@media(max-width:700px){
+  .assistant-question-menu{
+    max-height:240px;
+  }
+  .assistant-question-grid{
+    grid-template-columns:1fr;
+  }
+  .assistant-question-btn{
+    min-height:34px;
+    font-size:10px;
+  }
+}
 </style>
 </head>
 <body>
@@ -3543,19 +3694,19 @@ body.mother-sheet-active .mini-assistant{
 
 
       <section class="admin-card master-admin-only" id="adminPasswordsCard">
-        <div class="admin-card-title">CONTRASEÑAS POR SUCURSAL</div>
+        <div class="admin-card-title">☁ ACCESOS FIREBASE POR SUCURSAL</div>
         <div class="admin-help" style="margin-top:0">
-          Definí la clave inicial de cada sucursal. Esa misma contraseña permite ingresar a la sucursal y desbloquear su propio Menú Admin. Solo el Administrador General ve esta sección.
+          Creá o restablecé el acceso online de cada sucursal. El usuario seguirá ingresando solamente con <b>Sucursal + contraseña</b>; MIGA utiliza una cuenta técnica de Firebase por detrás.
         </div>
 
         <div id="adminBranchPasswords" class="admin-branch-passwords"></div>
 
         <div class="admin-actions">
-          <button type="button" onclick="saveBranchPasswords()">Guardar contraseñas</button>
+          <button type="button" onclick="saveBranchPasswords()">☁ Crear / restablecer accesos ingresados</button>
         </div>
 
         <div class="admin-help">
-          Si dejás una contraseña vacía, esa sucursal quedará sin bloqueo.
+          Dejá el campo vacío si no querés modificar esa sucursal. Al ingresar una nueva clave se crea el acceso o se reemplaza el anterior. La contraseña no queda guardada en el navegador.
         </div>
       </section>
 
@@ -3775,6 +3926,7 @@ body.mother-sheet-active .mini-assistant{
 
     <div class="modal-actions">
       <button type="button" onclick="cancelBranchLogin()">Cancelar</button>
+      <button type="button" onclick="openAdminFromBranchLogin()">Administrador General</button>
       <button type="button" onclick="confirmBranchLogin()">Ingresar</button>
     </div>
   </div>
@@ -3801,20 +3953,17 @@ body.mother-sheet-active .mini-assistant{
 
   <div id="assistantMessages" class="assistant-messages" aria-live="polite"></div>
 
-  <div class="assistant-quick">
-    <button type="button" onclick="assistantAskQuick('¿Qué hace esta hoja?')">Esta hoja</button>
-    <button type="button" onclick="assistantAskQuick('Dame un resumen de mi sucursal')">Resumen</button>
-    <button type="button" onclick="assistantAskQuick('¿Quién me elabora?')">Elaboradora</button>
-    <button type="button" onclick="assistantAskQuick('¿Tengo ventas cargadas?')">Ventas</button>
-    <button type="button" onclick="assistantAskQuick('¿Qué significa Coef.?')">Coef.</button>
-    <button type="button" onclick="assistantAskQuick('¿Cómo funciona el cronograma?')">Cronograma</button>
-    <button type="button" onclick="assistantAskQuick('¿Cómo hago para corregir el asistido?')">Corregir asistido</button>
-    <button type="button" onclick="assistantAskQuick('¿Cómo cambio mi contraseña?')">Contraseña</button>
+  <div id="assistantQuestionMenu" class="assistant-question-menu">
+    <div class="assistant-question-menu-head">
+      <span>Elegí una pregunta</span>
+      <span class="assistant-guided-badge">Modo guiado</span>
+    </div>
+    <div id="assistantQuestionGroups"></div>
   </div>
 
-  <form class="assistant-input-row" onsubmit="assistantSubmit(event)">
-    <input id="assistantInput" type="text" autocomplete="off" placeholder="Preguntame algo sobre el sistema…" maxlength="220">
-    <button type="submit" aria-label="Enviar">➤</button>
+  <form id="assistantNameForm" class="assistant-input-row assistant-name-form" onsubmit="assistantSubmit(event)">
+    <input id="assistantInput" type="text" autocomplete="off" placeholder="Escribí tu nombre…" maxlength="28">
+    <button type="submit" aria-label="Continuar">Continuar</button>
   </form>
 </section>
 
@@ -3826,6 +3975,122 @@ body.mother-sheet-active .mini-assistant{
 let assistantInitialized=false;
 let assistantAwaitingName=false;
 const MIGA_USER_KEY='panaderia_miga_user_v39';
+
+
+const MIGA_GUIDED_QUESTIONS = {
+  common: [
+    {label:'📍 ¿Qué hace esta hoja?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'📋 Resumen de mi sucursal', q:'Dame un resumen de mi sucursal'},
+    {label:'🏭 ¿Quién me elabora?', q:'¿Quién me elabora?'},
+    {label:'📈 ¿Tengo ventas cargadas?', q:'¿Tengo ventas cargadas?'},
+    {label:'🛠 ¿Cómo corrijo el asistido?', q:'¿Cómo hago para corregir el asistido?'},
+    {label:'☁ ¿Cómo funciona la sincronización?', q:'¿Cómo funciona Firebase?'}
+  ],
+  params: [
+    {label:'📅 ¿Para qué sirve Parámetros?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'🗓 ¿Cómo funciona el Cronograma?', q:'¿Cómo funciona el cronograma?'},
+    {label:'📦 ¿Cuántas referencias tengo?', q:'¿Cuántas referencias tengo?'},
+    {label:'📆 ¿Cuál es la fecha de inicio?', q:'¿Cuál es la fecha de inicio?'}
+  ],
+  plan: [
+    {label:'🥖 ¿Qué muestra Panadería Suc?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'％ ¿Qué significa Coef.?', q:'¿Qué significa Coef.?'},
+    {label:'🛠 ¿Cómo corrijo el asistido?', q:'¿Cómo hago para corregir el asistido?'},
+    {label:'📦 ¿Cuántas referencias tengo?', q:'¿Cuántas referencias tengo?'}
+  ],
+  sales: [
+    {label:'📈 ¿Qué muestra Ventas Prisma?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'✅ ¿Tengo ventas cargadas?', q:'¿Tengo ventas cargadas?'},
+    {label:'📦 ¿Cuántas referencias tienen ventas?', q:'¿Cuántas referencias tengo?'}
+  ],
+  baker: [
+    {label:'👨‍🍳 ¿Qué es la Hoja del Panadero?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'🖨 ¿Cómo imprimo la hoja?', q:'¿Cómo imprimo la Hoja del Panadero?'},
+    {label:'🛠 ¿Cómo corrijo el asistido?', q:'¿Cómo hago para corregir el asistido?'}
+  ],
+  mother: [
+    {label:'🏭 ¿Qué es Plan Elaboradora?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'🏪 ¿A qué sucursales produzco?', q:'¿Qué hace Plan Elaboradora?'},
+    {label:'🔒 ¿Quién puede cambiar destinos?', q:'¿Cómo funciona Plan Elaboradora?'},
+    {label:'☁ ¿Se actualiza automáticamente?', q:'¿Cómo funciona Firebase?'}
+  ],
+  security: [
+    {label:'🔐 ¿Cómo cambio mi contraseña?', q:'¿Cómo cambio mi contraseña?'},
+    {label:'💾 ¿Cómo hago un respaldo?', q:'¿Cómo hago un respaldo?'},
+    {label:'💬 ¿Cómo aviso por WhatsApp?', q:'¿Cómo funciona Guardar y avisar por WhatsApp?'}
+  ],
+  fun: [
+    {label:'😄 ¿Cómo estás?', q:'¿Cómo estás?'},
+    {label:'🏠 ¿De dónde sos?', q:'¿De dónde sos?'},
+    {label:'🤖 ¿Quién sos?', q:'¿Quién sos?'},
+    {label:'😂 Contame un chiste', q:'Contame un chiste'},
+    {label:'🧉 ¿Tomás mate?', q:'¿Tomás mate?'},
+    {label:'☕ ¿Tomás café?', q:'¿Tomás café?'}
+  ]
+};
+
+function assistantSheetKey(){
+ const active=document.querySelector('.sheet-tab.active')?.dataset.sheet||'params';
+ return ['params','plan','sales','baker','mother'].includes(active)?active:'params';
+}
+function assistantQuestionButtonHtml(item){
+ const klass=item.context?'assistant-question-btn context':'assistant-question-btn';
+ return `<button type="button" class="${klass}" onclick='assistantAskQuick(${JSON.stringify(item.q)})'>${item.label}</button>`;
+}
+function assistantRenderQuestionButtons(){
+ const box=document.getElementById('assistantQuestionGroups');
+ if(!box)return;
+ if(assistantAwaitingName || !migaGetUserName()){
+   box.innerHTML='';
+   return;
+ }
+
+ const key=assistantSheetKey();
+ const contextual=MIGA_GUIDED_QUESTIONS[key]||[];
+ const common=MIGA_GUIDED_QUESTIONS.common.filter(item=>
+   !contextual.some(x=>x.q===item.q)
+ );
+ const security=MIGA_GUIDED_QUESTIONS.security;
+ const fun=MIGA_GUIDED_QUESTIONS.fun;
+
+ const groups=[
+   {title:'En esta sección',items:contextual},
+   {title:'Mi sucursal',items:common},
+   {title:'Ayuda y acceso',items:security},
+   {title:'Un poco de MIGA',items:fun}
+ ].filter(g=>g.items.length);
+
+ box.innerHTML=groups.map(g=>
+   `<div class="assistant-question-group">
+      <div class="assistant-question-group-title">${g.title}</div>
+      <div class="assistant-question-grid">${g.items.map(assistantQuestionButtonHtml).join('')}</div>
+    </div>`
+ ).join('');
+}
+function assistantSyncGuidedMode(){
+ const panel=document.getElementById('miniAssistant');
+ const input=document.getElementById('assistantInput');
+ const nameForm=document.getElementById('assistantNameForm');
+ const hasName=!!migaGetUserName();
+
+ if(!panel)return;
+
+ if(assistantAwaitingName || !hasName){
+   panel.classList.add('assistant-awaiting-name');
+   if(input){
+     input.disabled=false;
+     input.maxLength=28;
+     input.placeholder='Escribí tu nombre…';
+   }
+ }else{
+   panel.classList.remove('assistant-awaiting-name');
+   if(input){
+     input.value='';
+     input.disabled=true;
+   }
+   assistantRenderQuestionButtons();
+ }
+}
 
 function migaGetUserName(){
  try{
@@ -3856,8 +4121,10 @@ function migaAskName(){
  const input=document.getElementById('assistantInput');
  if(input){
    input.value='';
+   input.disabled=false;
    input.placeholder='Escribí tu nombre…';
  }
+ assistantSyncGuidedMode();
  assistantAddMessage(
    'bot',
    '👋 Hola, soy <b>MIGA</b>, el <b>Módulo Inteligente de Gestión Asistida</b>.<br><br>'+
@@ -3869,7 +4136,11 @@ function migaWelcomeUser(name,returning=false){
  assistantAwaitingName=false;
  document.getElementById('miniAssistant')?.classList.remove('assistant-awaiting-name');
  const input=document.getElementById('assistantInput');
- if(input)input.placeholder='Preguntale algo a MIGA…';
+ if(input){
+   input.value='';
+   input.disabled=true;
+ }
+ assistantSyncGuidedMode();
 
  const elaborators=assistantCurrentElaborators();
  const sales=assistantSalesCount();
@@ -3898,6 +4169,7 @@ function migaWelcomeUser(name,returning=false){
    '• Referencias: '+products+'<br>'+
    '• Ventas cargadas: '+sales+' referencias<br>'+
    '• Inicio: '+esc(assistantProductionDate())+
+   '<span class="assistant-guided-note">Elegí una de las preguntas disponibles debajo. Así siempre te respondo sobre funciones que conozco del sistema.</span>'+
    '<div class="assistant-user-actions">'+
      '<button type="button" class="assistant-inline-action" onclick="migaChangeUser()">No soy '+esc(clean)+'</button>'+
    '</div>'
@@ -3911,8 +4183,10 @@ function migaChangeUser(){
  const input=document.getElementById('assistantInput');
  if(input){
    input.value='';
+   input.disabled=false;
    input.placeholder='Escribí otro nombre…';
  }
+ assistantSyncGuidedMode();
  assistantAddMessage(
    'bot',
    'Perfecto'+(current?', dejamos de usar <b>'+esc(current)+'</b>':'')+'. 😄<br>'+
@@ -3971,9 +4245,11 @@ function assistantAddMessage(role,htmlText){
 }
 function assistantUpdateContext(){
  const el=document.getElementById('assistantContext');
- if(!el)return;
- const migaUser=migaGetUserName();
- el.textContent=(migaUser?migaUser+' · ':'')+(assistantZoneName()?assistantZoneName()+' · ':'')+'Suc. '+state.branch+(assistantBranchName()?' · '+assistantBranchName():'')+' · '+assistantCurrentSheet()+' · '+(isMasterAdmin()?'Admin General':(isBranchAdmin()?'Admin Sucursal':'Usuario'));
+ if(el){
+   const migaUser=migaGetUserName();
+   el.textContent=(migaUser?migaUser+' · ':'')+(assistantZoneName()?assistantZoneName()+' · ':'')+'Suc. '+state.branch+(assistantBranchName()?' · '+assistantBranchName():'')+' · '+assistantCurrentSheet()+' · '+(isMasterAdmin()?'Admin General':(isBranchAdmin()?'Admin Sucursal':'Usuario'));
+ }
+ if(!assistantAwaitingName && migaGetUserName())assistantRenderQuestionButtons();
 }
 function assistantInitialGreeting(){
  if(assistantInitialized)return;
@@ -4012,10 +4288,21 @@ function toggleMiniAssistant(force){
      }
    }
 
-   setTimeout(()=>document.getElementById('assistantInput')?.focus(),40);
+   assistantSyncGuidedMode();
+   if(assistantAwaitingName || !migaGetUserName()){
+     setTimeout(()=>document.getElementById('assistantInput')?.focus(),40);
+   }
  }
 }
+function assistantGuidedQuestionAllowed(text){
+ const wanted=String(text||'');
+ return Object.values(MIGA_GUIDED_QUESTIONS)
+   .flat()
+   .some(item=>item.q===wanted);
+}
 function assistantAskQuick(text){
+ if(assistantAwaitingName || !migaGetUserName())return;
+ if(!assistantGuidedQuestionAllowed(text))return;
  assistantAddMessage('user',esc(text));
  assistantRespond(text);
 }
@@ -4023,23 +4310,27 @@ function assistantSubmit(ev){
  ev.preventDefault();
  const input=document.getElementById('assistantInput');
  if(!input)return;
+
+ // El campo de texto existe únicamente para identificar a la persona.
+ if(!assistantAwaitingName){
+   input.value='';
+   assistantSyncGuidedMode();
+   return;
+ }
+
  const text=input.value.trim();
  if(!text)return;
  input.value='';
 
- if(assistantAwaitingName){
-   const name=migaSetUserName(text);
-   if(!name){
-     assistantAddMessage('bot','No llegué a entender el nombre 😄. ¿Me lo escribís nuevamente?');
-     return;
-   }
-   assistantAddMessage('user',esc(name));
-   migaWelcomeUser(name,false);
+ const name=migaSetUserName(text);
+ if(!name){
+   assistantAddMessage('bot','No llegué a entender el nombre 😄. ¿Me lo escribís nuevamente?');
    return;
  }
 
- assistantAddMessage('user',esc(text));
- assistantRespond(text);
+ assistantAddMessage('user',esc(name));
+ migaWelcomeUser(name,false);
+ assistantRenderQuestionButtons();
 }
 
 
@@ -4215,8 +4506,9 @@ function assistantRespond(question){
  else if(/(firebase|nube|sincroniza|sincronizacion|sincronización|otro dispositivo|celular|otra pc)/.test(q)){
    const cloud=firebaseCloudInitialized?'conectada e inicializada':'todavía no inicializada';
    answer='☁ <b>Firebase</b> es la nube central de MIGA. Actualmente está <b>'+cloud+'</b>.<br><br>'+
-     '📍 La configuración está en <b>Administrador General → Firebase · Sincronización</b>.'+
-     '<span class="assistant-note">En esta primera etapa, la sincronización requiere ingresar como Administrador General. Luego habilitaremos cuentas individuales para cada sucursal.</span>';
+     'Cada sucursal puede ingresar con su propia contraseña y los cambios de <b>Coef. y Cronograma</b> se sincronizan automáticamente entre dispositivos. '+
+     'Si la sucursal es elaboradora, también recibe en tiempo real los cambios de las sucursales que abastece.'+
+     '<span class="assistant-note">Los accesos se crean o restablecen desde Administrador General → Accesos Firebase por Sucursal.</span>';
  }
  else if(/(respaldo|backup|copia de seguridad|copia de resguardo|restaurar respaldo)/.test(q)){
    const last=getLastBackupInfo();
@@ -4324,7 +4616,7 @@ function assistantRespond(question){
    answer='Contame qué parte falla: <b>ventas, cálculo, cronograma, impresión, contraseña, WhatsApp o Plan Elaboradora</b>. Si me indicás la solapa y qué esperabas que ocurriera, puedo orientarte mejor.';
  }
  else if(/(que podes hacer|opciones|menu)/.test(q)){
-   answer='Puedo darte un <b>resumen de la sucursal</b>, explicarte <b>qué hace la hoja en la que estás</b>, decirte <b>dónde se encuentra cada función</b>, ayudarte a corregir el Asistido, verificar ventas y orientarte con Coef., cronograma, contraseñas, impresión, WhatsApp y Plan Elaboradora. Y si necesitás distraerte un minuto, también acepto alguna pregunta informal 😄.';
+   answer='Trabajo en <b>modo guiado</b>: debajo vas a encontrar todas las preguntas que puedo responder. Las opciones cambian según la solapa donde estés, y también tenés algunas preguntas informales para conocerme un poco 😄.';
  }
  else if(/(hola|buen dia|buenas|buenas tardes|buenas noches)/.test(q)){
    const userName=migaGetUserName();
@@ -4631,7 +4923,14 @@ function persistState(obj=state){
  }catch(e){return false}
 }
 function saveNow(){try{persistState(state);document.getElementById('saveState').textContent='Config. Suc '+state.branch+' guardada '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}catch(e){document.getElementById('saveState').textContent='No se pudo guardar';}recalc()}
-let saveTimer;function scheduleSave(){clearTimeout(saveTimer);document.getElementById('saveState').textContent='Cambios sin guardar';saveTimer=setTimeout(saveNow,350)}
+let saveTimer;function scheduleSave(){
+ if(!canEditCurrentBranch()){
+   const local=loadLocalFor(state.branch);if(local)state=attachSalesToState(local,state.branch);
+   recalc();requireBranchCloudAccess();return;
+ }
+ clearTimeout(saveTimer);document.getElementById('saveState').textContent='Cambios sin guardar';
+ saveTimer=setTimeout(saveNow,220);
+}
 function monthNameFromDate(value){
  const d=new Date(String(value||'')+'T12:00:00');
  if(Number.isNaN(d.getTime()))return state.monthLabel||'';
@@ -4682,204 +4981,191 @@ function recalc(){
 
 
 
-const BRANCH_PASSWORD_STORAGE='panaderia_branch_passwords_v28';
+
+const BRANCH_PASSWORD_STORAGE='panaderia_branch_passwords_v28'; // legado, no autentica en Firebase
 let pendingBranchLogin='';
 let unlockedBranches=new Set();
+let firebaseBranchDirectoryCache={};
+let firebaseBranchDirectoryLoaded=false;
+let firebaseBranchSessionCode='';
 setTimeout(()=>{try{unlockedBranches.add(state.branch)}catch(e){}},0);
 
 function simplePasswordHash(branch,password){
- // Hash local para no persistir texto plano. Es una barrera de uso, no autenticación de servidor.
  const text=String(branch)+'|PANADERIA|'+String(password);
- let h1=0x811c9dc5, h2=0x9e3779b9;
+ let h1=0x811c9dc5,h2=0x9e3779b9;
  for(let i=0;i<text.length;i++){
    const c=text.charCodeAt(i);
-   h1^=c;
-   h1=Math.imul(h1,16777619);
-   h2^=(c+i);
-   h2=Math.imul(h2,2246822519);
+   h1^=c;h1=Math.imul(h1,16777619);
+   h2^=(c+i);h2=Math.imul(h2,2246822519);
  }
  return (h1>>>0).toString(16).padStart(8,'0')+(h2>>>0).toString(16).padStart(8,'0');
 }
-function loadBranchPasswordHashes(){
- try{
-   const raw=localStorage.getItem(BRANCH_PASSWORD_STORAGE);
-   const obj=raw?JSON.parse(raw):{};
-   return obj&&typeof obj==='object'?obj:{};
- }catch(e){return {}}
+function loadBranchPasswordHashes(){return {}}
+function branchHasPassword(code){return !!firebaseBranchDirectoryCache[code]?.enabled}
+function isFirebaseBranchSession(code=state.branch){return !!window.MigaFirebase?.isBranchFor?.(code)}
+function canEditCurrentBranch(){return isMasterAdmin()||isFirebaseBranchSession(state.branch)}
+function updateBranchCloudBodyClass(){
+ const online=isFirebaseBranchSession(state.branch);
+ document.body.classList.toggle('firebase-branch-online',online);
+ const top=document.getElementById('firebaseTopStatus');
+ if(top&&online){top.classList.add('online');top.textContent='☁ Sincronizado'}
 }
-function branchHasPassword(code){
- const obj=loadBranchPasswordHashes();
- return !!obj[code];
+async function firebaseRefreshBranchDirectory(){
+ if(!window.MigaFirebase?.ready)return;
+ try{
+   firebaseBranchDirectoryCache=await window.MigaFirebase.loadBranchDirectory();
+   firebaseBranchDirectoryLoaded=true;
+   renderAdminBranchPasswords();
+   populateBranchSelector();
+ }catch(e){console.warn('Directorio Firebase:',e)}
 }
 function renderAdminBranchPasswords(){
  const box=document.getElementById('adminBranchPasswords');
  if(!box)return;
- const hashes=loadBranchPasswordHashes();
-
  box.innerHTML=zoneOrder.map(zoneId=>{
    const z=zoneCatalog[zoneId];
-   const rows=branchesForZone(zoneId).map(code=>`
-     <div class="admin-branch-password-row">
+   const rows=branchesForZone(zoneId).map(code=>{
+     const info=firebaseBranchDirectoryCache[code]||null;
+     const enabled=!!info?.enabled;
+     return `<div class="admin-branch-password-row">
        <span class="branch-code">${code}</span>
        <span class="branch-name">${esc(branchCatalog[code]?.name||'')}</span>
+       <span class="admin-branch-cloud-state ${enabled?'online':'offline'}">${enabled?'☁ Activo':'Sin acceso'}</span>
        <div style="display:flex;gap:4px;min-width:0">
-         <input
-           style="flex:1;min-width:0"
-           data-branch-password="${code}"
-           type="password"
-           autocomplete="new-password"
-           placeholder="${hashes[code]?'Nueva clave':'Sin contraseña'}"
-           value="">
-         ${hashes[code]?`<button type="button" title="Quitar clave" onclick="removeBranchPassword('${code}')" style="width:30px;border:1px solid #999;background:#fff;cursor:pointer">✕</button>`:''}
+         <input style="flex:1;min-width:0" data-branch-password="${code}" type="password"
+           autocomplete="new-password" placeholder="${enabled?'Nueva clave / restablecer':'Clave inicial'}" value="">
+         ${enabled?`<button type="button" title="Deshabilitar acceso" onclick="removeBranchPassword('${code}')" style="width:30px;border:1px solid #999;background:#fff;cursor:pointer">✕</button>`:''}
        </div>
-     </div>`).join('');
+     </div>`;
+   }).join('');
    return `<div class="admin-zone-password-block"><div class="admin-zone-group-title">${esc(z?.name||zoneId)}</div>${rows}</div>`;
  }).join('');
 }
-function saveBranchPasswords(){
+async function saveBranchPasswords(){
  if(!isMasterAdmin())return;
-
- const current=loadBranchPasswordHashes();
-
+ if(!window.MigaFirebase?.isAdmin?.()){alert('Ingresá nuevamente como Administrador General.');return}
+ const entries=[];
  document.querySelectorAll('#adminBranchPasswords input[data-branch-password]').forEach(inp=>{
-   const code=inp.dataset.branchPassword;
-   const value=String(inp.value||'');
-
-   // Vacío sin hash previo = queda sin contraseña.
-   // Vacío con hash previo = conserva la existente.
-   if(value){
-     current[code]=simplePasswordHash(code,value);
-     unlockedBranches.add(code);
-   }
+   const password=String(inp.value||'');
+   if(password)entries.push({code:inp.dataset.branchPassword,password});
  });
-
- try{
-   localStorage.setItem(BRANCH_PASSWORD_STORAGE,JSON.stringify(current));
-   firebaseQueueSystemSync();
-   alert('Contraseñas actualizadas. Para quitar una clave, usá el botón "Quitar clave" de la sucursal.');
-   renderAdminBranchPasswords();
-   populateBranchSelector();
- }catch(e){
-   alert('No se pudieron guardar las contraseñas.');
+ if(!entries.length){alert('Ingresá una contraseña en al menos una sucursal.');return}
+ if(entries.some(x=>x.password.length<6)){alert('Las contraseñas deben tener al menos 6 caracteres.');return}
+ if(!confirm('Se crearán/restablecerán '+entries.length+' accesos Firebase. ¿Continuar?'))return;
+ let done=0;
+ for(const item of entries){
+   try{
+     await window.MigaFirebase.provisionBranch(item.code,branchZoneId(item.code),branchCatalog[item.code]?.name||'',item.password);
+     done++;
+   }catch(e){alert('Suc. '+item.code+': '+(e?.message||e));break}
  }
-}
-function removeBranchPassword(code){
- if(!isMasterAdmin())return;
- const current=loadBranchPasswordHashes();
- if(!current[code])return;
-
- if(!confirm('¿Quitar la contraseña de la Suc. '+code+'?'))return;
-
- delete current[code];
- try{
-   localStorage.setItem(BRANCH_PASSWORD_STORAGE,JSON.stringify(current));
-   firebaseQueueSystemSync();
- }catch(e){}
- unlockedBranches.delete(code);
+ await firebaseRefreshBranchDirectory();
  renderAdminBranchPasswords();
- populateBranchSelector();
+ if(done)alert(done+' accesos Firebase procesados correctamente.');
 }
-function renderAdminBranchPasswords(){
- const box=document.getElementById('adminBranchPasswords');
- if(!box)return;
- const hashes=loadBranchPasswordHashes();
-
- box.innerHTML=allBranchCodes().map(code=>`
-   <div class="admin-branch-password-row">
-     <span class="branch-code">${code}</span>
-     <span class="branch-name">${esc(branchCatalog[code]?.name||'')}</span>
-     <div style="display:flex;gap:4px;min-width:0">
-       <input
-         style="flex:1;min-width:0"
-         data-branch-password="${code}"
-         type="password"
-         autocomplete="new-password"
-         placeholder="${hashes[code]?'Nueva clave':'Sin contraseña'}"
-         value="">
-       ${hashes[code]?`<button type="button" title="Quitar clave" onclick="removeBranchPassword('${code}')" style="width:30px;border:1px solid #999;background:#fff;cursor:pointer">✕</button>`:''}
-     </div>
-   </div>
- `).join('');
+async function removeBranchPassword(code){
+ if(!isMasterAdmin()||!branchCatalog[code])return;
+ if(!confirm('¿Deshabilitar el acceso online de la Suc. '+code+'?'))return;
+ try{
+   await window.MigaFirebase.disableBranch(code);
+   await firebaseRefreshBranchDirectory();
+ }catch(e){alert('No se pudo deshabilitar: '+(e?.message||e))}
 }
-
-function changeOwnBranchPassword(){
- if(!isBranchAdmin())return;
-
+async function changeOwnBranchPassword(){
+ if(!isBranchAdmin()||!isFirebaseBranchSession(state.branch))return;
  const p1=String(document.getElementById('branchOwnNewPassword')?.value||'');
  const p2=String(document.getElementById('branchOwnNewPassword2')?.value||'');
-
- if(p1.length<4){
-   alert('La nueva contraseña debe tener al menos 4 caracteres.');
-   return;
- }
- if(p1!==p2){
-   alert('Las contraseñas no coinciden.');
-   return;
- }
-
- const hashes=loadBranchPasswordHashes();
- hashes[state.branch]=simplePasswordHash(state.branch,p1);
-
+ if(p1.length<6){alert('La nueva contraseña debe tener al menos 6 caracteres.');return}
+ if(p1!==p2){alert('Las contraseñas no coinciden.');return}
  try{
-   localStorage.setItem(BRANCH_PASSWORD_STORAGE,JSON.stringify(hashes));
-   unlockedBranches.add(state.branch);
+   await window.MigaFirebase.changeOwnBranchPassword(p1);
    document.getElementById('branchOwnNewPassword').value='';
    document.getElementById('branchOwnNewPassword2').value='';
-   populateBranchSelector();
-   alert('Contraseña de la Suc. '+state.branch+' actualizada.');
- }catch(e){
-   alert('No se pudo cambiar la contraseña.');
- }
+   alert('Contraseña de la Suc. '+state.branch+' actualizada en Firebase.');
+ }catch(e){alert('No se pudo cambiar la contraseña: '+(e?.message||e))}
 }
-
 function openBranchLogin(code){
  pendingBranchLogin=code;
  const modal=document.getElementById('branchLoginModal');
  const text=document.getElementById('branchLoginText');
  const pass=document.getElementById('branchLoginPassword');
  const err=document.getElementById('branchLoginError');
-
- if(text)text.innerHTML='Ingresá la contraseña para acceder a <b>'+esc(branchZoneName(code))+' · Suc. '+esc(code)+' - '+esc(branchCatalog[code]?.name||'')+'</b>.';
+ if(text)text.innerHTML='Ingresá la contraseña para acceder a <b>'+esc(branchZoneName(code))+' · Suc. '+esc(code)+' - '+esc(branchCatalog[code]?.name||'')+'</b>.'+
+   '<div class="branch-cloud-login-note">☁ Acceso y sincronización validados con Firebase.</div>';
  if(pass)pass.value='';
  if(err)err.textContent='';
  if(modal)modal.classList.add('show');
-
  setTimeout(()=>pass?.focus(),30);
 }
 function cancelBranchLogin(){
  const modal=document.getElementById('branchLoginModal');
  if(modal)modal.classList.remove('show');
  pendingBranchLogin='';
- syncZoneToBranch(state.branch,false);
- populateZoneSelector();
- populateBranchSelector();
- const sel=document.getElementById('branchSelect');
- if(sel)sel.value=state.branch;
+ syncZoneToBranch(state.branch,false);populateZoneSelector();populateBranchSelector();
+ const sel=document.getElementById('branchSelect');if(sel)sel.value=state.branch;
 }
-function confirmBranchLogin(){
- const code=pendingBranchLogin;
- if(!code)return;
-
- const pass=document.getElementById('branchLoginPassword')?.value||'';
- const hashes=loadBranchPasswordHashes();
- const err=document.getElementById('branchLoginError');
-
- if(!hashes[code]){
-   unlockedBranches.add(code);
-   finishBranchSwitch(code);
-   return;
- }
-
- if(simplePasswordHash(code,pass)!==hashes[code]){
-   if(err)err.textContent='Contraseña incorrecta.';
-   return;
- }
-
- unlockedBranches.add(code);
- const modal=document.getElementById('branchLoginModal');
- if(modal)modal.classList.remove('show');
+function openAdminFromBranchLogin(){
+ const modal=document.getElementById('branchLoginModal');if(modal)modal.classList.remove('show');
  pendingBranchLogin='';
- finishBranchSwitch(code);
+ setTimeout(()=>toggleMotherAdmin(),20);
+}
+async function confirmBranchLogin(){
+ const code=pendingBranchLogin;if(!code)return;
+ const pass=document.getElementById('branchLoginPassword')?.value||'';
+ const err=document.getElementById('branchLoginError');
+ if(!pass){if(err)err.textContent='Ingresá la contraseña.';return}
+ if(!window.MigaFirebase?.ready){if(err)err.textContent='Firebase todavía está iniciando.';return}
+ if(err)err.textContent='Validando acceso en Firebase…';
+ try{
+   if(isFirebaseBranchSession(state.branch)||isMasterAdmin()){persistState(state);await new Promise(r=>setTimeout(r,80))}
+   await window.MigaFirebase.signInBranch(code,pass);
+   const payload=await window.MigaFirebase.pullBranchContext(code);
+   firebaseCloudInitialized=true;
+   firebaseBranchSessionCode=code;
+   firebaseStoreBranchContext(payload);
+   unlockedBranches.clear();unlockedBranches.add(code);
+   const modal=document.getElementById('branchLoginModal');if(modal)modal.classList.remove('show');
+   pendingBranchLogin='';
+   finishBranchSwitch(code);
+   firebaseStartBranchRealtime(code);
+   updateBranchCloudBodyClass();
+   assistantUpdateContext();
+ }catch(e){
+   const ec=String(e?.code||'');let msg=e?.message||String(e);
+   if(ec.includes('invalid-credential')||ec.includes('wrong-password'))msg='Contraseña incorrecta.';
+   else if(ec.includes('user-not-found'))msg='Esta sucursal todavía no tiene acceso Firebase configurado.';
+   if(err)err.textContent=msg;
+ }
+}
+function firebaseStoreBranchContext(payload){
+ if(!payload||typeof payload!=='object')return;
+ firebaseCloudApplying=true;
+ try{
+   Object.entries(payload.zoneRefs||{}).forEach(([zoneId,refs])=>{if(zoneCatalog[zoneId])storeZoneReferencesLocal(zoneId,refs)});
+   Object.entries(payload.branches||{}).forEach(([code,data])=>{
+     if(!branchCatalog[code]||!data)return;
+     let x=normalizeStateArticles(clone(data));x.branch=code;x.branchName=branchCatalog[code]?.name||x.branchName||'';
+     x=syncBranchProductsWithZoneMaster(x,code);
+     localStorage.setItem(storageKey(code),JSON.stringify(configSnapshot(x)));
+   });
+   Object.entries(payload.sales||{}).forEach(([code,data])=>{if(data)salesWorkbook[code]=clone(data)});
+   if(payload.salesSourceFile)salesSourceFile=String(payload.salesSourceFile);
+   firebaseApplySystemSnapshot(payload.system||{});
+ }finally{firebaseCloudApplying=false}
+}
+function firebaseStartBranchRealtime(code){
+ try{
+   window.MigaFirebase?.unsubscribe?.();
+   window.MigaFirebase.subscribeBranch(code,firebaseApplyRealtimeChange);
+   firebaseRealtimeActive=true;firebaseCloudInitialized=true;
+   firebaseSetStatus('✅ Suc. '+code+' sincronizada con Firebase en tiempo real.','ok');
+   updateBranchCloudBodyClass();
+ }catch(e){firebaseRealtimeActive=false;console.error(e)}
+}
+function requireBranchCloudAccess(){
+ if(canEditCurrentBranch())return true;
+ alert('Para modificar esta sucursal primero ingresá con su contraseña.');
+ openBranchLogin(state.branch);return false;
 }
 
 const ELABORATOR_WHATSAPP_STORAGE='panaderia_elaboradora_whatsapp_v25';
@@ -5249,9 +5535,10 @@ function firebaseSetStatus(text,type='pending'){
  }
  const top=document.getElementById('firebaseTopStatus');
  if(top){
-   const online=type==='ok' && firebaseCloudInitialized;
+   const online=type==='ok' && firebaseCloudInitialized &&
+     (!!window.MigaFirebase?.isAdmin?.() || !!window.MigaFirebase?.isBranch?.());
    top.classList.toggle('online',online);
-   top.textContent=online?'☁ Firebase':'☁ Local';
+   top.textContent=online?'☁ Sincronizado':'☁ Local';
  }
  const rt=document.getElementById('firebaseRealtimeStatus');
  if(rt)rt.textContent=firebaseRealtimeActive?'activa · cambios en tiempo real':'inactiva';
@@ -5261,8 +5548,7 @@ function firebaseSystemSnapshot(){
  const storage={};
  const keys=[
    MOTHER_ELABORATORS_STORAGE,
-   ELABORATOR_WHATSAPP_STORAGE,
-   BRANCH_PASSWORD_STORAGE
+   ELABORATOR_WHATSAPP_STORAGE
  ];
  for(const code of allBranchCodes())keys.push(motherSelectionKey(code));
 
@@ -5282,7 +5568,6 @@ function firebaseApplySystemSnapshot(storage){
    const allowed=[
      MOTHER_ELABORATORS_STORAGE,
      ELABORATOR_WHATSAPP_STORAGE,
-     BRANCH_PASSWORD_STORAGE,
      ...allBranchCodes().map(code=>motherSelectionKey(code))
    ];
    allowed.forEach(key=>{
@@ -5312,8 +5597,13 @@ function firebaseBuildUploadPayload(){
    const s=getEditableBranchState(code);
    branches[code]=configSnapshot(s);
  });
+ const elaborators={};
+ (enabledElaborators||loadEnabledElaborators()).forEach(code=>{
+   elaborators[code]={code,zoneId:branchZoneId(code),destinations:loadMotherSelection(code).filter(x=>branchCatalog[x]),enabled:true};
+ });
  return {
    branches,
+   elaborators,
    zoneRefs:getAllZoneReferenceMasters(),
    sales:clone(salesWorkbook||{}),
    salesSourceFile:salesSourceFile||'',
@@ -5466,12 +5756,13 @@ function firebaseStartRealtime(){
 function firebaseStopRealtime(){
  try{window.MigaFirebase?.unsubscribe?.();}catch(e){}
  firebaseRealtimeActive=false;
- firebaseSetStatus('Firebase desconectado. Los cambios quedan locales hasta volver a ingresar como Admin General.','pending');
+ firebaseSetStatus('Firebase desconectado. Ingresá nuevamente para recuperar la sincronización.','pending');
 }
 
 function firebaseQueueBranchSync(obj){
- if(firebaseCloudApplying || !firebaseCloudInitialized || !window.MigaFirebase?.isAdmin?.())return;
+ if(firebaseCloudApplying || !firebaseCloudInitialized)return;
  const snapshot=configSnapshot(obj);
+ if(!window.MigaFirebase?.canWriteBranch?.(snapshot.branch))return;
  window.MigaFirebase.saveBranch(snapshot.branch,snapshot).catch(err=>{
    console.error('Firebase branch sync:',err);
    firebaseSetStatus('⚠ Error al sincronizar la Suc. '+esc(snapshot.branch)+'. Los datos siguen guardados localmente.','error');
@@ -5490,9 +5781,14 @@ function firebaseQueueSystemSync(){
  if(firebaseCloudApplying || !firebaseCloudInitialized || !window.MigaFirebase?.isAdmin?.())return;
  clearTimeout(firebaseSystemTimer);
  firebaseSystemTimer=setTimeout(()=>{
-   window.MigaFirebase.saveSystem(firebaseSystemSnapshot()).catch(err=>{
-     console.error('Firebase system sync:',err);
+   const elaborators={};
+   (enabledElaborators||loadEnabledElaborators()).forEach(code=>{
+     elaborators[code]={code,zoneId:branchZoneId(code),destinations:loadMotherSelection(code).filter(x=>branchCatalog[x]),enabled:true};
    });
+   Promise.all([
+     window.MigaFirebase.saveSystem(firebaseSystemSnapshot()),
+     window.MigaFirebase.saveElaborators(elaborators)
+   ]).catch(err=>{console.error('Firebase system sync:',err)});
  },220);
 }
 
@@ -6255,62 +6551,35 @@ async function toggleMotherAdmin(){
    clearAdminRole();
    if(wasMaster){
      firebaseStopRealtime();
-     try{await window.MigaFirebase?.signOutAdmin?.();}catch(e){}
+     try{await window.MigaFirebase?.signOutCurrent?.()}catch(e){}
+     firebaseBranchSessionCode='';updateBranchCloudBodyClass();
    }
-   updateMotherAdminUI();
-   populateBranchSelector();
-   return;
+   updateMotherAdminUI();populateBranchSelector();return;
  }
-
- const pass=prompt(
-   'Ingrese la contraseña de la Suc. '+state.branch+
-   ' o la clave de Administrador General:'
- );
+ const pass=prompt('Ingrese la contraseña de la Suc. '+state.branch+' o la clave de Administrador General:');
  if(pass===null)return;
 
- // Primero validar la contraseña propia de la sucursal actual.
- const hashes=loadBranchPasswordHashes();
- const hash=hashes[state.branch];
-
- if(hash && simplePasswordHash(state.branch,pass)===hash){
-   motherAdminMode=true;
-   adminRole='branch';
-   adminBranchCode=state.branch;
-   unlockedBranches.add(state.branch);
-   updateMotherAdminUI();
-   populateBranchSelector();
-   return;
+ if(isFirebaseBranchSession(state.branch)){
+   try{
+     await window.MigaFirebase.reauthenticateBranch(pass);
+     motherAdminMode=true;adminRole='branch';adminBranchCode=state.branch;unlockedBranches.add(state.branch);
+     updateMotherAdminUI();populateBranchSelector();return;
+   }catch(e){}
  }
-
- // Si no coincide con la clave de sucursal, intentar autenticación real de Admin General en Firebase.
  try{
    await firebaseMasterLogin(pass);
-   motherAdminMode=true;
-   adminRole='master';
-   adminBranchCode='';
-   unlockedBranches.add(state.branch);
+   firebaseBranchSessionCode='';
+   motherAdminMode=true;adminRole='master';adminBranchCode='';unlockedBranches.add(state.branch);
    if(!enabledElaborators.length)enabledElaborators=loadEnabledElaborators();
-   updateMotherAdminUI();
-   populateBranchSelector();
-
-   if(firebaseCloudInitialized){
-     await firebasePullAll(true);
-   }else{
-     firebaseSetStatus(
-       '✅ Administrador General autenticado en Firebase.<br>⚠ La nube todavía está vacía. Desde Menú Admin usá <b>Subir datos actuales a Firebase</b>.',
-       'pending'
-     );
-   }
+   updateMotherAdminUI();populateBranchSelector();
+   if(firebaseCloudInitialized)await firebasePullAll(true);
+   else firebaseSetStatus('✅ Administrador General autenticado.<br>⚠ Firebase todavía está vacío.','pending');
    return;
  }catch(e){
-   const msg=(e?.code==='auth/invalid-credential' || e?.code==='auth/wrong-password')
-     ? 'Contraseña incorrecta.'
-     : ('No se pudo validar el Administrador General: '+(e?.message||e));
-   alert(msg);
+   const ec=String(e?.code||'');
+   alert(ec.includes('invalid-credential')||ec.includes('wrong-password')?'Contraseña incorrecta.':'No se pudo validar el acceso: '+(e?.message||e));
  }
-
- clearAdminRole();
- updateMotherAdminUI();
+ clearAdminRole();updateMotherAdminUI();
 }
 function motherSelectionKey(code){
  return MOTHER_SELECTION_PREFIX+String(code||'').padStart(3,'0');
@@ -6650,7 +6919,7 @@ function renderMotherTable(){
  });
 
  let h='<table class="mother-grid"><thead>';
- h+='<tr class="mother-head-row-1"><th class="article" rowspan="2">Articulo</th><th class="description" rowspan="2">Descripción</th><th class="brand" rowspan="2">Marca</th><th class="aptitude" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto" rowspan="2">Bto</th>';
+ h+='<tr class="mother-head-row-1"><th class="article" rowspan="2">Articulo</th><th class="description" rowspan="2">Descripción</th><th class="brand mobile-hide-mother" rowspan="2">Marca</th><th class="aptitude mobile-hide-mother" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto mobile-hide-mother" rowspan="2">Bto</th>';
  h+=`<th class="mother-branches-title" colspan="${selected.length}">SUCURSALES</th><th class="product-total" rowspan="2">Total Kilos x Producto</th></tr>`;
  h+='<tr class="mother-head-row-2">'+selected.map(code=>`<th class="branch-col" title="${esc(branchCatalog[code]?.name||'')} · ${esc(branchZoneName(code))}">${code}</th>`).join('')+'</tr></thead><tbody>';
 
@@ -6658,7 +6927,7 @@ function renderMotherTable(){
 
  products.forEach(p=>{
    let rowTotal=0,hasAny=false;
-   h+=`<tr><td class="article">${esc(p.article)}</td><td class="description">${esc(p.description)}</td><td class="brand">${esc(p.brand)}</td><td class="aptitude">${esc(p.aptitude)}</td><td class="um">${esc(p.um)}</td><td class="bto">${esc(p.bto)}</td>`;
+   h+=`<tr><td class="article">${esc(p.article)}</td><td class="description">${esc(p.description)}</td><td class="brand mobile-hide-mother">${esc(p.brand)}</td><td class="aptitude mobile-hide-mother">${esc(p.aptitude)}</td><td class="um">${esc(p.um)}</td><td class="bto mobile-hide-mother">${esc(p.bto)}</td>`;
    selected.forEach(code=>{
      const raw=branchData[code].map[p.article];
      if(raw===null||raw===undefined||!Number.isFinite(Number(raw))){
@@ -6675,7 +6944,8 @@ function renderMotherTable(){
  });
 
  const grandTotal=selected.reduce((s,c)=>s+branchTotals[c],0);
- h+=`<tr class="total-row"><td colspan="6" class="total-label">TOTAL DE KILOS POR SUCURSAL</td>`;
+ const totalLabelCols=window.matchMedia('(max-width:700px)').matches?3:6;
+ h+=`<tr class="total-row"><td colspan="${totalLabelCols}" class="total-label">TOTAL DE KILOS POR SUCURSAL</td>`;
  selected.forEach(code=>h+=`<td class="branch-col">${fmt(branchTotals[code],1)}</td>`);
  h+=`<td class="product-total">${fmt(grandTotal,1)}</td></tr>`;
 
@@ -6797,7 +7067,10 @@ function editProduct(i,k,v){
  state=normalizeStateArticles(state);
  scheduleSave();
 }
-function toggleSchedule(i,d){state.products[i].schedule[d]=state.products[i].schedule[d]?0:1;scheduleSave()}
+function toggleSchedule(i,d){
+ if(!requireBranchCloudAccess())return;
+ state.products[i].schedule[d]=state.products[i].schedule[d]?0:1;scheduleSave();
+}
 
 function planMaxScroll(){
  const plan=document.getElementById('planTable');
@@ -6931,6 +7204,7 @@ function refreshAfterCoefficient(index,scrollLeft){
  persistCoefficientSoon();
 }
 function editCoefficientQuick(index,select){
+ if(!requireBranchCloudAccess())return;
  if(!select || !state.products[index])return;
 
  const previous=coefficientPercentValue(state.products[index].increment);
@@ -7162,7 +7436,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='55.0';
+ x.sales={};x.salesRows=[];x.version='57.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -7237,7 +7511,6 @@ function populateBranchSelector(){
  const sel=document.getElementById('branchSelect');
  if(!sel)return;
  const current=state.branch;
- const hashes=loadBranchPasswordHashes();
  if(!zoneCatalog[currentZoneId])currentZoneId=branchZoneId(current)||zoneOrder[0]||'';
  const codes=branchesForZone(currentZoneId);
  sel.innerHTML='';
@@ -7254,7 +7527,8 @@ function populateBranchSelector(){
  codes.forEach(code=>{
    const op=document.createElement('option');
    op.value=code;
-   const locked=hashes[code]?' 🔒':'';
+   const cloud=firebaseBranchDirectoryCache[code];
+   const locked=cloud?.enabled?' ☁':'';
    op.textContent=code+(branchCatalog[code].name?' - '+branchCatalog[code].name:'')+locked;
    sel.appendChild(op);
  });
@@ -7264,32 +7538,9 @@ function populateBranchSelector(){
 function switchBranch(code){
  code=normalizeBranch(code);
  if(!code||!branchCatalog[code]||code===state.branch)return;
-
- const leavingBranch=state.branch;
-
- // El Administrador General puede entrar a cualquier sucursal.
- if(isMasterAdmin()){
-   finishBranchSwitch(code);
-   return;
- }
-
- // Al abandonar una sucursal protegida, su autorización deja de ser válida.
- if(leavingBranch && branchHasPassword(leavingBranch)){
-   unlockedBranches.delete(leavingBranch);
- }
-
- // El Admin Sucursal sólo administra su propia sucursal.
- if(isBranchAdmin()){
-   clearAdminRole();
-   updateMotherAdminUI();
- }
-
- if(!branchHasPassword(code)){
-   finishBranchSwitch(code);
-   return;
- }
-
- // Se conserva Zona/Sucursal objetivo mientras se solicita la contraseña.
+ try{persistState(state)}catch(e){}
+ if(isMasterAdmin()&&window.MigaFirebase?.isAdmin?.()){finishBranchSwitch(code);return}
+ if(isBranchAdmin()){clearAdminRole();updateMotherAdminUI()}
  openBranchLogin(code);
 }
 function finishBranchSwitch(code){
@@ -7304,8 +7555,6 @@ function finishBranchSwitch(code){
  for(const unlocked of Array.from(unlockedBranches)){
    if(unlocked!==code)unlockedBranches.delete(unlocked);
  }
-
- persistState(state);
 
  const meta=branchCatalog[code]||salesWorkbook[code]||{code,name:''};
  let next=loadLocalFor(code)||makeBranchState(code,meta.name);
@@ -7647,6 +7896,12 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
  setTimeout(initMobileTouchScrolling,0);
  assistantUpdateContext();
 }));
+window.addEventListener('miga-firebase-ready',async()=>{
+ await firebaseRefreshBranchDirectory();
+ setTimeout(()=>{
+   if(!window.MigaFirebase?.isAdmin?.()&&!window.MigaFirebase?.isBranchFor?.(state.branch))openBranchLogin(state.branch);
+ },700);
+});
 document.getElementById('pasteModal').addEventListener('click',e=>{if(e.target.id==='pasteModal')closePaste()});
 branchCatalog[state.branch]={...(branchCatalog[state.branch]||{}),code:state.branch,name:state.branchName||branchCatalog[state.branch]?.name||''};
 syncZoneToBranch(state.branch,false);
@@ -7669,7 +7924,9 @@ monthlyBackupReminder();
     browserSessionPersistence,
     EmailAuthProvider,
     reauthenticateWithCredential,
-    updatePassword
+    updatePassword,
+    createUserWithEmailAndPassword,
+    inMemoryPersistence
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
   import {
     getFirestore,
@@ -7699,7 +7956,12 @@ monthlyBackupReminder();
   const db = getFirestore(app);
   await setPersistence(auth, browserSessionPersistence);
 
+  const provisionApp = initializeApp(firebaseConfig, 'MIGA_PROVISIONER');
+  const provisionAuth = getAuth(provisionApp);
+  await setPersistence(provisionAuth, inMemoryPersistence);
+
   let unsubscribers=[];
+  let activeProfile=null;
 
   const clean = value => JSON.parse(JSON.stringify(value ?? null));
 
@@ -7712,17 +7974,26 @@ monthlyBackupReminder();
   }
 
   async function signInAdmin(password){
+    unsubscribe();
     const cred=await signInWithEmailAndPassword(auth,ADMIN_EMAIL,String(password||''));
     if(cred.user.uid!==ADMIN_UID){
       await signOut(auth);
       throw new Error('La cuenta autenticada no corresponde al Administrador General autorizado.');
     }
-    return {uid:cred.user.uid,email:cred.user.email};
+    activeProfile={role:'admin',uid:cred.user.uid,email:cred.user.email,enabled:true};
+    return activeProfile;
   }
 
   async function signOutAdmin(){
     unsubscribe();
+    activeProfile=null;
     await signOut(auth);
+  }
+
+  async function signOutCurrent(){
+    unsubscribe();
+    activeProfile=null;
+    if(auth.currentUser)await signOut(auth);
   }
 
   async function changeAdminPassword(currentPassword,newPassword){
@@ -7744,6 +8015,172 @@ monthlyBackupReminder();
 
   function isAdmin(){
     return !!auth.currentUser && auth.currentUser.uid===ADMIN_UID;
+  }
+  function isBranch(){
+    return !!auth.currentUser && activeProfile?.role==='branch' && activeProfile?.enabled===true;
+  }
+  function isBranchFor(code){
+    return isBranch() && String(activeProfile.branch)===String(code);
+  }
+  function canWriteBranch(code){
+    return isAdmin() || isBranchFor(code);
+  }
+  function currentProfile(){
+    return activeProfile?clean(activeProfile):null;
+  }
+
+
+  async function loadBranchDirectory(){
+    const snap=await getDocs(collection(db,'miga_login_directory'));
+    const out={};
+    snap.forEach(d=>{out[d.id]=clean(d.data())});
+    return out;
+  }
+
+  async function getBranchDirectory(code){
+    const snap=await getDoc(doc(db,'miga_login_directory',String(code)));
+    return snap.exists()?clean(snap.data()):null;
+  }
+
+  async function provisionBranch(code,zoneId,name,password){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    code=String(code||'').padStart(3,'0');
+
+    const dirRef=doc(db,'miga_login_directory',code);
+    const previous=await getDoc(dirRef);
+    const old=previous.exists()?previous.data():null;
+    const version=Number(old?.version||0)+1;
+    const email=`b${code}-v${version}-${Date.now().toString(36)}@miga-panaderia.app`;
+
+    let cred;
+    try{
+      cred=await createUserWithEmailAndPassword(provisionAuth,email,String(password||''));
+    }finally{
+      try{if(provisionAuth.currentUser)await signOut(provisionAuth)}catch(e){}
+    }
+
+    const uid=cred.user.uid;
+    const now=new Date().toISOString();
+    const batch=writeBatch(db);
+
+    if(old?.uid){
+      batch.set(doc(db,'miga_users',String(old.uid)),{
+        enabled:false,disabledAt:now,replacedBy:uid
+      },{merge:true});
+    }
+
+    batch.set(doc(db,'miga_users',uid),{
+      uid,role:'branch',branch:code,zoneId:String(zoneId||''),
+      name:String(name||''),email,enabled:true,createdAt:now,updatedAt:now
+    });
+
+    batch.set(dirRef,{
+      branch:code,zoneId:String(zoneId||''),name:String(name||''),
+      email,uid,enabled:true,version,updatedAt:now
+    });
+
+    await batch.commit();
+    return {branch:code,email,uid,enabled:true,version};
+  }
+
+  async function disableBranch(code){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    code=String(code||'').padStart(3,'0');
+    const dirRef=doc(db,'miga_login_directory',code);
+    const snap=await getDoc(dirRef);
+    if(!snap.exists())return true;
+
+    const data=snap.data();
+    const batch=writeBatch(db);
+    if(data?.uid){
+      batch.set(doc(db,'miga_users',String(data.uid)),{
+        enabled:false,disabledAt:new Date().toISOString()
+      },{merge:true});
+    }
+    batch.set(dirRef,{enabled:false,updatedAt:new Date().toISOString()},{merge:true});
+    await batch.commit();
+    return true;
+  }
+
+  async function signInBranch(code,password){
+    unsubscribe();
+    code=String(code||'').padStart(3,'0');
+    const directory=await getBranchDirectory(code);
+
+    if(!directory||!directory.enabled||!directory.email){
+      const err=new Error('Esta sucursal todavía no tiene acceso Firebase configurado.');
+      err.code='auth/user-not-found';
+      throw err;
+    }
+
+    const cred=await signInWithEmailAndPassword(auth,String(directory.email),String(password||''));
+    const profileSnap=await getDoc(doc(db,'miga_users',cred.user.uid));
+    const profile=profileSnap.exists()?profileSnap.data():null;
+
+    if(!profile||profile.role!=='branch'||profile.enabled!==true||String(profile.branch)!==code){
+      await signOut(auth);
+      activeProfile=null;
+      throw new Error('La cuenta no tiene permisos activos para esta sucursal.');
+    }
+
+    activeProfile=clean(profile);
+    return currentProfile();
+  }
+
+  async function reauthenticateBranch(password){
+    if(!isBranch())throw new Error('Sucursal no autenticada.');
+    const user=auth.currentUser;
+    const credential=EmailAuthProvider.credential(user.email,String(password||''));
+    await reauthenticateWithCredential(user,credential);
+    return true;
+  }
+
+  async function changeOwnBranchPassword(newPassword){
+    if(!isBranch())throw new Error('Sucursal no autenticada.');
+    await updatePassword(auth.currentUser,String(newPassword||''));
+    return true;
+  }
+
+  async function pullBranchContext(code){
+    if(!isBranchFor(code)&&!isAdmin())throw new Error('Sin permisos para esta sucursal.');
+    code=String(code||'').padStart(3,'0');
+
+    const ownElabSnap=await getDoc(doc(db,'miga_elaborators',code));
+    const elab=ownElabSnap.exists()?ownElabSnap.data():null;
+    const destinations=Array.isArray(elab?.destinations)?elab.destinations.map(String):[];
+    const allowedCodes=[...new Set([code,...destinations])];
+
+    const branchPairs=await Promise.all(allowedCodes.map(async c=>{
+      const snap=await getDoc(doc(db,'miga_branches',c));
+      return [c,snap.exists()?parsePayload(snap.data()):null];
+    }));
+
+    const salesPairs=await Promise.all(allowedCodes.map(async c=>{
+      const snap=await getDoc(doc(db,'miga_sales',c));
+      return [c,snap.exists()?parsePayload(snap.data()):null];
+    }));
+
+    const zoneSnap=await getDocs(collection(db,'miga_zone_refs'));
+    const zoneRefs={};
+    zoneSnap.forEach(d=>{
+      const p=parsePayload(d.data());
+      if(p)zoneRefs[d.id]=p;
+    });
+
+    const systemSnap=await getDoc(doc(db,'miga_system','config'));
+    const sys=systemSnap.exists()?systemSnap.data():{};
+
+    const branches={};
+    branchPairs.forEach(([c,p])=>{if(p)branches[c]=p});
+    const sales={};
+    salesPairs.forEach(([c,p])=>{if(p)sales[c]=p});
+
+    return {
+      initialized:true,branches,sales,zoneRefs,
+      system:parsePayload(sys)||{},
+      salesSourceFile:String(sys?.salesSourceFile||'Firebase'),
+      elaborator:elab?clean(elab):null
+    };
   }
 
   async function isInitialized(){
@@ -7769,11 +8206,17 @@ monthlyBackupReminder();
 
     for(const [zoneId,refs] of Object.entries(data.zoneRefs||{})){
       batch.set(doc(db,'miga_zone_refs',zoneId),{
-        zoneId,
-        payload:JSON.stringify(clean(refs)),
-        updatedAt:now,
-        updatedBy:ADMIN_UID
+        zoneId,payload:JSON.stringify(clean(refs)),updatedAt:now,updatedBy:ADMIN_UID
       });
+    }
+
+    for(const [code,data] of Object.entries(data.elaborators||{})){
+      batch.set(doc(db,'miga_elaborators',String(code)),{
+        code:String(code),zoneId:String(data?.zoneId||''),
+        enabled:data?.enabled!==false,
+        destinations:Array.isArray(data?.destinations)?data.destinations.map(String):[],
+        updatedAt:now
+      },{merge:true});
     }
 
     for(const [code,sales] of Object.entries(data.sales||{})){
@@ -7795,7 +8238,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'55.0',
+      appVersion:'57.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -7850,12 +8293,12 @@ monthlyBackupReminder();
   }
 
   async function saveBranch(code,state){
-    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    if(!canWriteBranch(code))throw new Error('Sin permisos para modificar esta sucursal.');
     await setDoc(doc(db,'miga_branches',String(code)),{
       code:String(code),
       payload:JSON.stringify(clean(state)),
       updatedAt:new Date().toISOString(),
-      updatedBy:ADMIN_UID
+      updatedBy:auth.currentUser?.uid||ADMIN_UID
     },{merge:true});
   }
 
@@ -7876,6 +8319,32 @@ monthlyBackupReminder();
       updatedAt:new Date().toISOString(),
       updatedBy:ADMIN_UID
     },{merge:true});
+  }
+
+  async function saveElaborators(elaborators){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    const current=await getDocs(collection(db,'miga_elaborators'));
+    const incoming=elaborators||{};
+    const batch=writeBatch(db);
+    const now=new Date().toISOString();
+
+    current.forEach(d=>{
+      if(!Object.prototype.hasOwnProperty.call(incoming,d.id)){
+        batch.set(doc(db,'miga_elaborators',d.id),{
+          code:d.id,enabled:false,destinations:[],updatedAt:now
+        },{merge:true});
+      }
+    });
+
+    Object.entries(incoming).forEach(([code,data])=>{
+      batch.set(doc(db,'miga_elaborators',String(code)),{
+        code:String(code),zoneId:String(data?.zoneId||''),
+        enabled:data?.enabled!==false,
+        destinations:Array.isArray(data?.destinations)?data.destinations.map(String):[],
+        updatedAt:now
+      },{merge:true});
+    });
+    await batch.commit();
   }
 
   async function saveAllSales(sales,sourceFile=''){
@@ -7937,6 +8406,62 @@ monthlyBackupReminder();
     }));
   }
 
+  function subscribeBranch(code,callback){
+    unsubscribe();
+    if(!isBranchFor(code))throw new Error('Sucursal no autenticada.');
+    code=String(code);
+
+    let destinationUnsubs=[];
+    const clearDestinations=()=>{
+      destinationUnsubs.forEach(fn=>{try{fn()}catch(e){}});
+      destinationUnsubs=[];
+    };
+    const listenDestination=branchCode=>{
+      destinationUnsubs.push(onSnapshot(doc(db,'miga_branches',branchCode),snap=>{
+        if(!snap.exists())return;
+        const payload=parsePayload(snap.data());
+        if(payload)callback({type:'branch',code:branchCode,data:payload});
+      }));
+      destinationUnsubs.push(onSnapshot(doc(db,'miga_sales',branchCode),snap=>{
+        callback({type:'sales',code:branchCode,data:snap.exists()?parsePayload(snap.data()):null});
+      }));
+    };
+
+    // Propia sucursal.
+    unsubscribers.push(onSnapshot(doc(db,'miga_branches',code),snap=>{
+      if(!snap.exists())return;
+      const payload=parsePayload(snap.data());
+      if(payload)callback({type:'branch',code,data:payload});
+    }));
+    unsubscribers.push(onSnapshot(doc(db,'miga_sales',code),snap=>{
+      callback({type:'sales',code,data:snap.exists()?parsePayload(snap.data()):null});
+    }));
+
+    // Padrones zonales visibles para las sucursales.
+    unsubscribers.push(onSnapshot(collection(db,'miga_zone_refs'),snap=>{
+      snap.docChanges().forEach(ch=>{
+        if(ch.type==='removed')return;
+        const payload=parsePayload(ch.doc.data());
+        if(payload)callback({type:'zoneRefs',zoneId:ch.doc.id,data:payload});
+      });
+    }));
+
+    unsubscribers.push(onSnapshot(doc(db,'miga_system','config'),snap=>{
+      if(snap.exists())callback({type:'system',data:parsePayload(snap.data())||{}});
+    }));
+
+    // Si es elaboradora, se conectan dinámicamente sus destinos.
+    unsubscribers.push(onSnapshot(doc(db,'miga_elaborators',code),snap=>{
+      clearDestinations();
+      const data=snap.exists()?snap.data():null;
+      const destinations=Array.isArray(data?.destinations)?data.destinations.map(String):[];
+      destinations.filter(c=>c!==code).forEach(listenDestination);
+      callback({type:'elaborator',code,data:data?clean(data):null});
+    }));
+
+    unsubscribers.push(clearDestinations);
+  }
+
   function unsubscribe(){
     unsubscribers.forEach(fn=>{try{fn()}catch(e){}});
     unsubscribers=[];
@@ -7945,22 +8470,37 @@ monthlyBackupReminder();
   // Evitar que una sesión anterior desbloquee el Admin automáticamente.
   try{
     if(auth.currentUser)await signOut(auth);
+    activeProfile=null;
   }catch(e){}
 
   window.MigaFirebase = {
     ready:true,
     signInAdmin,
+    signInBranch,
     signOutAdmin,
+    signOutCurrent,
+    reauthenticateBranch,
+    changeOwnBranchPassword,
     changeAdminPassword,
     isAdmin,
+    isBranch,
+    isBranchFor,
+    canWriteBranch,
+    currentProfile,
     isInitialized,
+    loadBranchDirectory,
+    provisionBranch,
+    disableBranch,
+    pullBranchContext,
     uploadAll,
     pullAll,
     saveBranch,
     saveZoneRefs,
     saveSystem,
+    saveElaborators,
     saveAllSales,
     subscribe,
+    subscribeBranch,
     unsubscribe
   };
 
