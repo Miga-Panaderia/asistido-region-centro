@@ -3449,6 +3449,21 @@ body.firebase-branch-online #firebaseTopStatus{
     font-size:10px;
   }
 }
+
+/* V58 - Firebase persistente + PIN de sucursal */
+#branchCloudLoginBtn{
+  border-color:#7e9e8c !important;
+  background:#edf5f0 !important;
+  color:#28563f !important;
+  font-weight:800;
+}
+body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
+.firebase-cloud-indicator.pending{
+  background:#fff4d7 !important;border-color:#ceb46c !important;color:#6d591e !important;
+}
+.firebase-cloud-indicator.error{
+  background:#fdeaea !important;border-color:#c79191 !important;color:#7a3030 !important;
+}
 </style>
 </head>
 <body>
@@ -3490,9 +3505,10 @@ body.firebase-branch-online #firebaseTopStatus{
   <button class="save" id="saveNotifyBtn" onclick="saveAndNotify()">💾 Guardar y avisar por WhatsApp</button>
   <span class="spacer"></span>
   <span id="startDateWrap" class="mini-field admin-locked-control" title="Solo Administrador">🔒 Inicio <input id="startDateTop" type="date" disabled></span>
+  <button id="branchCloudLoginBtn" type="button" onclick="openBranchLogin(state.branch)">☁ Ingresar sucursal</button>
   <button id="globalAdminBtn" type="button" onclick="toggleMotherAdmin()">🔒 Administrador</button>
   <button id="globalAdminMenuBtn" type="button" onclick="openAdminMenu()" style="display:none">⚙ Menú Admin</button>
-  <span id="saveState">Configuración independiente por sucursal</span><span id="firebaseTopStatus" class="firebase-cloud-indicator">☁ Local</span>
+  <span id="saveState">Configuración independiente por sucursal</span><span id="firebaseTopStatus" class="firebase-cloud-indicator">☁ Sin conectar</span>
 </div>
 
 <div class="workspace">
@@ -3696,7 +3712,7 @@ body.firebase-branch-online #firebaseTopStatus{
       <section class="admin-card master-admin-only" id="adminPasswordsCard">
         <div class="admin-card-title">☁ ACCESOS FIREBASE POR SUCURSAL</div>
         <div class="admin-help" style="margin-top:0">
-          Creá o restablecé el acceso online de cada sucursal. El usuario seguirá ingresando solamente con <b>Sucursal + contraseña</b>; MIGA utiliza una cuenta técnica de Firebase por detrás.
+          Creá o restablecé el acceso online de cada sucursal. El usuario ingresa con <b>Sucursal + PIN</b>. El PIN puede tener desde <b>3 dígitos</b>; MIGA utiliza una credencial técnica de Firebase por detrás.
         </div>
 
         <div id="adminBranchPasswords" class="admin-branch-passwords"></div>
@@ -3706,7 +3722,7 @@ body.firebase-branch-online #firebaseTopStatus{
         </div>
 
         <div class="admin-help">
-          Dejá el campo vacío si no querés modificar esa sucursal. Al ingresar una nueva clave se crea el acceso o se reemplaza el anterior. La contraseña no queda guardada en el navegador.
+          Dejá el campo vacío si no querés modificar esa sucursal. El PIN debe ser numérico y tener como mínimo 3 dígitos. El PIN no queda guardado en el navegador.
         </div>
       </section>
 
@@ -3832,11 +3848,11 @@ body.firebase-branch-online #firebaseTopStatus{
         </div>
         <label class="admin-field" style="margin-top:8px">
           <span>Nueva contraseña</span>
-          <input id="branchOwnNewPassword" type="password" autocomplete="new-password" placeholder="Nueva contraseña">
+          <input id="branchOwnNewPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="new-password" placeholder="Nuevo PIN (mín. 3 dígitos)">
         </label>
         <label class="admin-field">
           <span>Repetir contraseña</span>
-          <input id="branchOwnNewPassword2" type="password" autocomplete="new-password" placeholder="Repetir contraseña">
+          <input id="branchOwnNewPassword2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="new-password" placeholder="Repetir PIN">
         </label>
         <div class="admin-actions">
           <button type="button" onclick="changeOwnBranchPassword()">Cambiar mi contraseña</button>
@@ -3919,7 +3935,7 @@ body.firebase-branch-online #firebaseTopStatus{
 
     <label class="admin-field" style="margin-top:10px">
       <span>Contraseña</span>
-      <input id="branchLoginPassword" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')confirmBranchLogin()">
+      <input id="branchLoginPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="off" placeholder="PIN de sucursal" onkeydown="if(event.key==='Enter')confirmBranchLogin()">
     </label>
 
     <div id="branchLoginError" class="branch-login-error"></div>
@@ -4015,17 +4031,9 @@ const MIGA_GUIDED_QUESTIONS = {
     {label:'☁ ¿Se actualiza automáticamente?', q:'¿Cómo funciona Firebase?'}
   ],
   security: [
-    {label:'🔐 ¿Cómo cambio mi contraseña?', q:'¿Cómo cambio mi contraseña?'},
+    {label:'🔐 ¿Cómo cambio mi PIN?', q:'¿Cómo cambio mi contraseña?'},
     {label:'💾 ¿Cómo hago un respaldo?', q:'¿Cómo hago un respaldo?'},
     {label:'💬 ¿Cómo aviso por WhatsApp?', q:'¿Cómo funciona Guardar y avisar por WhatsApp?'}
-  ],
-  fun: [
-    {label:'😄 ¿Cómo estás?', q:'¿Cómo estás?'},
-    {label:'🏠 ¿De dónde sos?', q:'¿De dónde sos?'},
-    {label:'🤖 ¿Quién sos?', q:'¿Quién sos?'},
-    {label:'😂 Contame un chiste', q:'Contame un chiste'},
-    {label:'🧉 ¿Tomás mate?', q:'¿Tomás mate?'},
-    {label:'☕ ¿Tomás café?', q:'¿Tomás café?'}
   ]
 };
 
@@ -4051,13 +4059,11 @@ function assistantRenderQuestionButtons(){
    !contextual.some(x=>x.q===item.q)
  );
  const security=MIGA_GUIDED_QUESTIONS.security;
- const fun=MIGA_GUIDED_QUESTIONS.fun;
 
  const groups=[
    {title:'En esta sección',items:contextual},
    {title:'Mi sucursal',items:common},
-   {title:'Ayuda y acceso',items:security},
-   {title:'Un poco de MIGA',items:fun}
+   {title:'Ayuda y acceso',items:security}
  ].filter(g=>g.items.length);
 
  box.innerHTML=groups.map(g=>
@@ -4169,7 +4175,7 @@ function migaWelcomeUser(name,returning=false){
    '• Referencias: '+products+'<br>'+
    '• Ventas cargadas: '+sales+' referencias<br>'+
    '• Inicio: '+esc(assistantProductionDate())+
-   '<span class="assistant-guided-note">Elegí una de las preguntas disponibles debajo. Así siempre te respondo sobre funciones que conozco del sistema.</span>'+
+   '<span class="assistant-guided-note">Elegí una de las preguntas disponibles debajo. Las opciones están limitadas a funciones que MIGA puede interpretar correctamente.</span>'+
    '<div class="assistant-user-actions">'+
      '<button type="button" class="assistant-inline-action" onclick="migaChangeUser()">No soy '+esc(clean)+'</button>'+
    '</div>'
@@ -4567,14 +4573,7 @@ function assistantRespond(question){
  else if(/(cuantos anos tenes|que edad tenes|tu edad)/.test(q)){
    answer='Soy bastante nuevo 😄. En años humanos casi recién nacido; en cálculos de producción ya tengo experiencia.';
  }
- else if(/(contame un chiste|decime un chiste|un chiste|haceme reir|algo gracioso)/.test(q)){
-   answer=assistantPick([
-     '🥖 ¿Por qué el panadero fue al psicólogo? Porque tenía muchos <b>rollos</b>. 😄',
-     'Un pan le dice a otro: “Nos vemos después”. Y el otro responde: “Dale, pero no me dejes <b>plantado</b> en la masa”. 😅',
-     '¿Qué hace una baguette en el gimnasio? Trabaja la <b>masa muscular</b>. 💪🥖',
-     'Mi mayor miedo es que alguien ponga el Coef. en 500% un viernes a última hora. Eso sí es terror administrativo. 😂'
-   ]);
- }
+
  else if(/(tomas mate|te gusta el mate|mate)/.test(q) && !/(parametro|cronograma|venta)/.test(q)){
    answer=assistantPick([
      '🧉 Si pudiera, amargo. Pero por ahora me alimento de datos y coeficientes.',
@@ -5007,8 +5006,19 @@ function canEditCurrentBranch(){return isMasterAdmin()||isFirebaseBranchSession(
 function updateBranchCloudBodyClass(){
  const online=isFirebaseBranchSession(state.branch);
  document.body.classList.toggle('firebase-branch-online',online);
+
+ const loginBtn=document.getElementById('branchCloudLoginBtn');
+ if(loginBtn){
+   loginBtn.style.display=(online||isMasterAdmin())?'none':'';
+   loginBtn.textContent='☁ Ingresar Suc. '+state.branch;
+ }
+
  const top=document.getElementById('firebaseTopStatus');
- if(top&&online){top.classList.add('online');top.textContent='☁ Sincronizado'}
+ if(top&&online){
+   top.classList.remove('pending','error');
+   top.classList.add('online');
+   top.textContent='☁ Sincronizado';
+ }
 }
 async function firebaseRefreshBranchDirectory(){
  if(!window.MigaFirebase?.ready)return;
@@ -5033,7 +5043,8 @@ function renderAdminBranchPasswords(){
        <span class="admin-branch-cloud-state ${enabled?'online':'offline'}">${enabled?'☁ Activo':'Sin acceso'}</span>
        <div style="display:flex;gap:4px;min-width:0">
          <input style="flex:1;min-width:0" data-branch-password="${code}" type="password"
-           autocomplete="new-password" placeholder="${enabled?'Nueva clave / restablecer':'Clave inicial'}" value="">
+           inputmode="numeric" pattern="[0-9]*" maxlength="12"
+           autocomplete="new-password" placeholder="${enabled?'Nuevo PIN / restablecer':'PIN inicial'}" value="">
          ${enabled?`<button type="button" title="Deshabilitar acceso" onclick="removeBranchPassword('${code}')" style="width:30px;border:1px solid #999;background:#fff;cursor:pointer">✕</button>`:''}
        </div>
      </div>`;
@@ -5050,7 +5061,10 @@ async function saveBranchPasswords(){
    if(password)entries.push({code:inp.dataset.branchPassword,password});
  });
  if(!entries.length){alert('Ingresá una contraseña en al menos una sucursal.');return}
- if(entries.some(x=>x.password.length<6)){alert('Las contraseñas deben tener al menos 6 caracteres.');return}
+ if(entries.some(x=>!/^\d{3,12}$/.test(x.password))){
+   alert('El PIN de sucursal debe ser numérico y tener entre 3 y 12 dígitos.');
+   return;
+ }
  if(!confirm('Se crearán/restablecerán '+entries.length+' accesos Firebase. ¿Continuar?'))return;
  let done=0;
  for(const item of entries){
@@ -5075,13 +5089,16 @@ async function changeOwnBranchPassword(){
  if(!isBranchAdmin()||!isFirebaseBranchSession(state.branch))return;
  const p1=String(document.getElementById('branchOwnNewPassword')?.value||'');
  const p2=String(document.getElementById('branchOwnNewPassword2')?.value||'');
- if(p1.length<6){alert('La nueva contraseña debe tener al menos 6 caracteres.');return}
- if(p1!==p2){alert('Las contraseñas no coinciden.');return}
+ if(!/^\d{3,12}$/.test(p1)){
+   alert('El nuevo PIN debe ser numérico y tener entre 3 y 12 dígitos.');
+   return;
+ }
+ if(p1!==p2){alert('Los PIN no coinciden.');return}
  try{
    await window.MigaFirebase.changeOwnBranchPassword(p1);
    document.getElementById('branchOwnNewPassword').value='';
    document.getElementById('branchOwnNewPassword2').value='';
-   alert('Contraseña de la Suc. '+state.branch+' actualizada en Firebase.');
+   alert('PIN de la Suc. '+state.branch+' actualizado en Firebase.');
  }catch(e){alert('No se pudo cambiar la contraseña: '+(e?.message||e))}
 }
 function openBranchLogin(code){
@@ -5090,7 +5107,7 @@ function openBranchLogin(code){
  const text=document.getElementById('branchLoginText');
  const pass=document.getElementById('branchLoginPassword');
  const err=document.getElementById('branchLoginError');
- if(text)text.innerHTML='Ingresá la contraseña para acceder a <b>'+esc(branchZoneName(code))+' · Suc. '+esc(code)+' - '+esc(branchCatalog[code]?.name||'')+'</b>.'+
+ if(text)text.innerHTML='Ingresá el PIN para acceder a <b>'+esc(branchZoneName(code))+' · Suc. '+esc(code)+' - '+esc(branchCatalog[code]?.name||'')+'</b>.'+
    '<div class="branch-cloud-login-note">☁ Acceso y sincronización validados con Firebase.</div>';
  if(pass)pass.value='';
  if(err)err.textContent='';
@@ -5113,7 +5130,11 @@ async function confirmBranchLogin(){
  const code=pendingBranchLogin;if(!code)return;
  const pass=document.getElementById('branchLoginPassword')?.value||'';
  const err=document.getElementById('branchLoginError');
- if(!pass){if(err)err.textContent='Ingresá la contraseña.';return}
+ if(!pass){if(err)err.textContent='Ingresá el PIN de la sucursal.';return}
+ if(!/^\d{3,12}$/.test(pass)){
+   if(err)err.textContent='El PIN debe tener entre 3 y 12 dígitos.';
+   return;
+ }
  if(!window.MigaFirebase?.ready){if(err)err.textContent='Firebase todavía está iniciando.';return}
  if(err)err.textContent='Validando acceso en Firebase…';
  try{
@@ -5283,6 +5304,7 @@ function showWhatsappLinks(codes){
  modal.classList.add('show');
 }
 function saveAndNotify(){
+ if(!requireBranchCloudAccess())return;
  saveNow();
  const elaborators=elaboratorsForBranch(state.branch);
  showWhatsappLinks(elaborators);
@@ -5535,10 +5557,16 @@ function firebaseSetStatus(text,type='pending'){
  }
  const top=document.getElementById('firebaseTopStatus');
  if(top){
-   const online=type==='ok' && firebaseCloudInitialized &&
-     (!!window.MigaFirebase?.isAdmin?.() || !!window.MigaFirebase?.isBranch?.());
+   const authenticated=!!window.MigaFirebase?.isAdmin?.() || !!window.MigaFirebase?.isBranch?.();
+   const online=type==='ok' && firebaseCloudInitialized && authenticated;
    top.classList.toggle('online',online);
-   top.textContent=online?'☁ Sincronizado':'☁ Local';
+   top.classList.toggle('pending',type==='pending'&&authenticated);
+   top.classList.toggle('error',type==='error');
+
+   if(online)top.textContent='☁ Sincronizado';
+   else if(type==='pending'&&authenticated)top.textContent='☁ Guardando…';
+   else if(type==='error')top.textContent='☁ Error de sincronización';
+   else top.textContent='☁ Sin conectar';
  }
  const rt=document.getElementById('firebaseRealtimeStatus');
  if(rt)rt.textContent=firebaseRealtimeActive?'activa · cambios en tiempo real':'inactiva';
@@ -5695,7 +5723,14 @@ async function firebasePullAll(silent=false){
 }
 
 function firebaseApplyRealtimeChange(change){
- if(!change || firebaseCloudApplying)return;
+ if(!change)return;
+
+ if(change.type==='syncError'){
+   firebaseSetStatus('⚠ Se perdió la conexión en tiempo real: '+esc(change.message||'error desconocido'),'error');
+   return;
+ }
+
+ if(firebaseCloudApplying)return;
  firebaseCloudApplying=true;
  try{
    if(change.type==='zoneRefs' && change.zoneId){
@@ -5763,10 +5798,18 @@ function firebaseQueueBranchSync(obj){
  if(firebaseCloudApplying || !firebaseCloudInitialized)return;
  const snapshot=configSnapshot(obj);
  if(!window.MigaFirebase?.canWriteBranch?.(snapshot.branch))return;
- window.MigaFirebase.saveBranch(snapshot.branch,snapshot).catch(err=>{
-   console.error('Firebase branch sync:',err);
-   firebaseSetStatus('⚠ Error al sincronizar la Suc. '+esc(snapshot.branch)+'. Los datos siguen guardados localmente.','error');
- });
+
+ firebaseSetStatus('☁ Guardando cambios de la Suc. '+esc(snapshot.branch)+'…','pending');
+
+ window.MigaFirebase.saveBranch(snapshot.branch,snapshot)
+   .then(()=>{
+     const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+     firebaseSetStatus('✅ Suc. '+esc(snapshot.branch)+' sincronizada · '+hora,'ok');
+   })
+   .catch(err=>{
+     console.error('Firebase branch sync:',err);
+     firebaseSetStatus('⚠ Error al sincronizar la Suc. '+esc(snapshot.branch)+': '+esc(err?.message||String(err)),'error');
+   });
 }
 
 function firebaseQueueZoneRefsSync(zoneId,refs){
@@ -7436,7 +7479,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='57.0';
+ x.sales={};x.salesRows=[];x.version='58.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -7537,10 +7580,26 @@ function populateBranchSelector(){
 }
 function switchBranch(code){
  code=normalizeBranch(code);
- if(!code||!branchCatalog[code]||code===state.branch)return;
+ if(!code||!branchCatalog[code])return;
+
+ if(code===state.branch){
+   if(!isMasterAdmin()&&!isFirebaseBranchSession(code))openBranchLogin(code);
+   return;
+ }
+
  try{persistState(state)}catch(e){}
- if(isMasterAdmin()&&window.MigaFirebase?.isAdmin?.()){finishBranchSwitch(code);return}
- if(isBranchAdmin()){clearAdminRole();updateMotherAdminUI()}
+
+ if(isMasterAdmin()&&window.MigaFirebase?.isAdmin?.()){
+   finishBranchSwitch(code);
+   updateBranchCloudBodyClass();
+   return;
+ }
+
+ if(isBranchAdmin()){
+   clearAdminRole();
+   updateMotherAdminUI();
+ }
+
  openBranchLogin(code);
 }
 function finishBranchSwitch(code){
@@ -7571,6 +7630,7 @@ function finishBranchSwitch(code){
  if(sel)sel.value=code;
 
  recalc();
+ updateBranchCloudBodyClass();
  assistantUpdateContext();
 
  const count=Object.keys(state.sales||{}).length;
@@ -7898,9 +7958,39 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
 }));
 window.addEventListener('miga-firebase-ready',async()=>{
  await firebaseRefreshBranchDirectory();
- setTimeout(()=>{
-   if(!window.MigaFirebase?.isAdmin?.()&&!window.MigaFirebase?.isBranchFor?.(state.branch))openBranchLogin(state.branch);
- },700);
+
+ try{
+   const profile=await window.MigaFirebase.restoreSession();
+
+   if(profile?.role==='branch' && profile?.branch){
+     const code=normalizeBranch(profile.branch);
+     const payload=await window.MigaFirebase.pullBranchContext(code);
+
+     firebaseCloudInitialized=true;
+     firebaseBranchSessionCode=code;
+     firebaseStoreBranchContext(payload);
+     unlockedBranches.clear();
+     unlockedBranches.add(code);
+
+     finishBranchSwitch(code);
+     firebaseStartBranchRealtime(code);
+     updateBranchCloudBodyClass();
+   }else if(profile?.role==='admin'){
+     firebaseCloudInitialized=await window.MigaFirebase.isInitialized();
+     if(firebaseCloudInitialized){
+       firebaseSetStatus('✅ Sesión Firebase del Administrador General restaurada.','ok');
+     }
+   }else{
+     firebaseCloudInitialized=false;
+     firebaseSetStatus('☁ Ingresá a tu sucursal con el PIN para activar la sincronización.','idle');
+     updateBranchCloudBodyClass();
+   }
+ }catch(e){
+   console.error('Restauración Firebase:',e);
+   firebaseCloudInitialized=false;
+   firebaseSetStatus('⚠ No se pudo restaurar la sesión Firebase.','error');
+   updateBranchCloudBodyClass();
+ }
 });
 document.getElementById('pasteModal').addEventListener('click',e=>{if(e.target.id==='pasteModal')closePaste()});
 branchCatalog[state.branch]={...(branchCatalog[state.branch]||{}),code:state.branch,name:state.branchName||branchCatalog[state.branch]?.name||''};
@@ -7922,6 +8012,8 @@ monthlyBackupReminder();
     signOut,
     setPersistence,
     browserSessionPersistence,
+    browserLocalPersistence,
+    onAuthStateChanged,
     EmailAuthProvider,
     reauthenticateWithCredential,
     updatePassword,
@@ -7954,7 +8046,7 @@ monthlyBackupReminder();
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  await setPersistence(auth, browserSessionPersistence);
+  await setPersistence(auth, browserLocalPersistence);
 
   const provisionApp = initializeApp(firebaseConfig, 'MIGA_PROVISIONER');
   const provisionAuth = getAuth(provisionApp);
@@ -7964,6 +8056,31 @@ monthlyBackupReminder();
   let activeProfile=null;
 
   const clean = value => JSON.parse(JSON.stringify(value ?? null));
+
+  const branchWriteChains=new Map();
+
+  function branchPinSecret(code,pin){
+    code=String(code||'').padStart(3,'0');
+    pin=String(pin||'').trim();
+
+    if(!/^\d{3,12}$/.test(pin)){
+      const err=new Error('El PIN debe ser numérico y tener entre 3 y 12 dígitos.');
+      err.code='miga/invalid-pin';
+      throw err;
+    }
+
+    return `MIGA#${code}#${pin}`;
+  }
+
+  async function waitForAuthState(){
+    await new Promise(resolve=>{
+      const off=onAuthStateChanged(auth,()=>{
+        off();
+        resolve();
+      });
+    });
+  }
+
 
   function parsePayload(data){
     if(!data)return null;
@@ -8054,7 +8171,7 @@ monthlyBackupReminder();
 
     let cred;
     try{
-      cred=await createUserWithEmailAndPassword(provisionAuth,email,String(password||''));
+      cred=await createUserWithEmailAndPassword(provisionAuth,email,branchPinSecret(code,password));
     }finally{
       try{if(provisionAuth.currentUser)await signOut(provisionAuth)}catch(e){}
     }
@@ -8071,12 +8188,12 @@ monthlyBackupReminder();
 
     batch.set(doc(db,'miga_users',uid),{
       uid,role:'branch',branch:code,zoneId:String(zoneId||''),
-      name:String(name||''),email,enabled:true,createdAt:now,updatedAt:now
+      name:String(name||''),email,enabled:true,credentialMode:'pin-v1',createdAt:now,updatedAt:now
     });
 
     batch.set(dirRef,{
       branch:code,zoneId:String(zoneId||''),name:String(name||''),
-      email,uid,enabled:true,version,updatedAt:now
+      email,uid,enabled:true,version,credentialMode:'pin-v1',updatedAt:now
     });
 
     await batch.commit();
@@ -8113,7 +8230,11 @@ monthlyBackupReminder();
       throw err;
     }
 
-    const cred=await signInWithEmailAndPassword(auth,String(directory.email),String(password||''));
+    const authPassword=directory.credentialMode==='pin-v1'
+      ? branchPinSecret(code,password)
+      : String(password||'');
+
+    const cred=await signInWithEmailAndPassword(auth,String(directory.email),authPassword);
     const profileSnap=await getDoc(doc(db,'miga_users',cred.user.uid));
     const profile=profileSnap.exists()?profileSnap.data():null;
 
@@ -8130,14 +8251,22 @@ monthlyBackupReminder();
   async function reauthenticateBranch(password){
     if(!isBranch())throw new Error('Sucursal no autenticada.');
     const user=auth.currentUser;
-    const credential=EmailAuthProvider.credential(user.email,String(password||''));
+    const authPassword=activeProfile?.credentialMode==='pin-v1'
+      ? branchPinSecret(activeProfile.branch,password)
+      : String(password||'');
+    const credential=EmailAuthProvider.credential(user.email,authPassword);
     await reauthenticateWithCredential(user,credential);
     return true;
   }
 
   async function changeOwnBranchPassword(newPassword){
     if(!isBranch())throw new Error('Sucursal no autenticada.');
-    await updatePassword(auth.currentUser,String(newPassword||''));
+
+    if(activeProfile?.credentialMode!=='pin-v1'){
+      throw new Error('Este acceso es de una versión anterior. Restablecé primero el PIN desde Administrador General.');
+    }
+
+    await updatePassword(auth.currentUser,branchPinSecret(activeProfile.branch,newPassword));
     return true;
   }
 
@@ -8181,6 +8310,38 @@ monthlyBackupReminder();
       salesSourceFile:String(sys?.salesSourceFile||'Firebase'),
       elaborator:elab?clean(elab):null
     };
+  }
+
+
+  async function restoreSession(){
+    await waitForAuthState();
+
+    const user=auth.currentUser;
+    if(!user){
+      activeProfile=null;
+      return null;
+    }
+
+    if(user.uid===ADMIN_UID){
+      activeProfile={role:'admin',uid:user.uid,email:user.email,enabled:true};
+      return currentProfile();
+    }
+
+    try{
+      const profileSnap=await getDoc(doc(db,'miga_users',user.uid));
+      const profile=profileSnap.exists()?profileSnap.data():null;
+
+      if(profile && profile.role==='branch' && profile.enabled===true){
+        activeProfile=clean(profile);
+        return currentProfile();
+      }
+    }catch(e){
+      console.error('restoreSession profile:',e);
+    }
+
+    activeProfile=null;
+    try{await signOut(auth)}catch(e){}
+    return null;
   }
 
   async function isInitialized(){
@@ -8238,7 +8399,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'57.0',
+      appVersion:'58.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -8292,14 +8453,27 @@ monthlyBackupReminder();
     };
   }
 
-  async function saveBranch(code,state){
-    if(!canWriteBranch(code))throw new Error('Sin permisos para modificar esta sucursal.');
-    await setDoc(doc(db,'miga_branches',String(code)),{
-      code:String(code),
-      payload:JSON.stringify(clean(state)),
-      updatedAt:new Date().toISOString(),
-      updatedBy:auth.currentUser?.uid||ADMIN_UID
-    },{merge:true});
+  function saveBranch(code,state){
+    code=String(code);
+
+    if(!canWriteBranch(code)){
+      return Promise.reject(new Error('Sin permisos para modificar esta sucursal.'));
+    }
+
+    const payload=clean(state);
+    const previous=branchWriteChains.get(code)||Promise.resolve();
+
+    const next=previous
+      .catch(()=>{})
+      .then(()=>setDoc(doc(db,'miga_branches',code),{
+        code,
+        payload:JSON.stringify(payload),
+        updatedAt:new Date().toISOString(),
+        updatedBy:auth.currentUser?.uid||ADMIN_UID
+      },{merge:true}));
+
+    branchWriteChains.set(code,next);
+    return next;
   }
 
   async function saveZoneRefs(zoneId,refs){
@@ -8428,11 +8602,15 @@ monthlyBackupReminder();
     };
 
     // Propia sucursal.
-    unsubscribers.push(onSnapshot(doc(db,'miga_branches',code),snap=>{
-      if(!snap.exists())return;
-      const payload=parsePayload(snap.data());
-      if(payload)callback({type:'branch',code,data:payload});
-    }));
+    unsubscribers.push(onSnapshot(
+      doc(db,'miga_branches',code),
+      snap=>{
+        if(!snap.exists())return;
+        const payload=parsePayload(snap.data());
+        if(payload)callback({type:'branch',code,data:payload});
+      },
+      err=>callback({type:'syncError',code,message:err?.message||String(err)})
+    ));
     unsubscribers.push(onSnapshot(doc(db,'miga_sales',code),snap=>{
       callback({type:'sales',code,data:snap.exists()?parsePayload(snap.data()):null});
     }));
@@ -8467,11 +8645,8 @@ monthlyBackupReminder();
     unsubscribers=[];
   }
 
-  // Evitar que una sesión anterior desbloquee el Admin automáticamente.
-  try{
-    if(auth.currentUser)await signOut(auth);
-    activeProfile=null;
-  }catch(e){}
+  // La sesión Firebase queda persistida en este dispositivo.
+  // restoreSession() valida el perfil antes de reactivar el tiempo real.
 
   window.MigaFirebase = {
     ready:true,
@@ -8487,6 +8662,7 @@ monthlyBackupReminder();
     isBranchFor,
     canWriteBranch,
     currentProfile,
+    restoreSession,
     isInitialized,
     loadBranchDirectory,
     provisionBranch,

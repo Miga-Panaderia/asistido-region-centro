@@ -298,3 +298,17 @@ Las preguntas están agrupadas en:
 Si se elige **No soy [nombre]**, vuelve a habilitarse temporalmente el campo para escribir el nuevo nombre.
 
 Esto evita que el usuario escriba consultas fuera del alcance del asistente local.
+
+## v16 · Realtime reforzado + PIN de sucursal
+
+MIGA ya no solicita el PIN automáticamente apenas se abre la página.
+
+Si ese dispositivo ya había iniciado sesión con una sucursal, Firebase restaura la sesión y reactiva los cambios en tiempo real de forma automática. En un dispositivo nuevo, el usuario puede tocar **☁ Ingresar Suc. XXX** o intentar modificar un dato; recién en ese momento se solicita el PIN.
+
+El PIN visible de sucursal es numérico y acepta entre **3 y 12 dígitos**. Firebase utiliza internamente una credencial técnica más larga, por lo que el usuario solamente necesita recordar su PIN.
+
+Las escrituras de una sucursal se envían en orden y el estado superior diferencia **Guardando**, **Sincronizado** y **Error de sincronización**.
+
+Los accesos creados con versiones anteriores pueden seguir funcionando con su clave anterior. Para comenzar a usar PIN de 3 dígitos, restablecer el acceso de esa sucursal desde Admin General.
+
+También se eliminó de MIGA el grupo recreativo y los chistes; el asistente guiado queda enfocado en funciones operativas.
