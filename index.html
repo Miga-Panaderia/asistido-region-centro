@@ -3464,6 +3464,22 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 .firebase-cloud-indicator.error{
   background:#fdeaea !important;border-color:#c79191 !important;color:#7a3030 !important;
 }
+
+/* =========================================================
+   V60 - SCROLL CON RUEDA DEL MOUSE
+   ========================================================= */
+@media(min-width:701px){
+  .sheet-scroll,
+  #motherTableWrap,
+  #patronSheet{
+    overscroll-behavior:auto !important;
+    scrollbar-gutter:stable;
+  }
+  .sheet-scroll,
+  #motherTableWrap{
+    cursor:default;
+  }
+}
 </style>
 </head>
 <body>
@@ -4341,37 +4357,41 @@ function assistantSubmit(ev){
 
 
 function assistantDescribeCurrentSheet(){
- const sheet=assistantCurrentSheet();
- const s=assistantNormalize(sheet);
+ const key=document.querySelector('.sheet-tab.active')?.dataset.sheet||'params';
 
- if(s.includes('parametros')){
-   return '📍 Estás en <b>Parámetros Suc</b>.<br>'+
-     'Esta hoja concentra la configuración de la sucursal: <b>Fecha/Mes, parámetros de cálculo, fines de semana, ponderaciones y Cronograma de recepción por referencia</b>.'+
-     '<span class="assistant-note">El Cronograma se modifica acá. Los parámetros protegidos requieren Administrador General.</span>';
- }
- if(s.includes('panaderia suc')){
-   return '📍 Estás en <b>Panadería Suc</b>.<br>'+
-     'Esta es la hoja principal del asistido. Muestra la <b>producción calculada por referencia y por día</b>. '+
-     'Acá también podés ajustar el <b>Coef.</b> de cada producto para corregir la pauta de producción.'+
-     '<span class="assistant-note">Los valores diarios se recalculan automáticamente a partir de ventas, parámetros, cronograma y Coef.</span>';
- }
- if(s.includes('ventas prisma')){
-   return '📍 Estás en <b>Ventas Prisma Suc</b>.<br>'+
-     'Esta hoja muestra las <b>ventas históricas utilizadas por el cálculo</b> para cada referencia de la sucursal.'+
-     '<span class="assistant-note">Las ventas se cargan desde el archivo madre por el Administrador General.</span>';
- }
- if(s.includes('hoja del panadero')){
-   return '📍 Estás en <b>Hoja del Panadero Suc</b>.<br>'+
-     'Esta sección transforma el cálculo en una <b>hoja operativa para producción</b>, organizada por semana y preparada para imprimir.'+
-     '<span class="assistant-note">Desde acá se imprime el listado completo para el panadero.</span>';
- }
- if(s.includes('plan elaboradora')){
-   return '📍 Estás en <b>Plan Elaboradora</b>.<br>'+
-     'Esta hoja consolida lo que debe producir una <b>sucursal elaboradora</b> para las sucursales que abastece, mostrando cantidades por destino y totales por producto.'+
-     '<span class="assistant-note">La selección “Sucursales a producir” solo puede modificarse desde Administrador General.</span>';
- }
+ const descriptions={
+   params:
+     '📍 Estás en <b>Parámetros Suc</b>.<br>'+
+     'Esta hoja define <b>cómo debe calcularse el Asistido de la sucursal</b>. Acá se consulta la fecha de trabajo, los parámetros generales y el <b>padrón de referencias con su Cronograma</b>.<br><br>'+
+     '<b>¿Para qué sirve?</b> Para indicar qué productos forman parte del asistido y qué días debe recibir cada referencia.'+
+     '<span class="assistant-note">Aunque todavía no haya ventas o producción calculada, esta hoja sigue siendo la base de configuración de la sucursal.</span>',
 
- return '📍 Estás en <b>'+esc(sheet)+'</b>. Esta es la sección activa del sistema.';
+   plan:
+     '📍 Estás en <b>Panadería Suc</b>.<br>'+
+     'Esta es la hoja principal del <b>Asistido de Producción</b>. Organiza cada referencia y calcula cuánto producir para cada día del período.<br><br>'+
+     '<b>¿Para qué sirve?</b> Para revisar la propuesta de producción y ajustar el <b>Coef.</b> cuando una referencia necesita producir más o menos.'+
+     '<span class="assistant-note">Si todavía no hay ventas cargadas, la estructura de la hoja igualmente se mantiene; los valores aparecerán cuando existan datos suficientes para calcular.</span>',
+
+   sales:
+     '📍 Estás en <b>Ventas Prisma Suc</b>.<br>'+
+     'Esta hoja reúne las <b>ventas históricas de la sucursal</b> que MIGA utiliza como referencia para calcular la producción.<br><br>'+
+     '<b>¿Para qué sirve?</b> Para comprobar qué consumo tuvo cada artículo y verificar la información utilizada por el Asistido.'+
+     '<span class="assistant-note">Si aparece vacía, significa que todavía no hay ventas disponibles para mostrar; la función de la hoja no cambia.</span>',
+
+   baker:
+     '📍 Estás en <b>Hoja del Panadero Suc</b>.<br>'+
+     'Esta hoja convierte el cálculo del Asistido en una <b>vista operativa para quien realiza la producción</b>, ordenada por producto, día y semana.<br><br>'+
+     '<b>¿Para qué sirve?</b> Para consultar las cantidades a elaborar y obtener una hoja lista para imprimir y usar en el sector.'+
+     '<span class="assistant-note">Aunque no haya cantidades calculadas todavía, esta sigue siendo la salida operativa que utilizará el panadero.</span>',
+
+   mother:
+     '📍 Estás en <b>Plan Elaboradora</b>.<br>'+
+     'Esta hoja reúne en un solo lugar la producción que una <b>sucursal elaboradora</b> debe preparar para las sucursales que abastece.<br><br>'+
+     '<b>¿Para qué sirve?</b> Para ver cuánto corresponde producir de cada referencia para cada destino y el total consolidado.'+
+     '<span class="assistant-note">Si todavía no hay sucursales asignadas o cantidades calculadas, la hoja puede verse vacía; las asignaciones se administran desde Administrador General.</span>'
+ };
+
+ return descriptions[key] || '📍 Esta es la sección activa de MIGA. Su contenido depende de la configuración y los datos de la sucursal.';
 }
 
 function assistantLocateFeature(question){
@@ -4454,7 +4474,7 @@ function assistantRespond(question){
    const location=assistantLocateFeature(q);
    answer=location || ('📍 Ahora mismo estás en <b>'+esc(assistantCurrentSheet())+'</b>. Decime qué dato o función buscás y te indico dónde está.');
  }
- if(/(resumen|estado.*sucursal|como estoy|situacion.*sucursal|dame.*estado)/.test(q)){
+ else if(/(resumen|estado.*sucursal|como estoy|situacion.*sucursal|dame.*estado)/.test(q)){
    answer=assistantBranchSummary();
  }
  else if(/\b(sucursal|donde estoy|cual estoy|trabajando)\b/.test(q) && !/elabora/.test(q)){
@@ -4615,7 +4635,7 @@ function assistantRespond(question){
    answer='Contame qué parte falla: <b>ventas, cálculo, cronograma, impresión, contraseña, WhatsApp o Plan Elaboradora</b>. Si me indicás la solapa y qué esperabas que ocurriera, puedo orientarte mejor.';
  }
  else if(/(que podes hacer|opciones|menu)/.test(q)){
-   answer='Trabajo en <b>modo guiado</b>: debajo vas a encontrar todas las preguntas que puedo responder. Las opciones cambian según la solapa donde estés, y también tenés algunas preguntas informales para conocerme un poco 😄.';
+   answer='Trabajo en <b>modo guiado</b>: debajo vas a encontrar las preguntas que puedo responder. Las opciones cambian según la solapa donde estés y están enfocadas en el funcionamiento de MIGA.';
  }
  else if(/(hola|buen dia|buenas|buenas tardes|buenas noches)/.test(q)){
    const userName=migaGetUserName();
@@ -5174,14 +5194,104 @@ function firebaseStoreBranchContext(payload){
    firebaseApplySystemSnapshot(payload.system||{});
  }finally{firebaseCloudApplying=false}
 }
+
+async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason=''}={}){
+ if(firebaseReconnectInProgress)return false;
+ if(!window.MigaFirebase?.ready)return false;
+ if(!navigator.onLine)return false;
+
+ const now=Date.now();
+ if(now-firebaseLastReconnectAt<FIREBASE_RECONNECT_MIN_GAP)return false;
+
+ const profile=window.MigaFirebase?.currentProfile?.();
+ if(!profile || profile.role!=='branch' || !profile.branch)return false;
+
+ const code=normalizeBranch(profile.branch);
+ if(!code || !branchCatalog[code])return false;
+
+ firebaseReconnectInProgress=true;
+ firebaseLastReconnectAt=now;
+
+ if(!silent){
+   firebaseSetStatus('☁ Actualizando datos de la Suc. '+esc(code)+'…','pending');
+ }
+
+ try{
+   await window.MigaFirebase.ensureNetwork?.();
+
+   const payload=await window.MigaFirebase.pullBranchContext(code);
+   firebaseStoreBranchContext(payload);
+
+   if(state.branch!==code){
+     finishBranchSwitch(code);
+   }else{
+     const local=loadLocalFor(code);
+     if(local){
+       state=attachSalesToState(local,code);
+       recalc();
+       updateBranchCloudBodyClass();
+       assistantUpdateContext();
+     }
+   }
+
+   firebaseStartBranchRealtime(code);
+
+   firebaseLastRealtimeAt=Date.now();
+   const hora=new Date().toLocaleTimeString('es-AR',{
+     hour:'2-digit',minute:'2-digit',second:'2-digit'
+   });
+   firebaseSetStatus('✅ Suc. '+esc(code)+' sincronizada · '+hora,'ok');
+   return true;
+
+ }catch(e){
+   console.error('Reconexión Firebase:',reason,e);
+   firebaseRealtimeActive=false;
+   firebaseSetStatus(
+     '⚠ No se pudo actualizar la Suc. '+esc(code)+'. MIGA volverá a intentarlo automáticamente.',
+     'error'
+   );
+   return false;
+ }finally{
+   firebaseReconnectInProgress=false;
+ }
+}
+
+function firebaseScheduleReconnect(reason=''){
+ clearTimeout(firebaseReconnectTimer);
+ firebaseReconnectTimer=setTimeout(()=>{
+   firebaseRefreshCurrentBranchFromCloud({silent:true,reason});
+ },300);
+}
+
+function firebaseHandleConnectivityResume(reason=''){
+ if(!navigator.onLine)return;
+ if(window.MigaFirebase?.isBranch?.()){
+   firebaseScheduleReconnect(reason);
+ }
+}
+
 function firebaseStartBranchRealtime(code){
  try{
    window.MigaFirebase?.unsubscribe?.();
-   window.MigaFirebase.subscribeBranch(code,firebaseApplyRealtimeChange);
-   firebaseRealtimeActive=true;firebaseCloudInitialized=true;
+
+   window.MigaFirebase.subscribeBranch(code,change=>{
+     firebaseLastRealtimeAt=Date.now();
+     firebaseApplyRealtimeChange(change);
+   });
+
+   firebaseRealtimeActive=true;
+   firebaseCloudInitialized=true;
+   firebaseLastRealtimeAt=Date.now();
+
    firebaseSetStatus('✅ Suc. '+code+' sincronizada con Firebase en tiempo real.','ok');
    updateBranchCloudBodyClass();
- }catch(e){firebaseRealtimeActive=false;console.error(e)}
+
+ }catch(e){
+   firebaseRealtimeActive=false;
+   console.error(e);
+   firebaseSetStatus('⚠ La conexión en tiempo real se interrumpió. MIGA intentará reconectarse.','error');
+   firebaseScheduleReconnect('start-error');
+ }
 }
 function requireBranchCloudAccess(){
  if(canEditCurrentBranch())return true;
@@ -5546,6 +5656,12 @@ function monthlyBackupReminder(){
 /* ===================== FIREBASE · FASE 1 ===================== */
 let firebaseCloudInitialized=false;
 let firebaseRealtimeActive=false;
+let firebaseReconnectInProgress=false;
+let firebaseLastReconnectAt=0;
+let firebaseLastRealtimeAt=0;
+let firebaseReconnectTimer=null;
+const FIREBASE_RECONNECT_MIN_GAP=2500;
+
 let firebaseCloudApplying=false;
 let firebaseSystemTimer=null;
 
@@ -5726,7 +5842,9 @@ function firebaseApplyRealtimeChange(change){
  if(!change)return;
 
  if(change.type==='syncError'){
-   firebaseSetStatus('⚠ Se perdió la conexión en tiempo real: '+esc(change.message||'error desconocido'),'error');
+   firebaseRealtimeActive=false;
+   firebaseSetStatus('⚠ Se perdió la conexión en tiempo real. MIGA intentará reconectarse automáticamente.','error');
+   firebaseScheduleReconnect('listener-error');
    return;
  }
 
@@ -7479,7 +7597,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='58.0';
+ x.sales={};x.salesRows=[];x.version='60.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -7914,11 +8032,78 @@ function enableTouchDragScroll(el){
  el.addEventListener('touchcancel',stop,{passive:true});
 }
 
+
+function enableMouseWheelScroll(el){
+ if(!el || el.dataset.mouseWheelReady==='1')return;
+ el.dataset.mouseWheelReady='1';
+
+ el.addEventListener('wheel',ev=>{
+   if(ev.ctrlKey)return; // conservar zoom del navegador
+
+   const maxV=Math.max(0,el.scrollHeight-el.clientHeight);
+   const maxH=Math.max(0,el.scrollWidth-el.clientWidth);
+   if(maxV<2 && maxH<2)return;
+
+   const dy=Number(ev.deltaY)||0;
+   const dx=Number(ev.deltaX)||0;
+
+   // Shift + rueda: desplazamiento horizontal explícito.
+   if(ev.shiftKey && maxH>2){
+     el.scrollLeft += (Math.abs(dy)>Math.abs(dx)?dy:dx);
+     ev.preventDefault();
+     return;
+   }
+
+   // Trackpad / rueda con componente horizontal.
+   if(Math.abs(dx)>Math.abs(dy) && maxH>2){
+     el.scrollLeft += dx;
+     ev.preventDefault();
+     return;
+   }
+
+   // Prioridad normal: desplazamiento vertical de la tabla.
+   if(maxV>2 && Math.abs(dy)>=Math.abs(dx)){
+     const before=el.scrollTop;
+     el.scrollTop += dy;
+
+     // Solo capturamos la rueda si realmente pudimos movernos.
+     if(Math.abs(el.scrollTop-before)>0.5){
+       ev.preventDefault();
+       return;
+     }
+   }
+
+   // Si la tabla no tiene más recorrido vertical pero sí horizontal,
+   // la rueda continúa hacia las columnas de la derecha/izquierda.
+   if(maxH>2 && dy!==0){
+     const before=el.scrollLeft;
+     el.scrollLeft += dy;
+     if(Math.abs(el.scrollLeft-before)>0.5){
+       ev.preventDefault();
+     }
+   }
+ },{passive:false});
+}
+
+function initMouseWheelScrolling(){
+ [
+   'planTable',
+   'bakerTable',
+   'motherTableWrap',
+   'salesTable',
+   'patronSheet'
+ ].forEach(id=>{
+   const el=document.getElementById(id);
+   if(el)enableMouseWheelScroll(el);
+ });
+}
+
 function initMobileTouchScrolling(){
  ['planTable','bakerTable','motherTableWrap','salesTable'].forEach(id=>{
    const el=document.getElementById(id);
    if(el)enableTouchDragScroll(el);
  });
+ initMouseWheelScrolling();
 }
 
 function syncSheetChrome(sheetName){
@@ -7973,6 +8158,7 @@ window.addEventListener('miga-firebase-ready',async()=>{
      unlockedBranches.add(code);
 
      finishBranchSwitch(code);
+     firebaseLastRealtimeAt=Date.now();
      firebaseStartBranchRealtime(code);
      updateBranchCloudBodyClass();
    }else if(profile?.role==='admin'){
@@ -7992,6 +8178,46 @@ window.addEventListener('miga-firebase-ready',async()=>{
    updateBranchCloudBodyClass();
  }
 });
+
+// Los navegadores móviles suelen suspender conexiones al dejar MIGA
+// en segundo plano. Al volver, se trae el último estado de Firebase
+// y se reconstruye el listener sin pedir nuevamente el PIN.
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='visible'){
+   firebaseHandleConnectivityResume('visibility');
+ }
+});
+
+window.addEventListener('focus',()=>{
+ firebaseHandleConnectivityResume('focus');
+});
+
+window.addEventListener('online',()=>{
+ firebaseSetStatus('☁ Conexión recuperada. Actualizando…','pending');
+ firebaseHandleConnectivityResume('online');
+});
+
+window.addEventListener('pageshow',event=>{
+ if(event.persisted){
+   firebaseHandleConnectivityResume('pageshow-cache');
+ }
+});
+
+// Heartbeat de recuperación.
+// Solo actúa mientras MIGA está visible. Si no hubo actividad del
+// listener durante un período, fuerza un catch-up desde Firestore.
+setInterval(()=>{
+ if(document.visibilityState!=='visible')return;
+ if(!navigator.onLine)return;
+ if(!window.MigaFirebase?.isBranch?.())return;
+
+ const idle=Date.now()-firebaseLastRealtimeAt;
+ if(firebaseLastRealtimeAt && idle>45000){
+   firebaseScheduleReconnect('heartbeat');
+ }
+},15000);
+
+setTimeout(initMouseWheelScrolling,0);
 document.getElementById('pasteModal').addEventListener('click',e=>{if(e.target.id==='pasteModal')closePaste()});
 branchCatalog[state.branch]={...(branchCatalog[state.branch]||{}),code:state.branch,name:state.branchName||branchCatalog[state.branch]?.name||''};
 syncZoneToBranch(state.branch,false);
@@ -8028,7 +8254,8 @@ monthlyBackupReminder();
     getDocs,
     collection,
     writeBatch,
-    onSnapshot
+    onSnapshot,
+    enableNetwork
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -8272,6 +8499,7 @@ monthlyBackupReminder();
 
   async function pullBranchContext(code){
     if(!isBranchFor(code)&&!isAdmin())throw new Error('Sin permisos para esta sucursal.');
+    await ensureNetwork();
     code=String(code||'').padStart(3,'0');
 
     const ownElabSnap=await getDoc(doc(db,'miga_elaborators',code));
@@ -8312,6 +8540,17 @@ monthlyBackupReminder();
     };
   }
 
+
+
+  async function ensureNetwork(){
+    try{
+      await enableNetwork(db);
+      return true;
+    }catch(e){
+      console.warn('Firebase enableNetwork:',e);
+      return false;
+    }
+  }
 
   async function restoreSession(){
     await waitForAuthState();
@@ -8399,7 +8638,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'58.0',
+      appVersion:'60.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -8662,6 +8901,7 @@ monthlyBackupReminder();
     isBranchFor,
     canWriteBranch,
     currentProfile,
+    ensureNetwork,
     restoreSession,
     isInitialized,
     loadBranchDirectory,

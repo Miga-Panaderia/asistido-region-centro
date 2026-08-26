@@ -312,3 +312,49 @@ Las escrituras de una sucursal se envían en orden y el estado superior diferenc
 Los accesos creados con versiones anteriores pueden seguir funcionando con su clave anterior. Para comenzar a usar PIN de 3 dígitos, restablecer el acceso de esa sucursal desde Admin General.
 
 También se eliminó de MIGA el grupo recreativo y los chistes; el asistente guiado queda enfocado en funciones operativas.
+
+## v17 · Reconexión automática de Firebase
+
+Esta versión corrige el caso en el que un dispositivo ya tenía sesión iniciada pero, después de quedar en segundo plano o suspendido por el navegador, no recibía modificaciones hechas desde otro dispositivo hasta reconectarse manualmente.
+
+MIGA ahora:
+
+- mantiene la sesión Firebase existente;
+- al volver a primer plano trae el último estado de Firestore;
+- reinicia automáticamente los listeners;
+- hace lo mismo al recuperar conexión a Internet;
+- detecta restauraciones desde la caché del navegador;
+- realiza una comprobación silenciosa si la pestaña visible pasa demasiado tiempo sin actividad del listener.
+
+La reconexión no pide nuevamente el PIN mientras la sesión Firebase continúe siendo válida.
+
+Flujo esperado:
+
+**otro dispositivo modifica → Firebase → MIGA vuelve/permanece activa → catch-up automático → último dato visible → listener activo otra vez**.
+
+## v18 · MIGA explica cada hoja + rueda del mouse
+
+### ¿Qué hace esta hoja?
+
+Se corrigió la lógica que podía reemplazar la respuesta correcta por el mensaje genérico de consulta no reconocida.
+
+MIGA ahora identifica la solapa activa mediante su ID interno y siempre tiene una explicación breve para:
+
+- Parámetros Suc
+- Panadería Suc
+- Ventas Prisma Suc
+- Hoja del Panadero Suc
+- Plan Elaboradora
+
+Las explicaciones indican el objetivo de la hoja y continúan siendo válidas aunque todavía no existan ventas, cálculos o sucursales asignadas.
+
+### Scroll con rueda del mouse
+
+Se agrega manejo explícito de rueda para las tablas principales:
+
+- rueda normal: desplazamiento vertical;
+- `Shift + rueda`: desplazamiento horizontal;
+- si no existe recorrido vertical y sí horizontal, la rueda avanza por las columnas;
+- trackpads con desplazamiento horizontal también funcionan.
+
+Se aplica a Panadería Suc, Ventas Prisma, Hoja del Panadero, Plan Elaboradora y padrón de Parámetros.
