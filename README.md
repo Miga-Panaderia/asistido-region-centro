@@ -174,3 +174,40 @@ Después podés abrir MIGA en otro dispositivo, entrar como Admin General y eleg
 
 Esta es la **Fase 1**: solamente el Administrador General tiene permiso de Firestore.  
 La siguiente etapa será crear la autenticación de las sucursales y reglas para que cada una pueda leer/escribir únicamente lo que le corresponde.
+
+## Padrón maestro de referencias por zona
+
+Desde esta versión, cada zona maneja un padrón maestro independiente:
+
+- NEUQUEN INTERIOR
+- NEUQUEN CIUDAD
+- RIO NEGRO
+- TRELEW
+- VIEDMA
+
+Las sucursales heredan automáticamente el padrón de su zona.  
+La sucursal conserva solamente sus particularidades de cada referencia, especialmente **Coef.** y **Cronograma**.
+
+### Operaciones del Admin General
+
+En **Menú Admin → Padrón de Referencias por Zona**:
+
+- Agregar referencia
+- Editar referencia
+- Eliminar referencia
+- Importar / actualizar desde Excel
+- Reemplazar padrón completo de una zona desde Excel
+
+Al reemplazar:
+
+- una referencia que continúa conserva Coef. y Cronograma en cada sucursal;
+- una referencia nueva entra con Coef. `0%` y cronograma vacío;
+- una referencia eliminada deja de formar parte de todas las sucursales de esa zona.
+
+### Firebase
+
+Se agrega la colección:
+
+`miga_zone_refs`
+
+Antes de usar esta versión en producción, actualizá nuevamente **Firestore → Reglas** con el archivo `firebase/firestore.rules` de esta versión y publicalo.

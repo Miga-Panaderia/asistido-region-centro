@@ -3132,6 +3132,116 @@ body.mother-sheet-active .mini-assistant{
   border-color:#82a88f;
   color:#285b40;
 }
+
+/* =========================================================
+   V54 - PADRÓN MAESTRO DE REFERENCIAS POR ZONA
+   ========================================================= */
+.admin-ref-zone-panel{
+  margin-bottom:9px;
+  padding:9px 10px 8px;
+  border:1px solid #c8d1d7;
+  background:#fff;
+}
+.admin-ref-zone-head{
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.admin-ref-zone-head label{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:250px;
+  font-size:10px;
+  font-weight:800;
+  color:#30495a;
+}
+.admin-ref-zone-head select{
+  min-width:250px;
+  height:30px;
+  border:1px solid #899ba7;
+  background:#fff;
+  padding:3px 7px;
+  font-weight:700;
+}
+.admin-ref-zone-info{
+  margin-left:auto;
+  padding:4px 8px;
+  border:1px solid #b5c2ca;
+  border-radius:999px;
+  background:#f2f6f7;
+  color:#425967;
+  font-size:9.5px;
+  font-weight:700;
+}
+.admin-ref-zone-tabs{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+.admin-ref-zone-tab{
+  min-height:28px;
+  padding:4px 9px;
+  border:1px solid #9daab3;
+  background:#eef2f4;
+  color:#294356;
+  font-size:9.5px;
+  font-weight:800;
+  cursor:pointer;
+}
+.admin-ref-zone-tab:hover{
+  background:#e4eaed;
+}
+.admin-ref-zone-tab.active{
+  border-color:#4f856c;
+  background:#fff;
+  color:#214f3a;
+  box-shadow:inset 0 -3px 0 #2f7657;
+}
+.admin-ref-zone-tab .count{
+  display:inline-block;
+  margin-left:5px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#dce5ea;
+  font-size:8.5px;
+}
+.admin-ref-zone-tab.active .count{
+  background:#e3f0e8;
+}
+.admin-ref-replace-btn{
+  border-color:#b78b53 !important;
+  color:#6e4b20 !important;
+  background:#fff9ef !important;
+}
+.admin-ref-replace-btn:hover{
+  background:#fff3df !important;
+}
+@media(max-width:700px){
+  .admin-ref-zone-head{
+    align-items:stretch;
+  }
+  .admin-ref-zone-head label,
+  .admin-ref-zone-head select{
+    width:100%;
+    min-width:0;
+  }
+  .admin-ref-zone-info{
+    margin-left:0;
+    align-self:flex-start;
+  }
+  .admin-ref-zone-tabs{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding-bottom:3px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .admin-ref-zone-tab{
+    flex:0 0 auto;
+  }
+}
 </style>
 </head>
 <body>
@@ -3489,20 +3599,16 @@ body.mother-sheet-active .mini-assistant{
       </section>
 
       <section class="admin-card admin-ref-card master-admin-only">
-        <div class="admin-card-title">PADRÓN DE REFERENCIAS</div>
+        <div class="admin-card-title">PADRÓN DE REFERENCIAS POR ZONA</div>
 
-        <div class="admin-ref-scope" id="adminReferenceScopeWrap">
-          <label>Aplicar cambios en:
-            <select id="adminReferenceScope" onchange="renderAdminReferences()">
-              <option value="current">Sucursal actual</option>
-              <option value="zone">Zona seleccionada</option>
-              <option value="all">Todas las sucursales</option>
-            </select>
-          </label>
-
-          <label id="adminReferenceZoneWrap">Zona del padrón:
-            <select id="adminReferenceZone" onchange="renderAdminReferences()"></select>
-          </label>
+        <div class="admin-ref-zone-panel">
+          <div class="admin-ref-zone-head">
+            <label>Zona del padrón
+              <select id="adminReferenceZone" onchange="onAdminReferenceZoneChange(this.value)"></select>
+            </label>
+            <span id="adminRefZoneInfo" class="admin-ref-zone-info"></span>
+          </div>
+          <div id="adminReferenceZoneTabs" class="admin-ref-zone-tabs"></div>
         </div>
 
         <div class="admin-ref-form">
@@ -3518,15 +3624,19 @@ body.mother-sheet-active .mini-assistant{
           <button id="adminSaveRefBtn" type="button" onclick="saveAdminReference()">＋ Agregar referencia</button>
           <button type="button" onclick="clearAdminReferenceForm()">Limpiar</button>
           <button type="button" onclick="downloadReferenceTemplate()">⬇ Plantilla Excel</button>
-          <label class="file-label admin-file-btn">⬆ Importar referencias
+          <label class="file-label admin-file-btn">⬆ Importar / actualizar
             <input id="adminReferenceFile" type="file" accept=".xlsx" onchange="adminImportReferences(this.files[0]);this.value=''">
+          </label>
+          <label class="file-label admin-file-btn admin-ref-replace-btn">↻ Reemplazar padrón de zona
+            <input id="adminReferenceReplaceFile" type="file" accept=".xlsx" onchange="adminReplaceReferences(this.files[0]);this.value=''">
           </label>
         </div>
 
         <div class="admin-help">
+          Cada zona tiene un <b>padrón maestro independiente</b>.
           Excel masivo: <b>Articulo | Descripción | Marca | Aptitud | U/M | Bto</b>.
-          Si el código tiene menos de 7 dígitos, se completan ceros adelante.
-          Las referencias nuevas ingresan con <b>Coef. 0%</b> y cronograma sin días activos.
+          Las sucursales de la zona heredan automáticamente ese padrón.
+          Las referencias nuevas ingresan con <b>Coef. 0%</b> y cronograma sin días activos; las existentes conservan su Coef. y Cronograma.
         </div>
 
         <div class="admin-ref-search-line">
@@ -3892,7 +4002,7 @@ function assistantLocateFeature(question){
    return '📍 La consolidación por elaboradora está en <b>Plan Elaboradora</b>.';
  }
  if(/referencias|padron|articulo|descripcion|marca|aptitud|u\/m|bto/.test(q)){
-   return '📍 El padrón se visualiza en <b>Parámetros Suc</b>. Su alta, edición o baja se gestiona desde <b>Administrador General</b>.';
+   return '📍 El padrón se visualiza en <b>Parámetros Suc</b>. Cada sucursal hereda el <b>padrón maestro de su zona</b>; su alta, edición, baja o importación se gestiona desde <b>Administrador General → Padrón de Referencias por Zona</b>.';
  }
  if(/fecha de inicio|inicio|mes/.test(q)){
    return '📍 La <b>Fecha de inicio</b> se muestra en la barra superior y se administra desde <b>Administrador General</b>. El mes se deriva automáticamente de esa fecha.';
@@ -4202,6 +4312,7 @@ let branchCatalog=(window.MIGA_CONFIG&&window.MIGA_CONFIG.branches&&typeof windo
  ? {...window.MIGA_CONFIG.branches}
  : {'068':{code:'068',name:'HIPERMERCADO NEUQUEN',zoneId:'neuquen-ciudad',zone:'NEUQUEN CIUDAD'}};
 const ZONE_STORAGE_KEY='panaderia_selected_zone_multizona_v43';
+const ZONE_REFERENCE_PREFIX='panaderia_zone_references_v54_';
 let currentZoneId='';
 function storageKey(branch){return STORAGE_PREFIX+String(branch||'').padStart(3,'0')+STORAGE_SUFFIX}
 let state = loadLocalFor(ORIGINAL.branch) || makeBranchState(ORIGINAL.branch,branchCatalog[ORIGINAL.branch]?.name||'HIPERMERCADO NEUQUEN');
@@ -4249,7 +4360,169 @@ function normalizeStateArticles(obj){
 state=normalizeStateArticles(state);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function escAttr(s){return esc(s)}
-function loadLocalFor(branch){try{const x=localStorage.getItem(storageKey(branch));return x?normalizeStateArticles(JSON.parse(x)):null}catch(e){return null}}
+
+function zoneReferenceKey(zoneId){
+ return ZONE_REFERENCE_PREFIX+String(zoneId||'');
+}
+function masterReferenceFromProduct(p){
+ const article=safeArticle(p?.article);
+ if(!article)return null;
+ return {
+   article,
+   description:String(p?.description||'').trim(),
+   brand:String(p?.brand||'').trim(),
+   aptitude:String(p?.aptitude||'').trim(),
+   um:String(p?.um||'').trim(),
+   bto:n(p?.bto,0)
+ };
+}
+function normalizeZoneReferences(refs){
+ const map=new Map();
+ (Array.isArray(refs)?refs:[]).forEach(p=>{
+   const ref=masterReferenceFromProduct(p);
+   if(!ref)return;
+   if(!map.has(ref.article))map.set(ref.article,ref);
+   else{
+     const cur=map.get(ref.article);
+     ['description','brand','aptitude','um'].forEach(k=>{
+       if(!cur[k] && ref[k])cur[k]=ref[k];
+     });
+     if(!Number.isFinite(Number(cur.bto)))cur.bto=ref.bto;
+   }
+ });
+ return Array.from(map.values()).sort((a,b)=>Number(a.article)-Number(b.article));
+}
+function loadRawLocalFor(branch){
+ try{
+   const x=localStorage.getItem(storageKey(branch));
+   return x?normalizeStateArticles(JSON.parse(x)):null;
+ }catch(e){
+   return null;
+ }
+}
+function deriveZoneReferences(zoneId){
+ const map=new Map();
+ const codes=(zoneCatalog[zoneId]?.branches||[]).filter(code=>branchCatalog[code]);
+
+ codes.forEach(code=>{
+   const s=loadRawLocalFor(code);
+   (s?.products||[]).forEach(p=>{
+     const ref=masterReferenceFromProduct(p);
+     if(ref && !map.has(ref.article))map.set(ref.article,ref);
+   });
+ });
+
+ // Migración inicial: si todavía no hay estados guardados para esa zona,
+ // se toma el padrón base actual como punto de partida.
+ if(!map.size){
+   (ORIGINAL.products||[]).forEach(p=>{
+     const ref=masterReferenceFromProduct(p);
+     if(ref && !map.has(ref.article))map.set(ref.article,ref);
+   });
+ }
+
+ return normalizeZoneReferences(Array.from(map.values()));
+}
+function storeZoneReferencesLocal(zoneId,refs){
+ const normalized=normalizeZoneReferences(refs);
+ try{
+   localStorage.setItem(zoneReferenceKey(zoneId),JSON.stringify(normalized));
+ }catch(e){}
+ return normalized;
+}
+function loadZoneReferences(zoneId){
+ if(!zoneId||!zoneCatalog[zoneId])return [];
+ try{
+   const raw=localStorage.getItem(zoneReferenceKey(zoneId));
+   if(raw){
+     const arr=JSON.parse(raw);
+     if(Array.isArray(arr))return normalizeZoneReferences(arr);
+   }
+ }catch(e){}
+ return storeZoneReferencesLocal(zoneId,deriveZoneReferences(zoneId));
+}
+function getAllZoneReferenceMasters(){
+ const out={};
+ zoneOrder.forEach(zoneId=>{
+   out[zoneId]=loadZoneReferences(zoneId);
+ });
+ return out;
+}
+function syncBranchProductsWithZoneMaster(s,code,master=null){
+ if(!s)return s;
+ s=normalizeStateArticles(s);
+ const zoneId=branchCatalog[code]?.zoneId||s.zoneId||'';
+ if(!zoneId||!zoneCatalog[zoneId])return s;
+
+ const refs=normalizeZoneReferences(master||loadZoneReferences(zoneId));
+ const existing=new Map((s.products||[]).map(p=>[safeArticle(p.article),p]));
+
+ s.products=refs.map(ref=>{
+   const prev=existing.get(ref.article);
+   return {
+     ...ref,
+     schedule:Array.isArray(prev?.schedule)
+       ? prev.schedule.slice(0,7).map(v=>n(v)?1:0)
+       : [0,0,0,0,0,0,0],
+     increment:n(prev?.increment,0)
+   };
+ });
+
+ s.zoneId=zoneId;
+ s.zoneName=branchCatalog[code]?.zone||zoneCatalog[zoneId]?.name||s.zoneName||'';
+ return normalizeStateArticles(s);
+}
+function applyZoneMasterToBranches(zoneId,refs,{syncCloud=true}={}){
+ const master=normalizeZoneReferences(refs);
+ const codes=(zoneCatalog[zoneId]?.branches||[]).filter(code=>branchCatalog[code]);
+
+ codes.forEach(code=>{
+   const meta=branchCatalog[code]||{code,name:''};
+   let s=loadRawLocalFor(code);
+   if(!s){
+     s=clone(ORIGINAL);
+     s.branch=code;
+     s.branchName=meta.name||'';
+     s.sales={};
+     s.salesRows=[];
+     s.salesSource='';
+     s.salesSheetName='';
+   }
+   s.branch=code;
+   s.branchName=meta.name||s.branchName||'';
+   s=syncBranchProductsWithZoneMaster(s,code,master);
+
+   try{
+     localStorage.setItem(storageKey(code),JSON.stringify(configSnapshot(s)));
+   }catch(e){}
+
+   if(syncCloud)firebaseQueueBranchSync(s);
+ });
+
+ if(branchZoneId(state.branch)===zoneId){
+   const local=loadRawLocalFor(state.branch);
+   if(local){
+     const sales=state.sales,rows=state.salesRows,source=state.salesSource,sheet=state.salesSheetName,loaded=state.salesLoadedAt;
+     state=syncBranchProductsWithZoneMaster(local,state.branch,master);
+     state.sales=sales||{};
+     state.salesRows=rows||[];
+     state.salesSource=source||'';
+     state.salesSheetName=sheet||'';
+     state.salesLoadedAt=loaded||'';
+   }
+ }
+}
+function saveZoneReferences(zoneId,refs,{syncCloud=true,propagate=true}={}){
+ const normalized=storeZoneReferencesLocal(zoneId,refs);
+ if(propagate)applyZoneMasterToBranches(zoneId,normalized,{syncCloud});
+ if(syncCloud)firebaseQueueZoneRefsSync(zoneId,normalized);
+ return normalized;
+}
+function loadLocalFor(branch){
+ const raw=loadRawLocalFor(branch);
+ return raw?syncBranchProductsWithZoneMaster(raw,branch):null;
+}
+
 function configSnapshot(obj=state){
  const x=clone(obj);
  delete x.sales;delete x.salesRows;delete x.salesSource;delete x.salesLoadedAt;delete x.salesSheetName;
@@ -4947,6 +5220,7 @@ function firebaseBuildUploadPayload(){
  });
  return {
    branches,
+   zoneRefs:getAllZoneReferenceMasters(),
    sales:clone(salesWorkbook||{}),
    salesSourceFile:salesSourceFile||'',
    system:firebaseSystemSnapshot()
@@ -4957,6 +5231,11 @@ function firebaseApplyFullPayload(payload){
  if(!payload || typeof payload!=='object')return;
  firebaseCloudApplying=true;
  try{
+   const zoneRefs=payload.zoneRefs||{};
+   Object.entries(zoneRefs).forEach(([zoneId,refs])=>{
+     if(zoneCatalog[zoneId])storeZoneReferencesLocal(zoneId,refs);
+   });
+
    const branches=payload.branches||{};
    Object.entries(branches).forEach(([code,data])=>{
      if(!branchCatalog[code]||!data)return;
@@ -5035,12 +5314,16 @@ function firebaseApplyRealtimeChange(change){
  if(!change || firebaseCloudApplying)return;
  firebaseCloudApplying=true;
  try{
-   if(change.type==='branch' && change.code && change.data){
+   if(change.type==='zoneRefs' && change.zoneId){
+     const refs=storeZoneReferencesLocal(change.zoneId,change.data||[]);
+     applyZoneMasterToBranches(change.zoneId,refs,{syncCloud:false});
+   }else if(change.type==='branch' && change.code && change.data){
      const code=change.code;
      if(branchCatalog[code]){
-       const x=normalizeStateArticles(clone(change.data));
+       let x=normalizeStateArticles(clone(change.data));
        x.branch=code;
        x.branchName=branchCatalog[code]?.name||x.branchName||'';
+       x=syncBranchProductsWithZoneMaster(x,code);
        localStorage.setItem(storageKey(code),JSON.stringify(configSnapshot(x)));
        if(code===state.branch){
          state=attachSalesToState(x,code);
@@ -5101,6 +5384,14 @@ function firebaseQueueBranchSync(obj){
  });
 }
 
+function firebaseQueueZoneRefsSync(zoneId,refs){
+ if(firebaseCloudApplying || !firebaseCloudInitialized || !window.MigaFirebase?.isAdmin?.())return;
+ window.MigaFirebase.saveZoneRefs(zoneId,normalizeZoneReferences(refs)).catch(err=>{
+   console.error('Firebase zone refs sync:',err);
+   firebaseSetStatus('⚠ No se pudo sincronizar el padrón de '+esc(zoneName(zoneId))+'.','error');
+ });
+}
+
 function firebaseQueueSystemSync(){
  if(firebaseCloudApplying || !firebaseCloudInitialized || !window.MigaFirebase?.isAdmin?.())return;
  clearTimeout(firebaseSystemTimer);
@@ -5158,17 +5449,7 @@ function openAdminMenu(){
  const allWrap=document.getElementById('adminConfigAllWrap');
  if(allWrap)allWrap.style.display=isMasterAdmin()?'flex':'none';
 
- const scope=document.getElementById('adminReferenceScope');
- if(scope){
-   scope.value='current';
-   const allOpt=Array.from(scope.options).find(o=>o.value==='all');
-   const zoneOpt=Array.from(scope.options).find(o=>o.value==='zone');
-   if(allOpt)allOpt.hidden=!isMasterAdmin();
-   if(zoneOpt)zoneOpt.hidden=!isMasterAdmin();
-   scope.disabled=!isMasterAdmin();
- }
- populateAdminReferenceZoneSelect();
- toggleAdminReferenceZoneVisibility();
+ populateAdminReferenceZoneSelect(branchZoneId(state.branch)||currentZoneId||zoneOrder[0]||'');
 
  const branchCard=document.getElementById('branchOwnPasswordCard');
  if(branchCard)branchCard.style.display=isBranchAdmin()?'block':'none';
@@ -5203,69 +5484,56 @@ function closeAdminMenu(){
  if(modal)modal.classList.remove('show');
 }
 
-function populateAdminReferenceZoneSelect(){
+
+function populateAdminReferenceZoneSelect(preferredZone=''){
  const sel=document.getElementById('adminReferenceZone');
  if(!sel)return;
- const current=sel.value || currentZoneId || branchZoneId(state.branch) || zoneOrder[0] || '';
+ const current=preferredZone || sel.value || currentZoneId || branchZoneId(state.branch) || zoneOrder[0] || '';
+
  sel.innerHTML=zoneOrder.map(zoneId=>{
-   const count=branchesForZone(zoneId).length;
-   return `<option value="${zoneId}">${esc(zoneName(zoneId))} (${count})</option>`;
+   const count=loadZoneReferences(zoneId).length;
+   return `<option value="${zoneId}">${esc(zoneName(zoneId))} · ${count} refs.</option>`;
  }).join('');
- if(current && zoneCatalog[current]) sel.value=current;
- toggleAdminReferenceZoneVisibility();
-}
-function toggleAdminReferenceZoneVisibility(){
- const wrap=document.getElementById('adminReferenceZoneWrap');
- const scope=document.getElementById('adminReferenceScope');
- if(!wrap||!scope)return;
- wrap.style.display=(isMasterAdmin() && scope.value==='zone') ? 'flex' : 'none';
+
+ if(current && zoneCatalog[current])sel.value=current;
+ renderAdminReferenceZoneTabs();
 }
 function adminSelectedReferenceZone(){
  const sel=document.getElementById('adminReferenceZone');
- return sel?.value || currentZoneId || branchZoneId(state.branch) || '';
+ return sel?.value || branchZoneId(state.branch) || currentZoneId || zoneOrder[0] || '';
 }
-function adminScopeCodes(scopeId='adminReferenceScope'){
- if(!isMasterAdmin())return [state.branch];
- const el=document.getElementById(scopeId);
- const scope=el?.value || 'current';
- if(scope==='all')return allBranchCodes();
- if(scope==='zone'){
-   const zoneId=adminSelectedReferenceZone();
-   return branchesForZone(zoneId);
+function renderAdminReferenceZoneTabs(){
+ const box=document.getElementById('adminReferenceZoneTabs');
+ if(!box)return;
+ const selected=adminSelectedReferenceZone();
+
+ box.innerHTML=zoneOrder.map(zoneId=>{
+   const refs=loadZoneReferences(zoneId);
+   const active=zoneId===selected?'active':'';
+   return `<button type="button" class="admin-ref-zone-tab ${active}" onclick="selectAdminReferenceZone('${zoneId}')">
+     ${esc(zoneName(zoneId))}<span class="count">${refs.length}</span>
+   </button>`;
+ }).join('');
+
+ const info=document.getElementById('adminRefZoneInfo');
+ if(info){
+   const refs=loadZoneReferences(selected);
+   info.textContent=zoneName(selected)+' · '+refs.length+' referencias · '+branchesForZone(selected).length+' sucursales';
  }
- return [state.branch];
+}
+function selectAdminReferenceZone(zoneId){
+ if(!zoneCatalog[zoneId])return;
+ const sel=document.getElementById('adminReferenceZone');
+ if(sel)sel.value=zoneId;
+ clearAdminReferenceForm();
+ renderAdminReferenceZoneTabs();
+ renderAdminReferences();
+}
+function onAdminReferenceZoneChange(zoneId){
+ selectAdminReferenceZone(zoneId);
 }
 function adminReferenceSourceRows(){
- const codes=adminScopeCodes();
- const scope=(document.getElementById('adminReferenceScope')?.value || 'current');
- if(scope==='current'){
-   return (state.products||[]).map(p=>({...p,_branchCount:1,_scopeLabel:'Suc. '+state.branch}));
- }
- const map=new Map();
- codes.forEach(code=>{
-   const s=getEditableBranchState(code);
-   (s.products||[]).forEach(p=>{
-     const article=safeArticle(p.article);
-     if(!article)return;
-     if(!map.has(article)){
-       map.set(article,{...p,article,_branchCount:0,_scopeCodes:[]});
-     }
-     const row=map.get(article);
-     row._branchCount++;
-     row._scopeCodes.push(code);
-     if(!row.description && p.description)row.description=p.description;
-     if(!row.brand && p.brand)row.brand=p.brand;
-     if(!row.aptitude && p.aptitude)row.aptitude=p.aptitude;
-     if(!row.um && p.um)row.um=p.um;
-     if((row.bto===undefined || row.bto===null || row.bto==='') && p.bto!==undefined)row.bto=p.bto;
-   });
- });
- const label=(scope==='all')
-   ? ('Global · '+codes.length+' sucs.')
-   : ('Zona · '+zoneName(adminSelectedReferenceZone()));
- return Array.from(map.values())
-   .sort((a,b)=>Number(a.article)-Number(b.article))
-   .map(p=>({...p,_scopeLabel:label}));
+ return loadZoneReferences(adminSelectedReferenceZone());
 }
 
 function getEditableBranchState(code){
@@ -5353,44 +5621,36 @@ function readAdminReferenceForm(){
 
  return {article,description,brand,aptitude,um,bto};
 }
-function upsertReferenceIntoState(s,ref){
- s=normalizeStateArticles(s);
- const ix=s.products.findIndex(p=>p.article===ref.article);
- if(ix>=0){
-   s.products[ix]=Object.assign(s.products[ix],ref);
- }else{
-   s.products.push({
-     article:ref.article,
-     description:ref.description,
-     brand:ref.brand,
-     aptitude:ref.aptitude,
-     um:ref.um,
-     bto:ref.bto,
-     schedule:[0,0,0,0,0,0,0],
-     increment:0
-   });
- }
- s.products.sort((a,b)=>Number(a.article)-Number(b.article));
- return s;
+
+function upsertMasterReference(refs,ref){
+ const list=normalizeZoneReferences(refs);
+ const clean=masterReferenceFromProduct(ref);
+ if(!clean)return list;
+ const ix=list.findIndex(x=>x.article===clean.article);
+ if(ix>=0)list[ix]={...list[ix],...clean};
+ else list.push(clean);
+ return normalizeZoneReferences(list);
 }
 function saveAdminReference(){
- if(!motherAdminMode)return;
+ if(!isMasterAdmin())return;
  try{
    const ref=readAdminReferenceForm();
-   const codes=adminScopeCodes();
-   codes.forEach(code=>{
-     let s=getEditableBranchState(code);
-     s=upsertReferenceIntoState(s,ref);
-     commitEditableBranchState(code,s);
-   });
+   const zoneId=adminSelectedReferenceZone();
+   const refs=upsertMasterReference(loadZoneReferences(zoneId),ref);
+
+   saveZoneReferences(zoneId,refs,{syncCloud:true,propagate:true});
+
    state=attachSalesToState(state,state.branch);
    recalc();
    clearAdminReferenceForm();
+   populateAdminReferenceZoneSelect(zoneId);
    renderAdminReferences();
- }catch(e){alert(e.message||String(e));}
+ }catch(e){
+   alert(e.message||String(e));
+ }
 }
 function editAdminReference(article){
- const p=adminReferenceSourceRows().find(x=>x.article===article);
+ const p=loadZoneReferences(adminSelectedReferenceZone()).find(x=>x.article===article);
  if(!p)return;
  adminEditingArticle=article;
  document.getElementById('adminRefArticle').value=p.article;
@@ -5403,48 +5663,53 @@ function editAdminReference(article){
  document.getElementById('adminSaveRefBtn').textContent='💾 Guardar referencia';
 }
 function deleteAdminReference(article){
- if(!motherAdminMode)return;
- const p=state.products.find(x=>x.article===article);
+ if(!isMasterAdmin())return;
+ const zoneId=adminSelectedReferenceZone();
+ const refs=loadZoneReferences(zoneId);
+ const p=refs.find(x=>x.article===article);
  if(!p)return;
- const scopeLabel=(document.getElementById('adminReferenceScope')?.value==='zone')
-   ? ('la zona '+zoneName(adminSelectedReferenceZone()))
-   : ((document.getElementById('adminReferenceScope')?.value==='all') ? 'todas las sucursales' : 'la sucursal seleccionada');
- if(!confirm('¿Eliminar '+article+' - '+p.description+' del padrón de '+scopeLabel+'?'))return;
 
- const codes=adminScopeCodes();
- codes.forEach(code=>{
-   const s=getEditableBranchState(code);
-   s.products=(s.products||[]).filter(x=>safeArticle(x.article)!==article);
-   commitEditableBranchState(code,s);
- });
+ if(!confirm(
+   '¿Eliminar '+article+' - '+p.description+' del padrón de '+zoneName(zoneId)+'?\n\n'+
+   'La referencia dejará de aparecer en las '+branchesForZone(zoneId).length+' sucursales de esta zona.'
+ ))return;
+
+ const next=refs.filter(x=>x.article!==article);
+ saveZoneReferences(zoneId,next,{syncCloud:true,propagate:true});
 
  state=attachSalesToState(state,state.branch);
  recalc();
  clearAdminReferenceForm();
+ populateAdminReferenceZoneSelect(zoneId);
  renderAdminReferences();
 }
 function renderAdminReferences(){
  const box=document.getElementById('adminReferenceList');
  if(!box)return;
- toggleAdminReferenceZoneVisibility();
- const q=(document.getElementById('adminRefSearch')?.value||'').trim().toLowerCase();
- const scope=(document.getElementById('adminReferenceScope')?.value || 'current');
- const source=adminReferenceSourceRows();
- const rows=source.filter(p=>!q||(`${p.article} ${p.description} ${p.brand}`.toLowerCase().includes(q)));
- document.getElementById('adminRefCount').textContent=rows.length+' refs.';
 
- const scopeHeader=(scope==='current')?'':'<th>Sucs.</th><th>Listado</th>';
+ const zoneId=adminSelectedReferenceZone();
+ const q=(document.getElementById('adminRefSearch')?.value||'').trim().toLowerCase();
+ const source=loadZoneReferences(zoneId);
+ const rows=source.filter(p=>!q||(`${p.article} ${p.description} ${p.brand}`.toLowerCase().includes(q)));
+
+ const count=document.getElementById('adminRefCount');
+ if(count)count.textContent=rows.length+' refs.';
+
+ const info=document.getElementById('adminRefZoneInfo');
+ if(info)info.textContent=zoneName(zoneId)+' · '+source.length+' referencias · '+branchesForZone(zoneId).length+' sucursales';
 
  box.innerHTML=`<table class="admin-ref-table"><thead><tr>
- <th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th>${scopeHeader}<th>Acciones</th>
+ <th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
  </tr></thead><tbody>`+
  rows.map(p=>`<tr>
  <td>${esc(p.article)}</td><td>${esc(p.description)}</td><td>${esc(p.brand)}</td>
  <td>${esc(p.aptitude)}</td><td>${esc(p.um)}</td><td>${esc(p.bto)}</td>
- ${scope==='current' ? '' : `<td class="ref-scope-col">${esc(p._branchCount)}</td><td class="ref-scope-col">${esc(p._scopeLabel)}</td>`}
  <td class="ref-actions"><button type="button" onclick="editAdminReference('${p.article}')">Editar</button><button type="button" onclick="deleteAdminReference('${p.article}')">Eliminar</button></td>
  </tr>`).join('')+'</tbody></table>';
+
+ renderAdminReferenceZoneTabs();
 }
+
 function downloadReferenceTemplate(){
  const raw=atob(REFERENCE_TEMPLATE_B64);
  const bytes=new Uint8Array(raw.length);
@@ -5503,25 +5768,68 @@ async function parseReferenceWorkbook(arrayBuffer){
  throw new Error('No se encontró una hoja con las columnas: Articulo, Descripción, Marca, Aptitud, U/M y Bto.');
 }
 async function adminImportReferences(file){
- if(!file||!motherAdminMode)return;
+ if(!file||!isMasterAdmin())return;
  try{
    const refs=await parseReferenceWorkbook(await file.arrayBuffer());
    if(!refs.length)throw new Error('El archivo no contiene referencias para importar.');
-   const codes=adminScopeCodes();
-   codes.forEach(code=>{
-     let s=getEditableBranchState(code);
-     refs.forEach(ref=>{s=upsertReferenceIntoState(s,ref);});
-     commitEditableBranchState(code,s);
-   });
+
+   const zoneId=adminSelectedReferenceZone();
+   let master=loadZoneReferences(zoneId);
+   refs.forEach(ref=>{master=upsertMasterReference(master,ref);});
+
+   saveZoneReferences(zoneId,master,{syncCloud:true,propagate:true});
+
    state=attachSalesToState(state,state.branch);
    recalc();
    clearAdminReferenceForm();
+   populateAdminReferenceZoneSelect(zoneId);
    renderAdminReferences();
-   const scope=(document.getElementById('adminReferenceScope')?.value || 'current');
-   const target=(scope==='zone') ? ('zona '+zoneName(adminSelectedReferenceZone())) : (scope==='all' ? 'todas las sucursales' : 'la sucursal actual');
-   alert(refs.length+' referencias procesadas correctamente en '+target+'.');
- }catch(e){alert('No se pudo importar: '+(e.message||String(e)));}
+
+   alert(refs.length+' referencias importadas/actualizadas en '+zoneName(zoneId)+'.');
+ }catch(e){
+   alert('No se pudo importar: '+(e.message||String(e)));
+ }
 }
+
+async function adminReplaceReferences(file){
+ if(!file||!isMasterAdmin())return;
+ try{
+   const refs=normalizeZoneReferences(await parseReferenceWorkbook(await file.arrayBuffer()));
+   if(!refs.length)throw new Error('El archivo no contiene referencias para reemplazar el padrón.');
+
+   const zoneId=adminSelectedReferenceZone();
+   const oldRefs=loadZoneReferences(zoneId);
+   const oldCodes=new Set(oldRefs.map(x=>x.article));
+   const newCodes=new Set(refs.map(x=>x.article));
+   const removed=oldRefs.filter(x=>!newCodes.has(x.article)).length;
+   const added=refs.filter(x=>!oldCodes.has(x.article)).length;
+
+   const ok=confirm(
+     'REEMPLAZAR PADRÓN · '+zoneName(zoneId)+'\n\n'+
+     'Padrón actual: '+oldRefs.length+' referencias\n'+
+     'Nuevo padrón: '+refs.length+' referencias\n'+
+     'Nuevas: '+added+'\n'+
+     'Se eliminarán: '+removed+'\n\n'+
+     'Las referencias que continúen conservarán el Coef. y Cronograma de cada sucursal.\n'+
+     'Las nuevas ingresarán con Coef. 0% y cronograma vacío.\n\n'+
+     '¿Continuar?'
+   );
+   if(!ok)return;
+
+   saveZoneReferences(zoneId,refs,{syncCloud:true,propagate:true});
+
+   state=attachSalesToState(state,state.branch);
+   recalc();
+   clearAdminReferenceForm();
+   populateAdminReferenceZoneSelect(zoneId);
+   renderAdminReferences();
+
+   alert('Padrón de '+zoneName(zoneId)+' reemplazado correctamente.');
+ }catch(e){
+   alert('No se pudo reemplazar el padrón: '+(e.message||String(e)));
+ }
+}
+
 
 
 /* ===================== PLAN ELABORADORA ===================== */
@@ -6681,9 +6989,9 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='53.0';
+ x.sales={};x.salesRows=[];x.version='54.0';
  x.salesSource='';x.salesSheetName='';
- return x;
+ return syncBranchProductsWithZoneMaster(x,code);
 }
 function attachSalesToState(obj,code){
  obj=normalizeStateArticles(obj);
@@ -7266,6 +7574,15 @@ monthlyBackupReminder();
       });
     }
 
+    for(const [zoneId,refs] of Object.entries(data.zoneRefs||{})){
+      batch.set(doc(db,'miga_zone_refs',zoneId),{
+        zoneId,
+        payload:JSON.stringify(clean(refs)),
+        updatedAt:now,
+        updatedBy:ADMIN_UID
+      });
+    }
+
     for(const [code,sales] of Object.entries(data.sales||{})){
       batch.set(doc(db,'miga_sales',code),{
         code,
@@ -7285,7 +7602,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'53.0',
+      appVersion:'54.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -7300,11 +7617,12 @@ monthlyBackupReminder();
 
     const meta=await getDoc(doc(db,'miga_system','meta'));
     if(!meta.exists() || meta.data()?.initialized!==true){
-      return {initialized:false,branches:{},sales:{},system:{}};
+      return {initialized:false,branches:{},zoneRefs:{},sales:{},system:{}};
     }
 
-    const [branchSnap,salesSnap,systemSnap] = await Promise.all([
+    const [branchSnap,zoneRefSnap,salesSnap,systemSnap] = await Promise.all([
       getDocs(collection(db,'miga_branches')),
+      getDocs(collection(db,'miga_zone_refs')),
       getDocs(collection(db,'miga_sales')),
       getDoc(doc(db,'miga_system','config'))
     ]);
@@ -7313,6 +7631,12 @@ monthlyBackupReminder();
     branchSnap.forEach(d=>{
       const p=parsePayload(d.data());
       if(p)branches[d.id]=p;
+    });
+
+    const zoneRefs={};
+    zoneRefSnap.forEach(d=>{
+      const p=parsePayload(d.data());
+      if(p)zoneRefs[d.id]=p;
     });
 
     const sales={};
@@ -7325,6 +7649,7 @@ monthlyBackupReminder();
     return {
       initialized:true,
       branches,
+      zoneRefs,
       sales,
       system:parsePayload(sysData)||{},
       salesSourceFile:String(sysData?.salesSourceFile||'Firebase')
@@ -7336,6 +7661,16 @@ monthlyBackupReminder();
     await setDoc(doc(db,'miga_branches',String(code)),{
       code:String(code),
       payload:JSON.stringify(clean(state)),
+      updatedAt:new Date().toISOString(),
+      updatedBy:ADMIN_UID
+    },{merge:true});
+  }
+
+  async function saveZoneRefs(zoneId,refs){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    await setDoc(doc(db,'miga_zone_refs',String(zoneId)),{
+      zoneId:String(zoneId),
+      payload:JSON.stringify(clean(refs)),
       updatedAt:new Date().toISOString(),
       updatedBy:ADMIN_UID
     },{merge:true});
@@ -7375,6 +7710,14 @@ monthlyBackupReminder();
   function subscribe(callback){
     unsubscribe();
     if(!isAdmin())throw new Error('Administrador General no autenticado.');
+
+    unsubscribers.push(onSnapshot(collection(db,'miga_zone_refs'),snap=>{
+      snap.docChanges().forEach(ch=>{
+        if(ch.type==='removed')return;
+        const payload=parsePayload(ch.doc.data());
+        if(payload)callback({type:'zoneRefs',zoneId:ch.doc.id,data:payload});
+      });
+    }));
 
     unsubscribers.push(onSnapshot(collection(db,'miga_branches'),snap=>{
       snap.docChanges().forEach(ch=>{
@@ -7420,6 +7763,7 @@ monthlyBackupReminder();
     uploadAll,
     pullAll,
     saveBranch,
+    saveZoneRefs,
     saveSystem,
     saveAllSales,
     subscribe,

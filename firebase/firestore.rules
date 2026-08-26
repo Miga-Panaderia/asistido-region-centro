@@ -12,6 +12,10 @@ service cloud.firestore {
       allow read, write: if isMigaAdmin();
     }
 
+    match /miga_zone_refs/{zoneId} {
+      allow read, write: if isMigaAdmin();
+    }
+
     match /miga_sales/{branchId} {
       allow read, write: if isMigaAdmin();
     }
