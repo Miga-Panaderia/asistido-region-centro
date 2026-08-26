@@ -358,3 +358,12 @@ Se agrega manejo explícito de rueda para las tablas principales:
 - trackpads con desplazamiento horizontal también funcionan.
 
 Se aplica a Panadería Suc, Ventas Prisma, Hoja del Panadero, Plan Elaboradora y padrón de Parámetros.
+
+## v19 · Ocultar selector de sucursales a producir
+
+En **Plan Elaboradora**, el bloque **SUCURSALES A PRODUCIR** y los botones **Todas / Ninguna** ahora son herramientas exclusivas de edición.
+
+- Se muestran únicamente mientras está activo **Administrador General**.
+- Al salir del Administrador General desaparecen inmediatamente.
+- La selección guardada continúa utilizándose para calcular el Plan Elaboradora.
+- Los usuarios normales solo ven el resultado del plan, no el panel de configuración.

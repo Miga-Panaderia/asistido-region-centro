@@ -3624,14 +3624,14 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           <select id="motherDateSelect" onchange="changeMotherDate(this.value)"></select>
         </div>
 
-        <div class="mother-actions">
+        <div class="mother-actions" id="motherDestinationActions" style="display:none">
           <button type="button" id="motherSelectAllBtn" onclick="selectAllMotherBranches(true)">Todas</button>
           <button type="button" id="motherSelectNoneBtn" onclick="selectAllMotherBranches(false)">Ninguna</button>
         </div>
       </div>
 
-      <div class="mother-destinations-wrap">
-        <div class="mother-destinations-title"><span>SUCURSALES A PRODUCIR</span><span id="motherDestLockBadge" class="mother-dest-lock-badge">🔒 SOLO ADMINISTRADOR GENERAL</span></div>
+      <div class="mother-destinations-wrap" id="motherDestinationsPanel" style="display:none">
+        <div class="mother-destinations-title"><span>SUCURSALES A PRODUCIR</span><span id="motherDestLockBadge" class="mother-dest-lock-badge">⚙ EDICIÓN ADMIN GENERAL</span></div>
         <div id="motherBranchChecks" class="mother-branch-checks"></div>
       </div>
 
@@ -6683,6 +6683,15 @@ function updateMotherAdminUI(){
  // Gestionar elaboradoras y destinos de producción son EXCLUSIVOS del Admin General.
  if(manage)manage.style.display=isMasterAdmin()?'inline-block':'none';
 
+ // El panel de selección de destinos no se muestra bloqueado al usuario.
+ // Solo existe visualmente mientras está activo el Administrador General.
+ const destinationPanel=document.getElementById('motherDestinationsPanel');
+ const destinationActions=document.getElementById('motherDestinationActions');
+ const showDestinationEditor=isMasterAdmin();
+
+ if(destinationPanel)destinationPanel.style.display=showDestinationEditor?'block':'none';
+ if(destinationActions)destinationActions.style.display=showDestinationEditor?'flex':'none';
+
  const canEditDestinations=isMasterAdmin();
  const allBtn=document.getElementById('motherSelectAllBtn');
  const noneBtn=document.getElementById('motherSelectNoneBtn');
@@ -6715,7 +6724,10 @@ async function toggleMotherAdmin(){
      try{await window.MigaFirebase?.signOutCurrent?.()}catch(e){}
      firebaseBranchSessionCode='';updateBranchCloudBodyClass();
    }
-   updateMotherAdminUI();populateBranchSelector();return;
+   updateMotherAdminUI();
+   renderMotherSheet();
+   populateBranchSelector();
+   return;
  }
  const pass=prompt('Ingrese la contraseña de la Suc. '+state.branch+' o la clave de Administrador General:');
  if(pass===null)return;
@@ -7597,7 +7609,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='60.0';
+ x.sales={};x.salesRows=[];x.version='61.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8638,7 +8650,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'60.0',
+      appVersion:'61.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
