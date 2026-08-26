@@ -211,3 +211,25 @@ Se agrega la colección:
 `miga_zone_refs`
 
 Antes de usar esta versión en producción, actualizá nuevamente **Firestore → Reglas** con el archivo `firebase/firestore.rules` de esta versión y publicalo.
+
+## Cambio de contraseña del Administrador General
+
+El **Menú Admin** incorpora la sección **Seguridad Admin General**.
+
+Para cambiar la contraseña se solicita:
+
+1. Contraseña actual
+2. Nueva contraseña
+3. Repetición de la nueva contraseña
+
+MIGA reautentica al usuario contra Firebase antes de ejecutar el cambio.  
+La contraseña nueva se actualiza con Firebase Authentication y **no se guarda en localStorage ni dentro del HTML**.
+
+El cambio de contraseña no modifica:
+
+- UID del Administrador General
+- reglas de Firestore
+- configuración de MIGA
+- repositorio de GitHub
+
+No es necesario modificar ni volver a publicar las reglas de Firestore por esta función.

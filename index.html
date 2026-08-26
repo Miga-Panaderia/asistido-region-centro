@@ -3242,6 +3242,62 @@ body.mother-sheet-active .mini-assistant{
     flex:0 0 auto;
   }
 }
+
+/* =========================================================
+   V55 - CAMBIO DE CONTRASEÑA ADMIN GENERAL
+   ========================================================= */
+.admin-security-card{
+  grid-column:1 / -1;
+}
+.admin-security-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(180px,1fr));
+  gap:8px;
+  margin-top:9px;
+  padding:10px;
+  border:1px solid #c8d1d7;
+  background:#fff;
+}
+.admin-security-grid .admin-field{
+  margin-bottom:0 !important;
+}
+.admin-password-status{
+  display:none;
+  margin-top:8px;
+  padding:7px 9px;
+  border:1px solid #c4cfd6;
+  border-radius:4px;
+  background:#f6f8f9;
+  color:#445965;
+  font-size:10px;
+  line-height:1.35;
+}
+.admin-password-status.show{
+  display:block;
+}
+.admin-password-status.ok{
+  display:block;
+  background:#e5f2e9;
+  border-color:#88ad95;
+  color:#245a3e;
+}
+.admin-password-status.error{
+  display:block;
+  background:#fbe8e8;
+  border-color:#c89494;
+  color:#7b3030;
+}
+.admin-password-save-btn{
+  background:#e7f1eb !important;
+  border-color:#7fa58e !important;
+  color:#22563d !important;
+  font-weight:700;
+}
+@media(max-width:700px){
+  .admin-security-grid{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -3504,6 +3560,44 @@ body.mother-sheet-active .mini-assistant{
       </section>
 
 
+
+
+      <section class="admin-card master-admin-only admin-security-card" id="adminSecurityCard">
+        <div class="admin-card-title">🔐 SEGURIDAD ADMIN GENERAL</div>
+
+        <div class="admin-help" style="margin-top:0">
+          Cambiá la contraseña del Administrador General directamente en Firebase.
+          El UID y los permisos del sistema no se modifican.
+        </div>
+
+        <div class="admin-security-grid">
+          <label class="admin-field">
+            <span>Contraseña actual</span>
+            <input id="adminCurrentPassword" type="password" autocomplete="current-password" placeholder="Contraseña actual">
+          </label>
+
+          <label class="admin-field">
+            <span>Nueva contraseña</span>
+            <input id="adminNewMasterPassword" type="password" autocomplete="new-password" placeholder="Nueva contraseña">
+          </label>
+
+          <label class="admin-field">
+            <span>Repetir nueva contraseña</span>
+            <input id="adminNewMasterPassword2" type="password" autocomplete="new-password" placeholder="Repetir nueva contraseña">
+          </label>
+        </div>
+
+        <div id="adminMasterPasswordStatus" class="admin-password-status"></div>
+
+        <div class="admin-actions">
+          <button type="button" class="admin-password-save-btn" onclick="changeFirebaseAdminPassword()">🔐 Cambiar contraseña</button>
+        </div>
+
+        <div class="admin-help">
+          Por seguridad, MIGA vuelve a validar la contraseña actual antes de realizar el cambio.
+          La nueva contraseña no se guarda en el navegador.
+        </div>
+      </section>
 
       <section class="admin-card master-admin-only firebase-admin-card" id="adminFirebaseCard">
         <div class="admin-card-title">☁ FIREBASE · SINCRONIZACIÓN</div>
@@ -4008,7 +4102,7 @@ function assistantLocateFeature(question){
    return '📍 La <b>Fecha de inicio</b> se muestra en la barra superior y se administra desde <b>Administrador General</b>. El mes se deriva automáticamente de esa fecha.';
  }
  if(/contrasena|clave|password/.test(q)){
-   return '📍 Las claves se administran desde el botón <b>Administrador</b>. Admin Sucursal solo puede cambiar su propia contraseña; Admin General puede restaurarlas todas.';
+   return '📍 Las claves se administran desde <b>Administrador</b>. Admin Sucursal puede cambiar su propia contraseña. El Admin General puede gestionar las claves de sucursal y cambiar su propia contraseña desde <b>Menú Admin → Seguridad Admin General</b>.';
  }
  if(/guardar|whatsapp|avisar/.test(q)){
    return '📍 El botón <b>Guardar y avisar por WhatsApp</b> está en la barra superior.';
@@ -5411,6 +5505,83 @@ function firebaseQueueSalesSync(){
  });
 }
 
+
+function clearAdminMasterPasswordFields(){
+ ['adminCurrentPassword','adminNewMasterPassword','adminNewMasterPassword2'].forEach(id=>{
+   const el=document.getElementById(id);
+   if(el)el.value='';
+ });
+}
+function setAdminMasterPasswordStatus(text,type=''){
+ const box=document.getElementById('adminMasterPasswordStatus');
+ if(!box)return;
+ box.className='admin-password-status'+(type?' '+type:'');
+ if(text){
+   box.classList.add('show');
+   box.textContent=text;
+ }else{
+   box.textContent='';
+   box.classList.remove('show','ok','error');
+ }
+}
+async function changeFirebaseAdminPassword(){
+ if(!isMasterAdmin())return;
+
+ const current=String(document.getElementById('adminCurrentPassword')?.value||'');
+ const next=String(document.getElementById('adminNewMasterPassword')?.value||'');
+ const repeat=String(document.getElementById('adminNewMasterPassword2')?.value||'');
+
+ if(!current){
+   setAdminMasterPasswordStatus('Ingresá la contraseña actual.','error');
+   return;
+ }
+ if(next.length<8){
+   setAdminMasterPasswordStatus('La nueva contraseña debe tener al menos 8 caracteres.','error');
+   return;
+ }
+ if(next!==repeat){
+   setAdminMasterPasswordStatus('Las nuevas contraseñas no coinciden.','error');
+   return;
+ }
+ if(current===next){
+   setAdminMasterPasswordStatus('La nueva contraseña debe ser distinta de la actual.','error');
+   return;
+ }
+ if(!window.MigaFirebase?.isAdmin?.()){
+   setAdminMasterPasswordStatus('El Administrador General no está autenticado en Firebase. Salí y volvé a ingresar.','error');
+   return;
+ }
+
+ const ok=confirm(
+   'CAMBIAR CONTRASEÑA ADMIN GENERAL\n\n'+
+   'Se cambiará la contraseña utilizada para ingresar como Administrador General en MIGA.\n'+
+   'El UID y los permisos de Firebase no se modificarán.\n\n'+
+   '¿Continuar?'
+ );
+ if(!ok)return;
+
+ setAdminMasterPasswordStatus('Validando contraseña actual…','');
+
+ try{
+   await window.MigaFirebase.changeAdminPassword(current,next);
+   clearAdminMasterPasswordFields();
+   setAdminMasterPasswordStatus('✅ Contraseña del Administrador General actualizada correctamente.','ok');
+ }catch(e){
+   let msg=e?.message||String(e);
+   const code=String(e?.code||'');
+   if(code.includes('invalid-credential') || code.includes('wrong-password')){
+     msg='La contraseña actual no es correcta.';
+   }else if(code.includes('weak-password')){
+     msg='La nueva contraseña es demasiado débil.';
+   }else if(code.includes('requires-recent-login')){
+     msg='Firebase solicita volver a iniciar sesión. Salí del Admin General, volvé a ingresar y repetí el cambio.';
+   }else if(code.includes('too-many-requests')){
+     msg='Firebase bloqueó temporalmente los intentos. Esperá unos minutos y probá nuevamente.';
+   }
+   setAdminMasterPasswordStatus('❌ '+msg,'error');
+ }
+}
+
 async function firebaseMasterLogin(password){
  if(!window.MigaFirebase?.ready){
    throw new Error('Firebase todavía se está inicializando. Intentá nuevamente en unos segundos.');
@@ -5465,6 +5636,8 @@ function openAdminMenu(){
    renderAdminWhatsapp();
    renderAdminBranchPasswords();
    updateBackupAdminStatus();
+   clearAdminMasterPasswordFields();
+   setAdminMasterPasswordStatus('');
 
    if(window.MigaFirebase?.isAdmin?.()){
      if(firebaseCloudInitialized){
@@ -6989,7 +7162,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='54.0';
+ x.sales={};x.salesRows=[];x.version='55.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -7493,7 +7666,10 @@ monthlyBackupReminder();
     signInWithEmailAndPassword,
     signOut,
     setPersistence,
-    browserSessionPersistence
+    browserSessionPersistence,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    updatePassword
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
   import {
     getFirestore,
@@ -7549,6 +7725,23 @@ monthlyBackupReminder();
     await signOut(auth);
   }
 
+  async function changeAdminPassword(currentPassword,newPassword){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+
+    const user=auth.currentUser;
+    if(!user)throw new Error('No hay una sesión de Firebase activa.');
+
+    const credential=EmailAuthProvider.credential(
+      ADMIN_EMAIL,
+      String(currentPassword||'')
+    );
+
+    await reauthenticateWithCredential(user,credential);
+    await updatePassword(user,String(newPassword||''));
+
+    return true;
+  }
+
   function isAdmin(){
     return !!auth.currentUser && auth.currentUser.uid===ADMIN_UID;
   }
@@ -7602,7 +7795,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'54.0',
+      appVersion:'55.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -7758,6 +7951,7 @@ monthlyBackupReminder();
     ready:true,
     signInAdmin,
     signOutAdmin,
+    changeAdminPassword,
     isAdmin,
     isInitialized,
     uploadAll,
