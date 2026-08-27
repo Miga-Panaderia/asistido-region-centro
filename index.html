@@ -3588,6 +3588,85 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     border-collapse:collapse !important;
   }
 }
+
+/* =========================================================
+   V65 - MÓVIL · COLUMNAS SIN SUPERPOSICIÓN
+   ========================================================= */
+@media(max-width:700px){
+  /* Reglas generales para tablas grandes en móvil */
+  #sheet-plan .big-grid,
+  #sheet-baker .big-grid,
+  #sheet-sales .big-grid,
+  #sheet-mother .big-grid{
+    table-layout:fixed !important;
+  }
+
+  #sheet-plan .big-grid th,
+  #sheet-plan .big-grid td,
+  #sheet-baker .big-grid th,
+  #sheet-baker .big-grid td,
+  #sheet-sales .big-grid th,
+  #sheet-sales .big-grid td,
+  #sheet-mother .big-grid th,
+  #sheet-mother .big-grid td{
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    vertical-align:middle !important;
+    background-clip:padding-box !important;
+  }
+
+  /* -------- PANADERÍA SUC -------- */
+  #sheet-plan .big-grid th:nth-child(1),
+  #sheet-plan .big-grid td:nth-child(1){width:98px !important; min-width:98px !important;}
+  #sheet-plan .big-grid th:nth-child(2),
+  #sheet-plan .big-grid td:nth-child(2){width:250px !important; min-width:250px !important;}
+  #sheet-plan .big-grid th:nth-child(3),
+  #sheet-plan .big-grid td:nth-child(3){width:118px !important; min-width:118px !important;}
+  #sheet-plan .big-grid th:nth-child(4),
+  #sheet-plan .big-grid td:nth-child(4){width:60px !important; min-width:60px !important;}
+  #sheet-plan .big-grid th:nth-child(5),
+  #sheet-plan .big-grid td:nth-child(5){width:58px !important; min-width:58px !important;}
+  #sheet-plan .big-grid th:nth-child(6),
+  #sheet-plan .big-grid td:nth-child(6){width:52px !important; min-width:52px !important;}
+
+  /* -------- HOJA DEL PANADERO -------- */
+  #sheet-baker .big-grid th:nth-child(1),
+  #sheet-baker .big-grid td:nth-child(1){width:98px !important; min-width:98px !important;}
+  #sheet-baker .big-grid th:nth-child(2),
+  #sheet-baker .big-grid td:nth-child(2){width:250px !important; min-width:250px !important;}
+  #sheet-baker .big-grid th:nth-child(3),
+  #sheet-baker .big-grid td:nth-child(3){width:60px !important; min-width:60px !important;}
+  #sheet-baker .big-grid th:nth-child(4),
+  #sheet-baker .big-grid td:nth-child(4){width:74px !important; min-width:74px !important;}
+  #sheet-baker .big-grid th:nth-child(5),
+  #sheet-baker .big-grid td:nth-child(5){width:58px !important; min-width:58px !important;}
+
+  /* -------- VENTAS PRISMA -------- */
+  #sheet-sales .big-grid th:nth-child(1),
+  #sheet-sales .big-grid td:nth-child(1){width:98px !important; min-width:98px !important;}
+  #sheet-sales .big-grid th:nth-child(2),
+  #sheet-sales .big-grid td:nth-child(2){width:250px !important; min-width:250px !important;}
+  #sheet-sales .big-grid th:nth-child(3),
+  #sheet-sales .big-grid td:nth-child(3){width:118px !important; min-width:118px !important;}
+
+  /* -------- PLAN ELABORADORA -------- */
+  #sheet-mother .big-grid th:nth-child(1),
+  #sheet-mother .big-grid td:nth-child(1){width:98px !important; min-width:98px !important;}
+  #sheet-mother .big-grid th:nth-child(2),
+  #sheet-mother .big-grid td:nth-child(2){width:250px !important; min-width:250px !important;}
+  #sheet-mother .big-grid th:nth-child(3),
+  #sheet-mother .big-grid td:nth-child(3){width:60px !important; min-width:60px !important;}
+
+  /* En la columna descripción preferimos mostrar el inicio del texto claramente */
+  #sheet-plan .big-grid td:nth-child(2),
+  #sheet-baker .big-grid td:nth-child(2),
+  #sheet-sales .big-grid td:nth-child(2),
+  #sheet-mother .big-grid td:nth-child(2){
+    text-align:left !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -7717,7 +7796,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='64.0';
+ x.sales={};x.salesRows=[];x.version='65.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8787,7 +8866,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'64.0',
+      appVersion:'65.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

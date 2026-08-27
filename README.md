@@ -398,3 +398,13 @@ Esto evita cambios inesperados de dirección al llegar al final vertical.
 En vista móvil, toda la fila de encabezados de **Panadería Suc** deja de usar posición fija.
 
 Ahora Art., Descripción, Marca, Aptitud, U/M, Bto, Consumo, Coef. y el resto del encabezado suben junto con la tabla al hacer scroll vertical.
+
+## v23 · Móvil sin superposición entre Descripción y Marca
+
+Se ajusta la visualización móvil de las tablas grandes para evitar que una columna invada a la siguiente.
+
+Cambios:
+- anchos más controlados para las primeras columnas;
+- recorte prolijo del texto largo con `ellipsis`;
+- Descripción deja de superponerse con Marca;
+- se aplica a Panadería Suc y también a otras hojas con tablas extensas.
