@@ -419,3 +419,20 @@ El botón **Guardar y avisar por WhatsApp** ahora detecta el dispositivo:
 - si no hay teléfono configurado, abre WhatsApp sin destinatario para elegirlo manualmente.
 
 En móvil el enlace no se abre en una pestaña nueva, evitando que Chrome derive primero a WhatsApp Web.
+
+## v25 · Gestión masiva del padrón por zona
+
+La carga masiva sigue disponible mediante:
+
+- **Importar / actualizar**
+- **Reemplazar padrón de zona**
+
+Se agrega borrado masivo:
+
+- selección por casilla;
+- **Seleccionar visibles**;
+- **Quitar selección**;
+- **Eliminar seleccionadas**;
+- **Vaciar padrón de zona** con doble confirmación.
+
+Los cambios se propagan a todas las sucursales de la zona y se sincronizan con Firebase.

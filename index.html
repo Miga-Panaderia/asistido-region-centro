@@ -3667,6 +3667,36 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     text-align:left !important;
   }
 }
+
+/* V67 - GESTIÓN MASIVA DEL PADRÓN */
+.admin-ref-bulkbar{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  padding:7px 8px;margin:6px 0;border:1px solid #c7d0d6;background:#f5f7f8;
+}
+.admin-ref-bulk-left,.admin-ref-bulk-right{
+  display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+}
+.admin-ref-bulkbar button{
+  min-height:27px;border:1px solid #9aa8b1;background:#fff;color:#294356;
+  font-size:9px;font-weight:700;cursor:pointer;
+}
+.admin-ref-selected-count{
+  padding:3px 7px;border:1px solid #b6c2c9;border-radius:999px;background:#fff;
+  color:#526774;font-size:9px;font-weight:800;
+}
+.admin-ref-delete-selected{
+  border-color:#b98888 !important;color:#7a3030 !important;background:#fff7f7 !important;
+}
+.admin-ref-clear-zone{
+  border-color:#c59a56 !important;color:#76501f !important;background:#fff9ed !important;
+}
+.admin-ref-check{width:30px;text-align:center}
+.admin-ref-check input{width:15px;height:15px;margin:0;cursor:pointer}
+@media(max-width:700px){
+  .admin-ref-bulkbar{align-items:stretch}
+  .admin-ref-bulk-left,.admin-ref-bulk-right{width:100%}
+  .admin-ref-bulkbar button{flex:1 1 auto}
+}
 </style>
 </head>
 <body>
@@ -4101,11 +4131,24 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           Excel masivo: <b>Articulo | Descripción | Marca | Aptitud | U/M | Bto</b>.
           Las sucursales de la zona heredan automáticamente ese padrón.
           Las referencias nuevas ingresan con <b>Coef. 0%</b> y cronograma sin días activos; las existentes conservan su Coef. y Cronograma.
+          También podés seleccionar varias referencias para eliminarlas juntas o vaciar todo el padrón de la zona.
         </div>
 
         <div class="admin-ref-search-line">
           <input id="adminRefSearch" type="text" placeholder="Buscar artículo o descripción" oninput="renderAdminReferences()">
           <span id="adminRefCount"></span>
+        </div>
+
+        <div class="admin-ref-bulkbar">
+          <div class="admin-ref-bulk-left">
+            <button type="button" onclick="adminSelectVisibleReferences(true)">☑ Seleccionar visibles</button>
+            <button type="button" onclick="adminSelectVisibleReferences(false)">☐ Quitar selección</button>
+            <span id="adminRefSelectedCount" class="admin-ref-selected-count">0 seleccionadas</span>
+          </div>
+          <div class="admin-ref-bulk-right">
+            <button type="button" class="admin-ref-delete-selected" onclick="adminDeleteSelectedReferences()">🗑 Eliminar seleccionadas</button>
+            <button type="button" class="admin-ref-clear-zone" onclick="adminClearZoneReferences()">⚠ Vaciar padrón de zona</button>
+          </div>
         </div>
 
         <div id="adminReferenceList" class="admin-reference-list"></div>
@@ -5630,6 +5673,7 @@ function saveAndNotify(){
 
 const REFERENCE_TEMPLATE_B64='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';
 let adminEditingArticle='';
+let adminSelectedReferences=new Set();
 
 
 /* ===================== RESPALDO Y RESTAURACIÓN ===================== */
@@ -6363,6 +6407,7 @@ function selectAdminReferenceZone(zoneId){
  if(!zoneCatalog[zoneId])return;
  const sel=document.getElementById('adminReferenceZone');
  if(sel)sel.value=zoneId;
+ adminSelectedReferences.clear();
  clearAdminReferenceForm();
  renderAdminReferenceZoneTabs();
  renderAdminReferences();
@@ -6521,6 +6566,102 @@ function deleteAdminReference(article){
  populateAdminReferenceZoneSelect(zoneId);
  renderAdminReferences();
 }
+
+function adminVisibleReferenceArticles(){
+ const zoneId=adminSelectedReferenceZone();
+ const q=(document.getElementById('adminRefSearch')?.value||'').trim().toLowerCase();
+ return loadZoneReferences(zoneId)
+   .filter(p=>!q || (`${p.article} ${p.description} ${p.brand}`.toLowerCase().includes(q)))
+   .map(p=>p.article);
+}
+function adminUpdateSelectedCount(){
+ const el=document.getElementById('adminRefSelectedCount');
+ if(el)el.textContent=adminSelectedReferences.size+' seleccionadas';
+}
+function adminToggleReferenceSelection(article,checked){
+ if(checked)adminSelectedReferences.add(article);
+ else adminSelectedReferences.delete(article);
+ adminUpdateSelectedCount();
+}
+function adminSelectVisibleReferences(select){
+ if(!isMasterAdmin())return;
+ adminVisibleReferenceArticles().forEach(article=>{
+   if(select)adminSelectedReferences.add(article);
+   else adminSelectedReferences.delete(article);
+ });
+ renderAdminReferences();
+}
+function adminDeleteSelectedReferences(){
+ if(!isMasterAdmin())return;
+ const zoneId=adminSelectedReferenceZone();
+ const refs=loadZoneReferences(zoneId);
+ const selected=refs.filter(x=>adminSelectedReferences.has(x.article));
+
+ if(!selected.length){
+   alert('No hay referencias seleccionadas.');
+   return;
+ }
+
+ if(!confirm(
+   'ELIMINAR REFERENCIAS SELECCIONADAS\n\n'+
+   'Zona: '+zoneName(zoneId)+'\n'+
+   'Cantidad: '+selected.length+' referencias\n\n'+
+   'Se eliminarán del padrón y de todas las sucursales de esta zona.\n\n'+
+   '¿Continuar?'
+ ))return;
+
+ const selectedSet=new Set(selected.map(x=>x.article));
+ const next=refs.filter(x=>!selectedSet.has(x.article));
+
+ saveZoneReferences(zoneId,next,{syncCloud:true,propagate:true});
+ adminSelectedReferences.clear();
+
+ state=attachSalesToState(state,state.branch);
+ recalc();
+ clearAdminReferenceForm();
+ populateAdminReferenceZoneSelect(zoneId);
+ renderAdminReferences();
+
+ alert(selected.length+' referencias eliminadas de '+zoneName(zoneId)+'.');
+}
+function adminClearZoneReferences(){
+ if(!isMasterAdmin())return;
+ const zoneId=adminSelectedReferenceZone();
+ const refs=loadZoneReferences(zoneId);
+
+ if(!refs.length){
+   alert('El padrón de '+zoneName(zoneId)+' ya está vacío.');
+   return;
+ }
+
+ if(!confirm(
+   'VACIAR PADRÓN COMPLETO\n\n'+
+   'Zona: '+zoneName(zoneId)+'\n'+
+   'Se eliminarán '+refs.length+' referencias de todas las sucursales de esta zona.\n\n'+
+   '¿Querés continuar?'
+ ))return;
+
+ const verification=prompt(
+   'Segunda confirmación.\n\nEscribí exactamente este código de zona:\n'+zoneId
+ );
+
+ if(String(verification||'').trim()!==String(zoneId)){
+   alert('Operación cancelada. No se eliminó ninguna referencia.');
+   return;
+ }
+
+ saveZoneReferences(zoneId,[],{syncCloud:true,propagate:true});
+ adminSelectedReferences.clear();
+
+ state=attachSalesToState(state,state.branch);
+ recalc();
+ clearAdminReferenceForm();
+ populateAdminReferenceZoneSelect(zoneId);
+ renderAdminReferences();
+
+ alert('Padrón de '+zoneName(zoneId)+' vaciado correctamente.');
+}
+
 function renderAdminReferences(){
  const box=document.getElementById('adminReferenceList');
  if(!box)return;
@@ -6537,14 +6678,16 @@ function renderAdminReferences(){
  if(info)info.textContent=zoneName(zoneId)+' · '+source.length+' referencias · '+branchesForZone(zoneId).length+' sucursales';
 
  box.innerHTML=`<table class="admin-ref-table"><thead><tr>
- <th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
+ <th class="admin-ref-check">Sel.</th><th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
  </tr></thead><tbody>`+
  rows.map(p=>`<tr>
+ <td class="admin-ref-check"><input type="checkbox" ${adminSelectedReferences.has(p.article)?'checked':''} onchange="adminToggleReferenceSelection('${p.article}',this.checked)"></td>
  <td>${esc(p.article)}</td><td>${esc(p.description)}</td><td>${esc(p.brand)}</td>
  <td>${esc(p.aptitude)}</td><td>${esc(p.um)}</td><td>${esc(p.bto)}</td>
  <td class="ref-actions"><button type="button" onclick="editAdminReference('${p.article}')">Editar</button><button type="button" onclick="deleteAdminReference('${p.article}')">Eliminar</button></td>
  </tr>`).join('')+'</tbody></table>';
 
+ adminUpdateSelectedCount();
  renderAdminReferenceZoneTabs();
 }
 
@@ -6619,6 +6762,7 @@ async function adminImportReferences(file){
 
    state=attachSalesToState(state,state.branch);
    recalc();
+   adminSelectedReferences.clear();
    clearAdminReferenceForm();
    populateAdminReferenceZoneSelect(zoneId);
    renderAdminReferences();
@@ -6658,6 +6802,7 @@ async function adminReplaceReferences(file){
 
    state=attachSalesToState(state,state.branch);
    recalc();
+   adminSelectedReferences.clear();
    clearAdminReferenceForm();
    populateAdminReferenceZoneSelect(zoneId);
    renderAdminReferences();
@@ -7817,7 +7962,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='66.0';
+ x.sales={};x.salesRows=[];x.version='67.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8887,7 +9032,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'66.0',
+      appVersion:'67.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
