@@ -367,3 +367,18 @@ En **Plan Elaboradora**, el bloque **SUCURSALES A PRODUCIR** y los botones **Tod
 - Al salir del Administrador General desaparecen inmediatamente.
 - La selección guardada continúa utilizándose para calcular el Plan Elaboradora.
 - Los usuarios normales solo ven el resultado del plan, no el panel de configuración.
+
+## v20 · Scroll natural con rueda
+
+Se normaliza el comportamiento de escritorio:
+
+- **Parámetros Suc:** la rueda funciona con el puntero en cualquier parte de la hoja.
+- **Panadería Suc / Ventas / Hoja del Panadero / Plan Elaboradora:** la rueda normal queda reservada al desplazamiento vertical.
+- Al llegar abajo de una tabla, la rueda **ya no comienza a mover automáticamente hacia la derecha**.
+- El desplazamiento horizontal queda disponible mediante:
+  - `Shift + rueda`;
+  - gesto horizontal de trackpad;
+  - barra/navegador horizontal de la hoja;
+  - arrastre táctil en celular.
+
+Esto evita cambios inesperados de dirección al llegar al final vertical.

@@ -3480,6 +3480,22 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     cursor:default;
   }
 }
+
+/* =========================================================
+   V62 - SCROLL NATURAL DE ESCRITORIO
+   ========================================================= */
+@media(min-width:701px){
+  .workspace{
+    height:calc(100vh - 42px);
+    min-height:0 !important;
+    overflow:auto !important;
+    overscroll-behavior:auto !important;
+  }
+
+  #sheet-params{
+    min-height:100%;
+  }
+}
 </style>
 </head>
 <body>
@@ -7609,7 +7625,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='61.0';
+ x.sales={};x.salesRows=[];x.version='62.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8073,7 +8089,7 @@ function enableMouseWheelScroll(el){
      return;
    }
 
-   // Prioridad normal: desplazamiento vertical de la tabla.
+   // Rueda normal: desplazamiento vertical de la tabla.
    if(maxV>2 && Math.abs(dy)>=Math.abs(dx)){
      const before=el.scrollTop;
      el.scrollTop += dy;
@@ -8085,14 +8101,41 @@ function enableMouseWheelScroll(el){
      }
    }
 
-   // Si la tabla no tiene más recorrido vertical pero sí horizontal,
-   // la rueda continúa hacia las columnas de la derecha/izquierda.
-   if(maxH>2 && dy!==0){
-     const before=el.scrollLeft;
-     el.scrollLeft += dy;
-     if(Math.abs(el.scrollLeft-before)>0.5){
-       ev.preventDefault();
-     }
+   // Al llegar al límite vertical no convertimos la rueda en horizontal.
+   // El evento queda libre para que continúe desplazando el contenedor/página.
+   // El recorrido horizontal se hace con Shift + rueda, trackpad o la barra inferior.
+ },{passive:false});
+}
+
+
+function initParamsWholeSheetWheel(){
+ const params=document.getElementById('sheet-params');
+ const workspace=document.querySelector('.workspace');
+ if(!params || !workspace || params.dataset.wholeWheelReady==='1')return;
+
+ params.dataset.wholeWheelReady='1';
+
+ params.addEventListener('wheel',ev=>{
+   if(ev.ctrlKey)return;
+
+   // Shift queda reservado al desplazamiento horizontal nativo.
+   if(ev.shiftKey)return;
+
+   const dy=Number(ev.deltaY)||0;
+   const dx=Number(ev.deltaX)||0;
+
+   // Un trackpad con gesto horizontal no debe convertirse en scroll vertical.
+   if(Math.abs(dx)>Math.abs(dy))return;
+   if(!dy)return;
+
+   const max=Math.max(0,workspace.scrollHeight-workspace.clientHeight);
+   if(max<2)return;
+
+   const before=workspace.scrollTop;
+   workspace.scrollTop+=dy;
+
+   if(Math.abs(workspace.scrollTop-before)>0.5){
+     ev.preventDefault();
    }
  },{passive:false});
 }
@@ -8108,6 +8151,8 @@ function initMouseWheelScrolling(){
    const el=document.getElementById(id);
    if(el)enableMouseWheelScroll(el);
  });
+
+ initParamsWholeSheetWheel();
 }
 
 function initMobileTouchScrolling(){
@@ -8650,7 +8695,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'61.0',
+      appVersion:'62.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
