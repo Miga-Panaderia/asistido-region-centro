@@ -3496,6 +3496,77 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     min-height:100%;
   }
 }
+
+/* =========================================================
+   V63 - MÓVIL · ELABORADORAS + BAKER
+   ========================================================= */
+@media(max-width:700px){
+  /* Solapas de sucursales elaboradoras: mostrar solo el código */
+  .mother-elaborator-tabs{
+    gap:3px !important;
+    padding:0 1px !important;
+    min-height:30px !important;
+  }
+  .mother-elaborator-tab{
+    min-width:48px !important;
+    height:28px !important;
+    padding:0 8px !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  .mother-elaborator-tab.active{
+    height:30px !important;
+  }
+  .mother-elaborator-tab .elab-name{
+    display:none !important;
+  }
+
+  /* Encabezado del padrón de elaboradora más compacto */
+  .mother-grid-title{
+    min-width:100% !important;
+    height:auto !important;
+    min-height:42px !important;
+    font-size:0 !important;
+    line-height:1.05 !important;
+    align-items:stretch !important;
+  }
+  #motherGridTitle{
+    flex:1 1 auto !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:6px 8px !important;
+    font-size:18px !important;
+    font-weight:800 !important;
+    text-align:center !important;
+    word-break:break-word !important;
+  }
+  #motherDateBadge{
+    flex:0 0 112px !important;
+    width:112px !important;
+    min-width:112px !important;
+    font-size:14px !important;
+    padding:4px 6px !important;
+  }
+
+  /* Hoja del Panadero: en móvil no dejar fija la fila de encabezado */
+  #sheet-baker .big-grid thead th,
+  #sheet-baker .big-grid thead tr:first-child > th,
+  #sheet-baker .big-grid thead th.week{
+    position:static !important;
+    top:auto !important;
+    z-index:auto !important;
+    box-shadow:none !important;
+  }
+
+  /* Mantener comportamiento simple de tabla en móvil */
+  #sheet-baker .big-grid{
+    border-collapse:collapse !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -7625,7 +7696,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='62.0';
+ x.sales={};x.salesRows=[];x.version='63.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8695,7 +8766,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'62.0',
+      appVersion:'63.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

@@ -382,3 +382,13 @@ Se normaliza el comportamiento de escritorio:
   - arrastre táctil en celular.
 
 Esto evita cambios inesperados de dirección al llegar al final vertical.
+
+## v21 · Ajustes móviles en Plan Elaboradora y Hoja del Panadero
+
+### Plan Elaboradora
+- En celular, las solapas de **Sucursales elaboradoras** muestran solo el **código** (por ejemplo `050`, `188`, `357`).
+- El encabezado **PADRÓN PANADERIA...** se vuelve más compacto y adaptable para evitar desbordes visuales.
+
+### Hoja del Panadero Suc
+- En celular, el encabezado de la tabla deja de comportarse como **sticky**.
+- Al hacer scroll vertical ya no queda fija la fila desde **U/M** en adelante.
