@@ -494,3 +494,19 @@ En **Parámetros Suc** se agrega una columna **SEM.** al final del Cronograma.
 Cada referencia dispone de un botón **✓ 7/7** que marca Lunes a Domingo de una sola vez. Las celdas individuales continúan funcionando normalmente para quitar o agregar días puntuales.
 
 El cambio se guarda y sincroniza con Firebase igual que cualquier modificación manual del cronograma.
+
+## v31 · Firebase: cambio de sesión mediante instancia limpia
+
+Se elimina el uso de `disableNetwork()` / `enableNetwork()` durante cambios de usuario, ya que alternar la red de Firestore mientras existe una escritura en curso puede dejar el stream interno en un estado inconsistente.
+
+Nuevo flujo al cambiar de una sucursal autenticada a otra:
+
+1. MIGA guarda el estado local.
+2. Espera a que terminen las escrituras Firebase pendientes.
+3. Cierra los listeners.
+4. Cierra la sesión Firebase actual.
+5. Recarga la página para crear una instancia limpia de Auth y Firestore.
+6. Abre automáticamente el acceso de la sucursal seleccionada.
+7. El usuario ingresa el PIN y comienza una sesión nueva.
+
+También se agrega recuperación automática ante errores internos no controlados de Firestore, incluidos `PersistentWriteStream`, `Unexpected state`, `Target ID already exists` y `pendingResponses`.

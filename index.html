@@ -5432,10 +5432,10 @@ async function changeOwnBranchPassword(){
 
 function isFirestoreInternalAssertionError(error){
  const text=String(error?.message||error||'');
- return /INTERNAL ASSERTION FAILED|Unexpected state|Target ID already exists|pendingResponses/i.test(text);
+ return /INTERNAL ASSERTION FAILED|Unexpected state|Target ID already exists|pendingResponses|PersistentWriteStream/i.test(text);
 }
 function firebaseRecoverPageOnce(){
- const key='miga_firestore_internal_recovery_v71';
+ const key='miga_firestore_internal_recovery_v72';
  const now=Date.now();
  let previous=0;
  try{previous=Number(sessionStorage.getItem(key)||0)}catch(e){}
@@ -5444,6 +5444,69 @@ function firebaseRecoverPageOnce(){
  setTimeout(()=>location.reload(),700);
  return true;
 }
+
+
+const FIREBASE_PENDING_BRANCH_LOGIN='miga_pending_branch_login_v72';
+
+async function firebasePrepareCleanBranchSwitch(code){
+ code=normalizeBranch(code);
+ if(!code||!branchCatalog[code])return false;
+
+ const current=window.MigaFirebase?.currentProfile?.();
+ if(!current || current.role!=='branch' || normalizeBranch(current.branch)===code){
+   openBranchLogin(code);
+   return true;
+ }
+
+ try{
+   // Estado local primero. La cola Firebase se espera dentro de prepareAccountSwitch.
+   try{persistState(state)}catch(e){}
+
+   firebaseSetStatus('☁ Cerrando la sesión anterior de forma segura…','pending');
+
+   try{
+     sessionStorage.setItem(FIREBASE_PENDING_BRANCH_LOGIN,code);
+   }catch(e){}
+
+   await window.MigaFirebase.prepareAccountSwitch();
+
+   // Recarga completa = nueva instancia limpia de Auth + Firestore.
+   location.reload();
+   return true;
+
+ }catch(e){
+   try{sessionStorage.removeItem(FIREBASE_PENDING_BRANCH_LOGIN)}catch(_){}
+
+   const msg=e?.message||String(e);
+   firebaseSetStatus('⚠ '+esc(msg),'error');
+
+   // El selector vuelve a la sucursal realmente activa.
+   syncZoneToBranch(state.branch,false);
+   populateZoneSelector();
+   populateBranchSelector();
+
+   const sel=document.getElementById('branchSelect');
+   if(sel)sel.value=state.branch;
+
+   alert(msg);
+   return false;
+ }
+}
+
+
+window.addEventListener('unhandledrejection',event=>{
+ if(!isFirestoreInternalAssertionError(event.reason))return;
+ try{event.preventDefault()}catch(e){}
+ firebaseSetStatus('⚠ Firebase reiniciará la conexión automáticamente.','error');
+ firebaseRecoverPageOnce();
+});
+
+window.addEventListener('error',event=>{
+ const candidate=event?.error || event?.message || '';
+ if(!isFirestoreInternalAssertionError(candidate))return;
+ firebaseSetStatus('⚠ Firebase reiniciará la conexión automáticamente.','error');
+ firebaseRecoverPageOnce();
+});
 
 function openBranchLogin(code){
  pendingBranchLogin=code;
@@ -5498,11 +5561,21 @@ async function confirmBranchLogin(){
  }catch(e){
    const ec=String(e?.code||'');let msg=e?.message||String(e);
 
-   if(isFirestoreInternalAssertionError(e)){
+   if(ec==='miga/auth-context-reload-required'){
+     msg='MIGA necesita reiniciar la sesión antes de cambiar de sucursal.';
+     try{sessionStorage.setItem(FIREBASE_PENDING_BRANCH_LOGIN,code)}catch(_){}
+     try{
+       await window.MigaFirebase.prepareAccountSwitch();
+       location.reload();
+       return;
+     }catch(switchErr){
+       msg=switchErr?.message||msg;
+     }
+   }else if(isFirestoreInternalAssertionError(e)){
      const recovering=firebaseRecoverPageOnce();
      msg=recovering
-       ? 'Firebase detectó una conexión anterior en un estado inconsistente. MIGA se reiniciará automáticamente para recuperar la sincronización.'
-       : 'Firebase necesita reiniciar la conexión. Cerrá esta pestaña, volvé a abrir MIGA e ingresá nuevamente.';
+       ? 'Firebase detectó una conexión interna inconsistente. MIGA se reiniciará automáticamente.'
+       : 'Firebase necesita una conexión limpia. Cerrá esta pestaña y volvé a abrir MIGA.';
    }else if(ec.includes('invalid-credential')||ec.includes('wrong-password')){
      msg='PIN incorrecto.';
    }else if(ec.includes('user-not-found')){
@@ -8114,7 +8187,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='72.0';
+ x.sales={};x.salesRows=[];x.version='73.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8233,6 +8306,15 @@ function switchBranch(code){
  if(isBranchAdmin()){
    clearAdminRole();
    updateMotherAdminUI();
+ }
+
+ const firebaseProfile=window.MigaFirebase?.currentProfile?.();
+ if(
+   firebaseProfile?.role==='branch' &&
+   normalizeBranch(firebaseProfile.branch)!==code
+ ){
+   firebasePrepareCleanBranchSwitch(code);
+   return;
  }
 
  openBranchLogin(code);
@@ -8780,6 +8862,16 @@ window.addEventListener('miga-firebase-ready',async()=>{
      firebaseCloudInitialized=false;
      firebaseSetStatus('☁ Ingresá a tu sucursal con el PIN para activar la sincronización.','idle');
      updateBranchCloudBodyClass();
+
+     let pending='';
+     try{
+       pending=normalizeBranch(sessionStorage.getItem(FIREBASE_PENDING_BRANCH_LOGIN)||'');
+       sessionStorage.removeItem(FIREBASE_PENDING_BRANCH_LOGIN);
+     }catch(e){}
+
+     if(pending && branchCatalog[pending]){
+       setTimeout(()=>openBranchLogin(pending),120);
+     }
    }
  }catch(e){
    console.error('Restauración Firebase:',e);
@@ -8866,7 +8958,7 @@ monthlyBackupReminder();
     writeBatch,
     onSnapshot,
     enableNetwork,
-    disableNetwork
+    waitForPendingWrites
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -8935,49 +9027,67 @@ monthlyBackupReminder();
     const currentEmail=String(auth.currentUser?.email||'').trim().toLowerCase();
     const switchingUser=!!auth.currentUser && !!targetEmail && currentEmail!==targetEmail;
 
-    // Si no estamos cambiando de cuenta, basta con cerrar listeners
-    // y autenticar normalmente.
-    if(!switchingUser){
-      unsubscribe();
-      return await signInWithEmailAndPassword(auth,email,password);
-    }
-
-    let networkPaused=false;
-
-    try{
-      // Pausamos primero la red para impedir que Firestore abra un stream
-      // nuevo por el cambio de Auth mientras el anterior aún termina de cerrar.
-      await disableNetwork(db);
-      networkPaused=true;
-
-      // Autenticamos con Firestore todavía pausado.
-      const cred=await signInWithEmailAndPassword(auth,email,password);
-
-      // Recién después de que Auth cambió correctamente invalidamos y cerramos
-      // las escuchas de la cuenta anterior.
-      unsubscribe();
-
-      // Un pequeño turno de evento evita encadenar el cierre y la reapertura
-      // en la misma ráfaga interna del SDK.
-      await new Promise(r=>setTimeout(r,80));
-
-      await enableNetwork(db);
-      networkPaused=false;
-
-      // Permitimos que el SDK termine de estabilizar el nuevo contexto Auth
-      // antes de hacer lecturas o registrar onSnapshot.
-      await new Promise(r=>setTimeout(r,80));
-
-      return cred;
-
-    }catch(e){
-      // Si la autenticación falló, la cuenta anterior sigue siendo válida.
-      // Volvemos a habilitar Firestore para que sus listeners puedan reanudarse.
-      if(networkPaused){
-        try{await enableNetwork(db)}catch(_){}
-      }
+    // MIGA no cambia de una cuenta Firebase a otra sobre una instancia
+    // de Firestore ya activa. El cambio se prepara desde la interfaz,
+    // se cierra la sesión y se recarga la página primero.
+    if(switchingUser){
+      const e=new Error('MIGA necesita reiniciar la sesión Firebase antes de cambiar de usuario.');
+      e.code='miga/auth-context-reload-required';
       throw e;
     }
+
+    unsubscribe();
+    return await signInWithEmailAndPassword(auth,email,password);
+  }
+
+  async function waitForWritesBeforeAccountSwitch(timeoutMs=3500){
+    const pendingChains=[...branchWriteChains.values()].map(p=>Promise.resolve(p).catch(()=>{}));
+
+    if(pendingChains.length){
+      const chainsFinished=await Promise.race([
+        Promise.all(pendingChains).then(()=>true),
+        new Promise(resolve=>setTimeout(()=>resolve(false),timeoutMs))
+      ]);
+      if(!chainsFinished){
+        const e=new Error('Todavía hay cambios pendientes de sincronización. Esperá unos segundos e intentá cambiar de sucursal nuevamente.');
+        e.code='miga/pending-writes';
+        throw e;
+      }
+    }
+
+    const firestoreFinished=await Promise.race([
+      waitForPendingWrites(db).then(()=>true).catch(()=>true),
+      new Promise(resolve=>setTimeout(()=>resolve(false),timeoutMs))
+    ]);
+
+    if(!firestoreFinished){
+      const e=new Error('Firebase todavía está terminando de guardar cambios. Esperá unos segundos e intentá nuevamente.');
+      e.code='miga/pending-writes';
+      throw e;
+    }
+
+    return true;
+  }
+
+  async function prepareAccountSwitch(){
+    if(!navigator.onLine){
+      const e=new Error('Necesitás conexión a Internet para cambiar de sucursal de forma segura.');
+      e.code='miga/offline-account-switch';
+      throw e;
+    }
+
+    await waitForWritesBeforeAccountSwitch();
+    unsubscribe();
+    activeProfile=null;
+
+    if(auth.currentUser){
+      await signOut(auth);
+    }
+
+    // Dejamos un pequeño margen para que Auth termine de persistir
+    // el cierre de sesión antes de que la página se recargue.
+    await new Promise(r=>setTimeout(r,120));
+    return true;
   }
 
   async function signInAdmin(password){
@@ -8997,9 +9107,12 @@ monthlyBackupReminder();
   }
 
   async function signOutCurrent(){
-    unsubscribe();
-    activeProfile=null;
-    if(auth.currentUser)await signOut(auth);
+    if(auth.currentUser){
+      await prepareAccountSwitch();
+    }else{
+      unsubscribe();
+      activeProfile=null;
+    }
   }
 
   async function changeAdminPassword(currentPassword,newPassword){
@@ -9160,7 +9273,6 @@ monthlyBackupReminder();
 
   async function pullBranchContext(code){
     if(!isBranchFor(code)&&!isAdmin())throw new Error('Sin permisos para esta sucursal.');
-    await ensureNetwork();
     code=String(code||'').padStart(3,'0');
 
     const ownElabSnap=await getDoc(doc(db,'miga_elaborators',code));
@@ -9299,7 +9411,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'72.0',
+      appVersion:'73.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -9605,6 +9717,7 @@ monthlyBackupReminder();
     canWriteBranch,
     currentProfile,
     ensureNetwork,
+    prepareAccountSwitch,
     restoreSession,
     isInitialized,
     loadBranchDirectory,
