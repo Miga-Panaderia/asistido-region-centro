@@ -5432,7 +5432,7 @@ function firebaseStoreBranchContext(payload){
  }finally{firebaseCloudApplying=false}
 }
 
-async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason=''}={}){
+async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason='',restartRealtime=false}={}){
  if(firebaseReconnectInProgress)return false;
  if(!window.MigaFirebase?.ready)return false;
  if(!navigator.onLine)return false;
@@ -5454,8 +5454,8 @@ async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason=''}={}
  }
 
  try{
-   await window.MigaFirebase.ensureNetwork?.();
-
+   // Firestore reanuda su red automáticamente al recuperar conexión.
+   // Acá sólo hacemos un catch-up de datos; no reiniciamos un listener sano.
    const payload=await window.MigaFirebase.pullBranchContext(code);
    firebaseStoreBranchContext(payload);
 
@@ -5471,9 +5471,18 @@ async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason=''}={}
      }
    }
 
-   firebaseStartBranchRealtime(code);
+   firebaseLastCloudRefreshAt=Date.now();
 
-   firebaseLastRealtimeAt=Date.now();
+   // Sólo reconstruir el listener si realmente estaba caído,
+   // pertenece a otra sucursal o un error explícito pidió reiniciarlo.
+   if(
+     restartRealtime ||
+     !firebaseRealtimeActive ||
+     firebaseRealtimeBranchCode!==code
+   ){
+     firebaseStartBranchRealtime(code,{force:true});
+   }
+
    const hora=new Date().toLocaleTimeString('es-AR',{
      hour:'2-digit',minute:'2-digit',second:'2-digit'
    });
@@ -5481,8 +5490,10 @@ async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason=''}={}
    return true;
 
  }catch(e){
-   console.error('Reconexión Firebase:',reason,e);
-   firebaseRealtimeActive=false;
+   console.error('Actualización Firebase:',reason,e);
+
+   // Un fallo de lectura puntual no implica que el listener haya muerto.
+   // Conservamos su estado para no crear suscripciones duplicadas.
    firebaseSetStatus(
      '⚠ No se pudo actualizar la Suc. '+esc(code)+'. MIGA volverá a intentarlo automáticamente.',
      'error'
@@ -5493,41 +5504,60 @@ async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason=''}={}
  }
 }
 
-function firebaseScheduleReconnect(reason=''){
+function firebaseScheduleReconnect(reason='',restartRealtime=false){
  clearTimeout(firebaseReconnectTimer);
  firebaseReconnectTimer=setTimeout(()=>{
-   firebaseRefreshCurrentBranchFromCloud({silent:true,reason});
- },300);
+   firebaseRefreshCurrentBranchFromCloud({silent:true,reason,restartRealtime});
+ },350);
 }
 
 function firebaseHandleConnectivityResume(reason=''){
  if(!navigator.onLine)return;
  if(window.MigaFirebase?.isBranch?.()){
-   firebaseScheduleReconnect(reason);
+   // Al volver a la app hacemos catch-up, pero dejamos que el SDK
+   // conserve/reanude el listener existente.
+   firebaseScheduleReconnect(reason,false);
  }
 }
 
-function firebaseStartBranchRealtime(code){
- try{
-   window.MigaFirebase?.unsubscribe?.();
+function firebaseStartBranchRealtime(code,{force=false}={}){
+ code=normalizeBranch(code);
+ if(!code)return false;
 
+ // Evita volver a crear exactamente la misma suscripción si ya está activa.
+ if(!force && firebaseRealtimeActive && firebaseRealtimeBranchCode===code){
+   return true;
+ }
+
+ try{
+   // subscribeBranch se ocupa internamente de cerrar la suscripción anterior.
    window.MigaFirebase.subscribeBranch(code,change=>{
      firebaseLastRealtimeAt=Date.now();
+
+     if(change?.type==='syncError'){
+       firebaseRealtimeActive=false;
+       firebaseRealtimeBranchCode='';
+     }
+
      firebaseApplyRealtimeChange(change);
    });
 
    firebaseRealtimeActive=true;
+   firebaseRealtimeBranchCode=code;
    firebaseCloudInitialized=true;
    firebaseLastRealtimeAt=Date.now();
 
    firebaseSetStatus('✅ Suc. '+code+' sincronizada con Firebase en tiempo real.','ok');
    updateBranchCloudBodyClass();
+   return true;
 
  }catch(e){
    firebaseRealtimeActive=false;
+   firebaseRealtimeBranchCode='';
    console.error(e);
    firebaseSetStatus('⚠ La conexión en tiempo real se interrumpió. MIGA intentará reconectarse.','error');
-   firebaseScheduleReconnect('start-error');
+   firebaseScheduleReconnect('start-error',true);
+   return false;
  }
 }
 function requireBranchCloudAccess(){
@@ -5915,9 +5945,11 @@ function monthlyBackupReminder(){
 /* ===================== FIREBASE · FASE 1 ===================== */
 let firebaseCloudInitialized=false;
 let firebaseRealtimeActive=false;
+let firebaseRealtimeBranchCode='';
 let firebaseReconnectInProgress=false;
 let firebaseLastReconnectAt=0;
 let firebaseLastRealtimeAt=0;
+let firebaseLastCloudRefreshAt=0;
 let firebaseReconnectTimer=null;
 const FIREBASE_RECONNECT_MIN_GAP=2500;
 
@@ -6103,7 +6135,7 @@ function firebaseApplyRealtimeChange(change){
  if(change.type==='syncError'){
    firebaseRealtimeActive=false;
    firebaseSetStatus('⚠ Se perdió la conexión en tiempo real. MIGA intentará reconectarse automáticamente.','error');
-   firebaseScheduleReconnect('listener-error');
+   firebaseScheduleReconnect('listener-error',true);
    return;
  }
 
@@ -6168,6 +6200,7 @@ function firebaseStartRealtime(){
 function firebaseStopRealtime(){
  try{window.MigaFirebase?.unsubscribe?.();}catch(e){}
  firebaseRealtimeActive=false;
+ firebaseRealtimeBranchCode='';
  firebaseSetStatus('Firebase desconectado. Ingresá nuevamente para recuperar la sincronización.','pending');
 }
 
@@ -7969,7 +8002,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='68.0';
+ x.sales={};x.salesRows=[];x.version='69.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8605,18 +8638,18 @@ window.addEventListener('pageshow',event=>{
 });
 
 // Heartbeat de recuperación.
-// Solo actúa mientras MIGA está visible. Si no hubo actividad del
-// listener durante un período, fuerza un catch-up desde Firestore.
+// Un listener de Firestore puede pasar mucho tiempo sin emitir eventos
+// simplemente porque no hubo cambios. Eso NO significa que esté caído.
+// Por eso sólo reintentamos cuando MIGA ya sabe que el listener falló.
 setInterval(()=>{
  if(document.visibilityState!=='visible')return;
  if(!navigator.onLine)return;
  if(!window.MigaFirebase?.isBranch?.())return;
 
- const idle=Date.now()-firebaseLastRealtimeAt;
- if(firebaseLastRealtimeAt && idle>45000){
-   firebaseScheduleReconnect('heartbeat');
+ if(!firebaseRealtimeActive){
+   firebaseScheduleReconnect('heartbeat-listener-inactive',true);
  }
-},15000);
+},30000);
 
 setTimeout(initMouseWheelScrolling,0);
 document.getElementById('pasteModal').addEventListener('click',e=>{if(e.target.id==='pasteModal')closePaste()});
@@ -8681,6 +8714,7 @@ monthlyBackupReminder();
   await setPersistence(provisionAuth, inMemoryPersistence);
 
   let unsubscribers=[];
+  let subscriptionEpoch=0;
   let activeProfile=null;
 
   const clean = value => JSON.parse(JSON.stringify(value ?? null));
@@ -9039,7 +9073,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'68.0',
+      appVersion:'69.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -9225,64 +9259,106 @@ monthlyBackupReminder();
     if(!isBranchFor(code))throw new Error('Sucursal no autenticada.');
     code=String(code);
 
+    // Cada nueva suscripción obtiene una generación distinta.
+    // Si llega tarde un callback perteneciente a una generación anterior,
+    // se ignora en vez de volver a tocar el estado de MIGA.
+    const myEpoch=subscriptionEpoch;
+    const safeCallback=change=>{
+      if(myEpoch!==subscriptionEpoch)return;
+      callback(change);
+    };
+
     let destinationUnsubs=[];
     const clearDestinations=()=>{
       destinationUnsubs.forEach(fn=>{try{fn()}catch(e){}});
       destinationUnsubs=[];
     };
     const listenDestination=branchCode=>{
-      destinationUnsubs.push(onSnapshot(doc(db,'miga_branches',branchCode),snap=>{
-        if(!snap.exists())return;
-        const payload=parsePayload(snap.data());
-        if(payload)callback({type:'branch',code:branchCode,data:payload});
-      }));
-      destinationUnsubs.push(onSnapshot(doc(db,'miga_sales',branchCode),snap=>{
-        callback({type:'sales',code:branchCode,data:snap.exists()?parsePayload(snap.data()):null});
-      }));
+      destinationUnsubs.push(onSnapshot(
+        doc(db,'miga_branches',branchCode),
+        snap=>{
+          if(myEpoch!==subscriptionEpoch || !snap.exists())return;
+          const payload=parsePayload(snap.data());
+          if(payload)safeCallback({type:'branch',code:branchCode,data:payload});
+        },
+        err=>safeCallback({type:'syncError',code:branchCode,message:err?.message||String(err)})
+      ));
+      destinationUnsubs.push(onSnapshot(
+        doc(db,'miga_sales',branchCode),
+        snap=>{
+          if(myEpoch!==subscriptionEpoch)return;
+          safeCallback({type:'sales',code:branchCode,data:snap.exists()?parsePayload(snap.data()):null});
+        },
+        err=>safeCallback({type:'syncError',code:branchCode,message:err?.message||String(err)})
+      ));
     };
 
     // Propia sucursal.
     unsubscribers.push(onSnapshot(
       doc(db,'miga_branches',code),
       snap=>{
-        if(!snap.exists())return;
+        if(myEpoch!==subscriptionEpoch || !snap.exists())return;
         const payload=parsePayload(snap.data());
-        if(payload)callback({type:'branch',code,data:payload});
+        if(payload)safeCallback({type:'branch',code,data:payload});
       },
-      err=>callback({type:'syncError',code,message:err?.message||String(err)})
+      err=>safeCallback({type:'syncError',code,message:err?.message||String(err)})
     ));
-    unsubscribers.push(onSnapshot(doc(db,'miga_sales',code),snap=>{
-      callback({type:'sales',code,data:snap.exists()?parsePayload(snap.data()):null});
-    }));
+
+    unsubscribers.push(onSnapshot(
+      doc(db,'miga_sales',code),
+      snap=>{
+        if(myEpoch!==subscriptionEpoch)return;
+        safeCallback({type:'sales',code,data:snap.exists()?parsePayload(snap.data()):null});
+      },
+      err=>safeCallback({type:'syncError',code,message:err?.message||String(err)})
+    ));
 
     // Padrones zonales visibles para las sucursales.
-    unsubscribers.push(onSnapshot(collection(db,'miga_zone_refs'),snap=>{
-      snap.docChanges().forEach(ch=>{
-        if(ch.type==='removed')return;
-        const payload=parsePayload(ch.doc.data());
-        if(payload)callback({type:'zoneRefs',zoneId:ch.doc.id,data:payload});
-      });
-    }));
+    unsubscribers.push(onSnapshot(
+      collection(db,'miga_zone_refs'),
+      snap=>{
+        if(myEpoch!==subscriptionEpoch)return;
+        snap.docChanges().forEach(ch=>{
+          if(ch.type==='removed')return;
+          const payload=parsePayload(ch.doc.data());
+          if(payload)safeCallback({type:'zoneRefs',zoneId:ch.doc.id,data:payload});
+        });
+      },
+      err=>safeCallback({type:'syncError',code,message:err?.message||String(err)})
+    ));
 
-    unsubscribers.push(onSnapshot(doc(db,'miga_system','config'),snap=>{
-      if(snap.exists())callback({type:'system',data:parsePayload(snap.data())||{}});
-    }));
+    unsubscribers.push(onSnapshot(
+      doc(db,'miga_system','config'),
+      snap=>{
+        if(myEpoch!==subscriptionEpoch)return;
+        if(snap.exists())safeCallback({type:'system',data:parsePayload(snap.data())||{}});
+      },
+      err=>safeCallback({type:'syncError',code,message:err?.message||String(err)})
+    ));
 
     // Si es elaboradora, se conectan dinámicamente sus destinos.
-    unsubscribers.push(onSnapshot(doc(db,'miga_elaborators',code),snap=>{
-      clearDestinations();
-      const data=snap.exists()?snap.data():null;
-      const destinations=Array.isArray(data?.destinations)?data.destinations.map(String):[];
-      destinations.filter(c=>c!==code).forEach(listenDestination);
-      callback({type:'elaborator',code,data:data?clean(data):null});
-    }));
+    unsubscribers.push(onSnapshot(
+      doc(db,'miga_elaborators',code),
+      snap=>{
+        if(myEpoch!==subscriptionEpoch)return;
+        clearDestinations();
+        const data=snap.exists()?snap.data():null;
+        const destinations=Array.isArray(data?.destinations)?data.destinations.map(String):[];
+        destinations.filter(c=>c!==code).forEach(listenDestination);
+        safeCallback({type:'elaborator',code,data:data?clean(data):null});
+      },
+      err=>safeCallback({type:'syncError',code,message:err?.message||String(err)})
+    ));
 
     unsubscribers.push(clearDestinations);
   }
 
   function unsubscribe(){
-    unsubscribers.forEach(fn=>{try{fn()}catch(e){}});
+    // Invalida callbacks anteriores antes de cerrar listeners.
+    subscriptionEpoch++;
+    const current=unsubscribers;
     unsubscribers=[];
+    current.forEach(fn=>{try{fn()}catch(e){}});
   }
 
   // La sesión Firebase queda persistida en este dispositivo.

@@ -450,3 +450,16 @@ El orden se mantiene después de:
 - eliminar referencias.
 
 Si dos descripciones son iguales, se usa el código de artículo como segundo criterio.
+
+## v27 · Firebase realtime estable
+
+Se corrige la reconexión de Firestore para evitar errores `Target ID already exists`.
+
+Cambios principales:
+
+- el heartbeat ya no interpreta falta de cambios como pérdida de conexión;
+- al volver del segundo plano se hace un catch-up de datos sin recrear un listener sano;
+- los listeners sólo se reconstruyen cuando realmente hubo un error;
+- se evita volver a suscribirse a la misma sucursal si ya está activa;
+- cada generación de listeners invalida callbacks atrasados de una suscripción anterior;
+- los errores de listeners de ventas, padrón, sistema y destinos también disparan recuperación controlada.
