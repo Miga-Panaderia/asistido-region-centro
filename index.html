@@ -3567,6 +3567,27 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     border-collapse:collapse !important;
   }
 }
+
+/* =========================================================
+   V64 - PANADERÍA SUC · ENCABEZADO LIBRE EN MÓVIL
+   ========================================================= */
+@media(max-width:700px){
+  #sheet-plan .big-grid thead th,
+  #sheet-plan .big-grid thead tr:first-child > th,
+  #sheet-plan .big-grid thead th.week,
+  #sheet-plan .big-grid thead .sticky-art,
+  #sheet-plan .big-grid thead .sticky-desc{
+    position:static !important;
+    top:auto !important;
+    left:auto !important;
+    z-index:auto !important;
+    box-shadow:none !important;
+  }
+
+  #sheet-plan .big-grid{
+    border-collapse:collapse !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -7696,7 +7717,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='63.0';
+ x.sales={};x.salesRows=[];x.version='64.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8766,7 +8787,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'63.0',
+      appVersion:'64.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

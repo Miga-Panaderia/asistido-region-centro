@@ -392,3 +392,9 @@ Esto evita cambios inesperados de dirección al llegar al final vertical.
 ### Hoja del Panadero Suc
 - En celular, el encabezado de la tabla deja de comportarse como **sticky**.
 - Al hacer scroll vertical ya no queda fija la fila desde **U/M** en adelante.
+
+## v22 · Panadería Suc sin encabezado fijo en celular
+
+En vista móvil, toda la fila de encabezados de **Panadería Suc** deja de usar posición fija.
+
+Ahora Art., Descripción, Marca, Aptitud, U/M, Bto, Consumo, Coef. y el resto del encabezado suben junto con la tabla al hacer scroll vertical.
