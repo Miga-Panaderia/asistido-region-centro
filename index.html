@@ -4735,7 +4735,7 @@ function assistantRespond(question){
      '<span class="assistant-note">Durante los últimos días del mes conviene descargar una copia y guardarla fuera de la PC.</span>';
  }
  else if(/(guardar|whatsapp|avisar|notificar|modificaciones)/.test(q)){
-   answer='El botón <b>Guardar y avisar por WhatsApp</b> guarda los cambios locales de la sucursal y luego muestra el acceso a WhatsApp Web para notificar a la elaboradora.';
+   answer='El botón <b>Guardar y avisar por WhatsApp</b> guarda los cambios de la sucursal y prepara el aviso para la elaboradora. En PC abre <b>WhatsApp Web</b> y en celular intenta abrir directamente la <b>app de WhatsApp</b>.';
  }
  else if(/(fecha.*inicio|inicio.*fecha|mes)/.test(q)){
    answer='La Fecha de inicio actual es <b>'+esc(assistantProductionDate())+'</b>. '+
@@ -5543,15 +5543,32 @@ function elaboratorsForBranch(branchCode){
 function whatsappMessageForCurrentBranch(){
  return DEFAULT_WHATSAPP_MESSAGE + '\n\nSucursal ' + state.branch + ' - ' + (state.branchName||branchCatalog[state.branch]?.name||'');
 }
-function whatsappWebUrl(code){
+function isMobileWhatsappDevice(){
+ const ua=String(navigator.userAgent||'').toLowerCase();
+ const touch=window.matchMedia?.('(pointer:coarse)')?.matches;
+ return /android|iphone|ipad|ipod|mobile/.test(ua) || !!touch;
+}
+function whatsappOpenUrl(code=''){
  const phones=loadElaboratorWhatsapp();
  const phone=normalizeWhatsappNumber(phones[code]||'');
  const msg=encodeURIComponent(whatsappMessageForCurrentBranch());
 
+ if(isMobileWhatsappDevice()){
+   // En celular usamos el esquema nativo para abrir la app instalada.
+   if(phone){
+     return 'whatsapp://send?phone='+encodeURIComponent(phone)+'&text='+msg;
+   }
+   return 'whatsapp://send?text='+msg;
+ }
+
+ // En escritorio mantenemos WhatsApp Web.
  if(phone){
    return 'https://web.whatsapp.com/send?phone='+encodeURIComponent(phone)+'&text='+msg;
  }
  return 'https://web.whatsapp.com/send?text='+msg;
+}
+function whatsappOpenLabel(){
+ return isMobileWhatsappDevice()?'WhatsApp':'WhatsApp Web';
 }
 function closeNotifyElaboratorModal(){
  const modal=document.getElementById('notifyElaboratorModal');
@@ -5564,37 +5581,41 @@ function showWhatsappLinks(codes){
  if(!modal||!list)return;
 
  const phones=loadElaboratorWhatsapp();
+ const mobile=isMobileWhatsappDevice();
+ const waLabel=whatsappOpenLabel();
 
  if(codes.length===1){
    const code=codes[0];
    const hasPhone=!!normalizeWhatsappNumber(phones[code]||'');
    if(text){
      text.innerHTML=hasPhone
-       ? 'Los cambios de la Suc. <b>'+esc(state.branch)+'</b> fueron guardados. Hacé clic para abrir WhatsApp Web con el mensaje preparado.'
-       : 'Los cambios fueron guardados. La elaboradora <b>'+esc(code)+'</b> no tiene teléfono configurado; WhatsApp Web se abrirá sin destinatario.';
+       ? 'Los cambios de la Suc. <b>'+esc(state.branch)+'</b> fueron guardados. Hacé clic para abrir <b>'+waLabel+'</b> con el mensaje preparado.'
+       : 'Los cambios fueron guardados. La elaboradora <b>'+esc(code)+'</b> no tiene teléfono configurado; se abrirá <b>'+waLabel+'</b> sin destinatario.';
    }
  }else if(codes.length>1){
    if(text)text.innerHTML='Los cambios fueron guardados. Elegí a qué elaboradora querés avisar:';
  }else{
-   if(text)text.innerHTML='Los cambios fueron guardados. Esta sucursal no tiene una elaboradora asignada; podés abrir WhatsApp Web y elegir el destinatario manualmente.';
+   if(text)text.innerHTML='Los cambios fueron guardados. Esta sucursal no tiene una elaboradora asignada; podés abrir <b>'+waLabel+'</b> y elegir el destinatario manualmente.';
  }
 
  const targets=codes.length?codes:[''];
  list.innerHTML=targets.map(code=>{
+   const targetAttr=mobile?'':' target="_blank" rel="noopener noreferrer"';
+
    if(!code){
-     const generic='https://web.whatsapp.com/send?text='+encodeURIComponent(whatsappMessageForCurrentBranch());
-     return `<a class="notify-whatsapp-link" href="${generic}" target="_blank" rel="noopener noreferrer">
-       <span class="wa-elab-name">Abrir WhatsApp Web</span>
+     return `<a class="notify-whatsapp-link" href="${whatsappOpenUrl('')}"${targetAttr}>
+       <span class="wa-elab-name">Abrir ${waLabel}</span>
        <span class="wa-open">Abrir ↗</span>
      </a>`;
    }
 
    const name=branchCatalog[code]?.name||'';
    const hasPhone=!!normalizeWhatsappNumber(phones[code]||'');
-   return `<a class="notify-whatsapp-link" href="${whatsappWebUrl(code)}" target="_blank" rel="noopener noreferrer">
+
+   return `<a class="notify-whatsapp-link" href="${whatsappOpenUrl(code)}"${targetAttr}>
      <span class="wa-elab-code">${code}</span>
      <span class="wa-elab-name">${esc(name)}${hasPhone?'':' · sin teléfono configurado'}</span>
-     <span class="wa-open">WhatsApp Web ↗</span>
+     <span class="wa-open">${waLabel} ↗</span>
    </a>`;
  }).join('');
 
@@ -7796,7 +7817,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='65.0';
+ x.sales={};x.salesRows=[];x.version='66.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8866,7 +8887,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'65.0',
+      appVersion:'66.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

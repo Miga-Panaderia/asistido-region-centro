@@ -408,3 +408,14 @@ Cambios:
 - recorte prolijo del texto largo con `ellipsis`;
 - Descripción deja de superponerse con Marca;
 - se aplica a Panadería Suc y también a otras hojas con tablas extensas.
+
+## v24 · WhatsApp según dispositivo
+
+El botón **Guardar y avisar por WhatsApp** ahora detecta el dispositivo:
+
+- en PC abre **WhatsApp Web**;
+- en celular utiliza el esquema nativo `whatsapp://` para abrir directamente la aplicación instalada;
+- conserva el teléfono de la elaboradora y el mensaje preparado;
+- si no hay teléfono configurado, abre WhatsApp sin destinatario para elegirlo manualmente.
+
+En móvil el enlace no se abre en una pestaña nueva, evitando que Chrome derive primero a WhatsApp Web.
