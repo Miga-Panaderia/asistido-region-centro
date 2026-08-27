@@ -486,3 +486,11 @@ Cuando MIGA cambia de una cuenta Firebase a otra:
 6. recién después valida el perfil y crea los nuevos listeners.
 
 Si el SDK llegara igualmente a detectar un estado interno inconsistente, MIGA muestra un mensaje breve y realiza una única recarga automática para obtener una instancia limpia, evitando mostrar el stack técnico completo al usuario.
+
+## v30 · Marcar semana completa en Cronograma
+
+En **Parámetros Suc** se agrega una columna **SEM.** al final del Cronograma.
+
+Cada referencia dispone de un botón **✓ 7/7** que marca Lunes a Domingo de una sola vez. Las celdas individuales continúan funcionando normalmente para quitar o agregar días puntuales.
+
+El cambio se guarda y sincroniza con Firebase igual que cualquier modificación manual del cronograma.

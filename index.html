@@ -3720,6 +3720,54 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     touch-action:pan-x pan-y !important;
   }
 }
+
+/* =========================================================
+   V72 - CRONOGRAMA · MARCAR SEMANA COMPLETA
+   ========================================================= */
+.patron .week-fill{
+  width:52px;
+  min-width:52px;
+  text-align:center;
+  padding:0 2px;
+}
+.patron .week-fill-head{
+  width:52px;
+  min-width:52px;
+  text-align:center;
+  background:#315a73;
+}
+.patron .week-fill-btn{
+  width:45px;
+  height:18px;
+  padding:0 3px;
+  border:1px solid #7b8b94;
+  background:#f7f9fa;
+  color:#214456;
+  font-size:9px;
+  line-height:16px;
+  font-weight:800;
+  cursor:pointer;
+}
+.patron .week-fill-btn:hover{
+  background:#e8f2ed;
+  border-color:#217346;
+}
+.patron .week-fill-btn.complete{
+  background:#d9eee3;
+  border-color:#217346;
+  color:#145530;
+}
+@media(max-width:700px){
+  .patron .week-fill,
+  .patron .week-fill-head{
+    width:48px;
+    min-width:48px;
+  }
+  .patron .week-fill-btn{
+    width:42px;
+    font-size:9px;
+  }
+}
 </style>
 </head>
 <body>
@@ -4770,7 +4818,7 @@ function assistantRespond(question){
      'Si necesitás otro porcentaje, elegí <b>Personalizado…</b>.';
  }
  else if(/(cronograma|recepciona|recepcion|dias.*recibe|dias.*produce)/.test(q)){
-   answer='📍 El Cronograma está en <b>Parámetros Suc</b>.<br><br>El Cronograma indica qué días recepciona la sucursal. '+
+   answer='📍 El Cronograma está en <b>Parámetros Suc</b>.<br><br>El Cronograma indica qué días recepciona la sucursal. Para referencias que trabajan todos los días, podés usar el botón <b>✓ 7/7</b> al final de la fila para marcar la semana completa de una sola vez. '+
      'Un <b>1</b> significa día activo. Tocás el día para activarlo o quitarlo y queda guardado para esa sucursal.';
  }
  else if(/(contrase|clave|password)/.test(q)){
@@ -7673,10 +7721,12 @@ function renderPatron(){
    <td class="um"><span class="patron-master-value center">${esc(p.um)}</span></td>
    <td class="bto"><span class="patron-master-value center">${esc(p.bto)}</span></td>`;
    for(let d=0;d<7;d++)rows+=`<td class="day ${p.schedule[d]?'sched-on':'sched-off'}" onclick="toggleSchedule(${i},${d})">${p.schedule[d]?'1':''}</td>`;
+   const fullWeek=(p.schedule||[]).slice(0,7).every(v=>n(v)?1:0);
+   rows+=`<td class="week-fill"><button type="button" class="week-fill-btn ${fullWeek?'complete':''}" onclick="fillScheduleWeek(${i})" title="Marcar lunes a domingo">✓ 7/7</button></td>`;
    rows+='</tr>';
  });
  document.getElementById('patronSheet').innerHTML=`<table class="excel-table patron"><thead>
- <tr><th class="art" rowspan="2">Articulo</th><th class="desc" rowspan="2">Descripción</th><th class="brand" rowspan="2">Marca</th><th class="apt" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto" rowspan="2">Bto</th><th class="cron-head" colspan="7">CRONOGRAMA</th></tr>
+ <tr><th class="art" rowspan="2">Articulo</th><th class="desc" rowspan="2">Descripción</th><th class="brand" rowspan="2">Marca</th><th class="apt" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto" rowspan="2">Bto</th><th class="cron-head" colspan="7">CRONOGRAMA</th><th class="week-fill-head" rowspan="2">SEM.</th></tr>
  <tr class="cron-days">${DOW_SHORT.map(x=>`<th class="day">${x}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 function editProduct(i,k,v){
@@ -7690,6 +7740,14 @@ function editProduct(i,k,v){
 function toggleSchedule(i,d){
  if(!requireBranchCloudAccess())return;
  state.products[i].schedule[d]=state.products[i].schedule[d]?0:1;scheduleSave();
+}
+function fillScheduleWeek(i){
+ if(!requireBranchCloudAccess())return;
+ const product=state.products[i];
+ if(!product)return;
+ product.schedule=[1,1,1,1,1,1,1];
+ renderPatron();
+ scheduleSave();
 }
 
 function planMaxScroll(){
@@ -8056,7 +8114,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='71.0';
+ x.sales={};x.salesRows=[];x.version='72.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -9241,7 +9299,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'71.0',
+      appVersion:'72.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
