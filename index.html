@@ -5381,6 +5381,22 @@ async function changeOwnBranchPassword(){
    alert('PIN de la Suc. '+state.branch+' actualizado en Firebase.');
  }catch(e){alert('No se pudo cambiar la contraseña: '+(e?.message||e))}
 }
+
+function isFirestoreInternalAssertionError(error){
+ const text=String(error?.message||error||'');
+ return /INTERNAL ASSERTION FAILED|Unexpected state|Target ID already exists|pendingResponses/i.test(text);
+}
+function firebaseRecoverPageOnce(){
+ const key='miga_firestore_internal_recovery_v71';
+ const now=Date.now();
+ let previous=0;
+ try{previous=Number(sessionStorage.getItem(key)||0)}catch(e){}
+ if(previous && now-previous<15000)return false;
+ try{sessionStorage.setItem(key,String(now))}catch(e){}
+ setTimeout(()=>location.reload(),700);
+ return true;
+}
+
 function openBranchLogin(code){
  pendingBranchLogin=code;
  const modal=document.getElementById('branchLoginModal');
@@ -5433,8 +5449,18 @@ async function confirmBranchLogin(){
    assistantUpdateContext();
  }catch(e){
    const ec=String(e?.code||'');let msg=e?.message||String(e);
-   if(ec.includes('invalid-credential')||ec.includes('wrong-password'))msg='Contraseña incorrecta.';
-   else if(ec.includes('user-not-found'))msg='Esta sucursal todavía no tiene acceso Firebase configurado.';
+
+   if(isFirestoreInternalAssertionError(e)){
+     const recovering=firebaseRecoverPageOnce();
+     msg=recovering
+       ? 'Firebase detectó una conexión anterior en un estado inconsistente. MIGA se reiniciará automáticamente para recuperar la sincronización.'
+       : 'Firebase necesita reiniciar la conexión. Cerrá esta pestaña, volvé a abrir MIGA e ingresá nuevamente.';
+   }else if(ec.includes('invalid-credential')||ec.includes('wrong-password')){
+     msg='PIN incorrecto.';
+   }else if(ec.includes('user-not-found')){
+     msg='Esta sucursal todavía no tiene acceso Firebase configurado.';
+   }
+
    if(err)err.textContent=msg;
  }
 }
@@ -5515,8 +5541,13 @@ async function firebaseRefreshCurrentBranchFromCloud({silent=false,reason='',res
  }catch(e){
    console.error('Actualización Firebase:',reason,e);
 
+   if(isFirestoreInternalAssertionError(e)){
+     firebaseSetStatus('⚠ Firebase reiniciará la conexión para recuperar la sincronización.','error');
+     firebaseRecoverPageOnce();
+     return false;
+   }
+
    // Un fallo de lectura puntual no implica que el listener haya muerto.
-   // Conservamos su estado para no crear suscripciones duplicadas.
    firebaseSetStatus(
      '⚠ No se pudo actualizar la Suc. '+esc(code)+'. MIGA volverá a intentarlo automáticamente.',
      'error'
@@ -8025,7 +8056,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='70.0';
+ x.sales={};x.salesRows=[];x.version='71.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8776,7 +8807,8 @@ monthlyBackupReminder();
     collection,
     writeBatch,
     onSnapshot,
-    enableNetwork
+    enableNetwork,
+    disableNetwork
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -8839,9 +8871,59 @@ monthlyBackupReminder();
     return data.payload ?? null;
   }
 
+
+  async function signInAuthSafely(email,password){
+    const targetEmail=String(email||'').trim().toLowerCase();
+    const currentEmail=String(auth.currentUser?.email||'').trim().toLowerCase();
+    const switchingUser=!!auth.currentUser && !!targetEmail && currentEmail!==targetEmail;
+
+    // Si no estamos cambiando de cuenta, basta con cerrar listeners
+    // y autenticar normalmente.
+    if(!switchingUser){
+      unsubscribe();
+      return await signInWithEmailAndPassword(auth,email,password);
+    }
+
+    let networkPaused=false;
+
+    try{
+      // Pausamos primero la red para impedir que Firestore abra un stream
+      // nuevo por el cambio de Auth mientras el anterior aún termina de cerrar.
+      await disableNetwork(db);
+      networkPaused=true;
+
+      // Autenticamos con Firestore todavía pausado.
+      const cred=await signInWithEmailAndPassword(auth,email,password);
+
+      // Recién después de que Auth cambió correctamente invalidamos y cerramos
+      // las escuchas de la cuenta anterior.
+      unsubscribe();
+
+      // Un pequeño turno de evento evita encadenar el cierre y la reapertura
+      // en la misma ráfaga interna del SDK.
+      await new Promise(r=>setTimeout(r,80));
+
+      await enableNetwork(db);
+      networkPaused=false;
+
+      // Permitimos que el SDK termine de estabilizar el nuevo contexto Auth
+      // antes de hacer lecturas o registrar onSnapshot.
+      await new Promise(r=>setTimeout(r,80));
+
+      return cred;
+
+    }catch(e){
+      // Si la autenticación falló, la cuenta anterior sigue siendo válida.
+      // Volvemos a habilitar Firestore para que sus listeners puedan reanudarse.
+      if(networkPaused){
+        try{await enableNetwork(db)}catch(_){}
+      }
+      throw e;
+    }
+  }
+
   async function signInAdmin(password){
-    unsubscribe();
-    const cred=await signInWithEmailAndPassword(auth,ADMIN_EMAIL,String(password||''));
+    const cred=await signInAuthSafely(ADMIN_EMAIL,String(password||''));
     if(cred.user.uid!==ADMIN_UID){
       await signOut(auth);
       throw new Error('La cuenta autenticada no corresponde al Administrador General autorizado.');
@@ -8969,7 +9051,6 @@ monthlyBackupReminder();
   }
 
   async function signInBranch(code,password){
-    unsubscribe();
     code=String(code||'').padStart(3,'0');
     const directory=await getBranchDirectory(code);
 
@@ -8983,7 +9064,7 @@ monthlyBackupReminder();
       ? branchPinSecret(code,password)
       : String(password||'');
 
-    const cred=await signInWithEmailAndPassword(auth,String(directory.email),authPassword);
+    const cred=await signInAuthSafely(String(directory.email),authPassword);
     const profileSnap=await getDoc(doc(db,'miga_users',cred.user.uid));
     const profile=profileSnap.exists()?profileSnap.data():null;
 
@@ -9160,7 +9241,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'70.0',
+      appVersion:'71.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

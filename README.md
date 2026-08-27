@@ -469,3 +469,20 @@ Cambios principales:
 Se corrige el desplazamiento vertical en celular dentro de **Parámetros Suc**.
 
 Ahora el usuario puede iniciar el gesto vertical sobre el calendario, las tablas de parámetros, el padrón, las celdas comunes o los espacios libres. Los controles interactivos continúan reservando el toque y los gestos predominantemente horizontales siguen destinados al desplazamiento lateral.
+
+## v29 · Cambio de sucursal Firebase seguro
+
+Se refuerza el cambio entre cuentas de sucursal para evitar errores internos de Firestore del tipo:
+
+`INTERNAL ASSERTION FAILED · Unexpected state · Target ID already exists`
+
+Cuando MIGA cambia de una cuenta Firebase a otra:
+
+1. pausa temporalmente la red de Firestore;
+2. autentica la nueva sucursal;
+3. invalida y cierra los listeners de la cuenta anterior;
+4. espera brevemente a que el SDK complete el cambio de contexto;
+5. vuelve a habilitar Firestore;
+6. recién después valida el perfil y crea los nuevos listeners.
+
+Si el SDK llegara igualmente a detectar un estado interno inconsistente, MIGA muestra un mensaje breve y realiza una única recarga automática para obtener una instancia limpia, evitando mostrar el stack técnico completo al usuario.
