@@ -3697,6 +3697,29 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
   .admin-ref-bulk-left,.admin-ref-bulk-right{width:100%}
   .admin-ref-bulkbar button{flex:1 1 auto}
 }
+
+/* =========================================================
+   V70 - PARÁMETROS SUC · SCROLL VERTICAL MÓVIL DESDE TODA LA HOJA
+   ========================================================= */
+@media(max-width:700px){
+  .workspace{
+    overscroll-behavior-y:auto !important;
+  }
+
+  #sheet-params,
+  #sheet-params .params-sheet,
+  #sheet-params .params-left,
+  #sheet-params .params-right,
+  #sheet-params .params-body,
+  #sheet-params .excel-table,
+  #sheet-params .excel-table td,
+  #sheet-params .excel-table th,
+  #sheet-params #calendarBlock,
+  #sheet-params #parameterBlocks,
+  #sheet-params #patronSheet{
+    touch-action:pan-x pan-y !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -8002,7 +8025,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='69.0';
+ x.sales={};x.salesRows=[];x.version='70.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8532,11 +8555,75 @@ function initMouseWheelScrolling(){
  initParamsWholeSheetWheel();
 }
 
+
+function initParamsMobileTouchScroll(){
+ const params=document.getElementById('sheet-params');
+ if(!params || params.dataset.mobileWholeTouchReady==='1')return;
+
+ params.dataset.mobileWholeTouchReady='1';
+
+ let active=false;
+ let direction='';
+ let startX=0;
+ let startY=0;
+ let startScrollTop=0;
+
+ const scrollingElement=()=>document.scrollingElement || document.documentElement;
+
+ params.addEventListener('touchstart',ev=>{
+   if(window.innerWidth>700 || ev.touches.length!==1)return;
+
+   const target=ev.target;
+   if(target?.closest?.('input,select,textarea,button,a,label,option'))return;
+
+   const t=ev.touches[0];
+   startX=t.clientX;
+   startY=t.clientY;
+   startScrollTop=scrollingElement().scrollTop;
+   active=true;
+   direction='';
+ },{passive:true,capture:true});
+
+ params.addEventListener('touchmove',ev=>{
+   if(!active || window.innerWidth>700 || ev.touches.length!==1)return;
+
+   const t=ev.touches[0];
+   const dx=t.clientX-startX;
+   const dy=t.clientY-startY;
+
+   if(!direction){
+     if(Math.abs(dx)<6 && Math.abs(dy)<6)return;
+     direction=Math.abs(dy)>=Math.abs(dx)?'vertical':'horizontal';
+   }
+
+   if(direction==='horizontal')return;
+
+   const scroller=scrollingElement();
+   const max=Math.max(0,scroller.scrollHeight-window.innerHeight);
+   if(max<2)return;
+
+   const next=Math.max(0,Math.min(max,startScrollTop-dy));
+   scroller.scrollTop=next;
+
+   if(ev.cancelable)ev.preventDefault();
+ },{passive:false,capture:true});
+
+ const stop=()=>{
+   active=false;
+   direction='';
+ };
+
+ params.addEventListener('touchend',stop,{passive:true,capture:true});
+ params.addEventListener('touchcancel',stop,{passive:true,capture:true});
+}
+
 function initMobileTouchScrolling(){
  ['planTable','bakerTable','motherTableWrap','salesTable'].forEach(id=>{
    const el=document.getElementById(id);
    if(el)enableTouchDragScroll(el);
  });
+
+ initParamsMobileTouchScroll();
  initMouseWheelScrolling();
 }
 
@@ -9073,7 +9160,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'69.0',
+      appVersion:'70.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

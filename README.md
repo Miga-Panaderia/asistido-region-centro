@@ -463,3 +463,9 @@ Cambios principales:
 - se evita volver a suscribirse a la misma sucursal si ya está activa;
 - cada generación de listeners invalida callbacks atrasados de una suscripción anterior;
 - los errores de listeners de ventas, padrón, sistema y destinos también disparan recuperación controlada.
+
+## v28 · Parámetros Suc con scroll móvil desde toda la hoja
+
+Se corrige el desplazamiento vertical en celular dentro de **Parámetros Suc**.
+
+Ahora el usuario puede iniciar el gesto vertical sobre el calendario, las tablas de parámetros, el padrón, las celdas comunes o los espacios libres. Los controles interactivos continúan reservando el toque y los gestos predominantemente horizontales siguen destinados al desplazamiento lateral.
