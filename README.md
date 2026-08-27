@@ -436,3 +436,17 @@ Se agrega borrado masivo:
 - **Vaciar padrón de zona** con doble confirmación.
 
 Los cambios se propagan a todas las sucursales de la zona y se sincronizan con Firebase.
+
+## v26 · Padrón ordenado alfabéticamente
+
+El padrón maestro de cada zona se ordena automáticamente por **Descripción**.
+
+El orden se mantiene después de:
+
+- agregar una referencia;
+- editar una referencia;
+- importar / actualizar desde Excel;
+- reemplazar el padrón de zona;
+- eliminar referencias.
+
+Si dos descripciones son iguales, se usa el código de artículo como segundo criterio.

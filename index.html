@@ -4132,6 +4132,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           Las sucursales de la zona heredan automáticamente ese padrón.
           Las referencias nuevas ingresan con <b>Coef. 0%</b> y cronograma sin días activos; las existentes conservan su Coef. y Cronograma.
           También podés seleccionar varias referencias para eliminarlas juntas o vaciar todo el padrón de la zona.
+          El padrón se mantiene automáticamente <b>ordenado alfabéticamente por Descripción</b>.
         </div>
 
         <div class="admin-ref-search-line">
@@ -5025,7 +5026,13 @@ function normalizeZoneReferences(refs){
      if(!Number.isFinite(Number(cur.bto)))cur.bto=ref.bto;
    }
  });
- return Array.from(map.values()).sort((a,b)=>Number(a.article)-Number(b.article));
+ return Array.from(map.values()).sort((a,b)=>{
+   const da=String(a.description||'').trim();
+   const db=String(b.description||'').trim();
+   const cmp=da.localeCompare(db,'es',{sensitivity:'base',numeric:true});
+   if(cmp!==0)return cmp;
+   return String(a.article||'').localeCompare(String(b.article||''),'es',{numeric:true});
+ });
 }
 function loadRawLocalFor(branch){
  try{
@@ -7962,7 +7969,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='67.0';
+ x.sales={};x.salesRows=[];x.version='68.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -9032,7 +9039,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'67.0',
+      appVersion:'68.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
