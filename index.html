@@ -5238,9 +5238,8 @@ function loadLocalFor(branch){
 }
 
 function configSnapshot(obj=state){
- const x=clone(obj);
- delete x.sales;delete x.salesRows;delete x.salesSource;delete x.salesLoadedAt;delete x.salesSheetName;
- return x;
+ const {sales,salesRows,salesSource,salesLoadedAt,salesSheetName,...configOnly}=(obj||{});
+ return clone(configOnly);
 }
 function persistState(obj=state){
  try{
@@ -5250,9 +5249,80 @@ function persistState(obj=state){
    return true;
  }catch(e){return false}
 }
-function saveNow(){try{persistState(state);document.getElementById('saveState').textContent='Config. Suc '+state.branch+' guardada '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}catch(e){document.getElementById('saveState').textContent='No se pudo guardar';}recalc()}
+function saveNow(){
+ clearTimeout(cronogramaSaveTimer);
+ cronogramaSaveTimer=null;
+ refreshCronogramaComputed();
+ try{
+   persistState(state);
+   document.getElementById('saveState').textContent='Config. Suc '+state.branch+' guardada '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+ }catch(e){
+   document.getElementById('saveState').textContent='No se pudo guardar';
+ }
+ recalc();
+}
 let saveTimer;
 let cronogramaSaveTimer;
+
+const cronogramaDirtyProducts=new Set();
+const cronogramaViewDirty={plan:false,baker:false,mother:false};
+
+function activeSheetName(){
+ return document.querySelector('.sheet-tab.active')?.dataset?.sheet||'params';
+}
+function clearCronogramaDirtyState(){
+ cronogramaDirtyProducts.clear();
+ cronogramaViewDirty.plan=false;
+ cronogramaViewDirty.baker=false;
+ cronogramaViewDirty.mother=false;
+}
+function markCronogramaDirty(index){
+ if(Number.isInteger(index)&&index>=0)cronogramaDirtyProducts.add(index);
+ cronogramaViewDirty.plan=true;
+ cronogramaViewDirty.baker=true;
+ cronogramaViewDirty.mother=true;
+}
+function refreshCronogramaComputed(){
+ if(!cronogramaDirtyProducts.size)return;
+ cronogramaDirtyProducts.forEach(i=>{
+   if(state.products[i])computed[i]=computeProduct(state.products[i]);
+ });
+ cronogramaDirtyProducts.clear();
+}
+function persistCronogramaFast(){
+ try{
+   const snapshot=configSnapshot(state);
+   localStorage.setItem(storageKey(state.branch),JSON.stringify(snapshot));
+   firebaseQueueBranchSnapshotSync(snapshot);
+   const el=document.getElementById('saveState');
+   if(el)el.textContent='Cronograma Suc '+state.branch+' guardado '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+   return true;
+ }catch(e){
+   const el=document.getElementById('saveState');
+   if(el)el.textContent='No se pudo guardar el cronograma';
+   return false;
+ }
+}
+function flushCronogramaChanges({renderActive=true}={}){
+ clearTimeout(cronogramaSaveTimer);
+ cronogramaSaveTimer=null;
+ refreshCronogramaComputed();
+ persistCronogramaFast();
+ if(!renderActive)return;
+ const sheet=activeSheetName();
+ if(sheet==='plan'&&cronogramaViewDirty.plan){renderPlan();cronogramaViewDirty.plan=false;}
+ else if(sheet==='baker'&&cronogramaViewDirty.baker){renderBaker();cronogramaViewDirty.baker=false;}
+ else if(sheet==='mother'&&cronogramaViewDirty.mother){renderMotherSheet();cronogramaViewDirty.mother=false;}
+}
+function ensureCronogramaViewFresh(sheet){
+ if(cronogramaSaveTimer||cronogramaDirtyProducts.size){
+   flushCronogramaChanges({renderActive:false});
+ }
+ if(sheet==='plan'&&cronogramaViewDirty.plan){renderPlan();cronogramaViewDirty.plan=false;}
+ if(sheet==='baker'&&cronogramaViewDirty.baker){renderBaker();cronogramaViewDirty.baker=false;}
+ if(sheet==='mother')cronogramaViewDirty.mother=false;
+}
+
 function scheduleSave(){
  if(!canEditCurrentBranch()){
    const local=loadLocalFor(state.branch);if(local)state=attachSalesToState(local,state.branch);
@@ -5272,11 +5342,7 @@ function scheduleCronogramaSave(){
  clearTimeout(cronogramaSaveTimer);
  const status=document.getElementById('saveState');
  if(status)status.textContent='Cronograma modificado · guardado automático…';
- // Agrupa una ráfaga de clics en un único persist + recalc + Firebase.
- cronogramaSaveTimer=setTimeout(()=>{
-   cronogramaSaveTimer=null;
-   saveNow();
- },650);
+ cronogramaSaveTimer=setTimeout(()=>flushCronogramaChanges({renderActive:true}),850);
 }
 function monthNameFromDate(value){
  const d=new Date(String(value||'')+'T12:00:00');
@@ -5323,6 +5389,7 @@ function recalc(){
  renderBaker();
  renderMotherSheet();
  initMobileTouchScrolling();
+ clearCronogramaDirtyState();
 }
 
 
@@ -6399,13 +6466,11 @@ function firebaseStopRealtime(){
  firebaseSetStatus('Firebase desconectado. Ingresá nuevamente para recuperar la sincronización.','pending');
 }
 
-function firebaseQueueBranchSync(obj){
- if(firebaseCloudApplying || !firebaseCloudInitialized)return;
- const snapshot=configSnapshot(obj);
+function firebaseQueueBranchSnapshotSync(snapshot){
+ if(firebaseCloudApplying||!firebaseCloudInitialized)return;
+ if(!snapshot?.branch)return;
  if(!window.MigaFirebase?.canWriteBranch?.(snapshot.branch))return;
-
  firebaseSetStatus('☁ Guardando cambios de la Suc. '+esc(snapshot.branch)+'…','pending');
-
  window.MigaFirebase.saveBranch(snapshot.branch,snapshot)
    .then(()=>{
      const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -6415,6 +6480,10 @@ function firebaseQueueBranchSync(obj){
      console.error('Firebase branch sync:',err);
      firebaseSetStatus('⚠ Error al sincronizar la Suc. '+esc(snapshot.branch)+': '+esc(err?.message||String(err)),'error');
    });
+}
+function firebaseQueueBranchSync(obj){
+ if(firebaseCloudApplying||!firebaseCloudInitialized)return;
+ firebaseQueueBranchSnapshotSync(configSnapshot(obj));
 }
 
 function firebaseQueueZoneRefsSync(zoneId,refs){
@@ -7848,6 +7917,7 @@ function toggleSchedule(i,d,cell){
  if(!product)return;
  const on=product.schedule[d]?0:1;
  product.schedule[d]=on;
+ markCronogramaDirty(i);
 
  // Respuesta visual inmediata: no esperamos al recálculo general.
  paintScheduleCell(cell,on);
@@ -7861,6 +7931,7 @@ function fillScheduleWeek(i,button){
  const product=state.products[i];
  if(!product)return;
  product.schedule=[1,1,1,1,1,1,1];
+ markCronogramaDirty(i);
 
  // Actualiza sólo esta fila, sin reconstruir todo el padrón.
  const row=button?.closest('tr');
@@ -8236,7 +8307,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='74.0';
+ x.sales={};x.salesRows=[];x.version='75.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -8853,27 +8924,30 @@ function syncSheetChrome(sheetName){
 }
 
 document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click',()=>{
+ const targetSheet=btn.dataset.sheet;
+ ensureCronogramaViewFresh(targetSheet);
  document.querySelectorAll('.sheet-tab').forEach(x=>x.classList.toggle('active',x===btn));
  document.querySelectorAll('.sheet-view').forEach(x=>x.classList.remove('active'));
- document.getElementById('sheet-'+btn.dataset.sheet).classList.add('active');
- syncSheetChrome(btn.dataset.sheet);
- if(btn.dataset.sheet==='plan'){
+ document.getElementById('sheet-'+targetSheet).classList.add('active');
+ syncSheetChrome(targetSheet);
+ if(targetSheet==='plan'){
    requestAnimationFrame(()=>{
      initPlanNavigator();
      requestAnimationFrame(syncPlanNavigator);
    });
    setTimeout(syncPlanNavigator,150);
  }
- if(btn.dataset.sheet==='baker'){
+ if(targetSheet==='baker'){
    requestAnimationFrame(()=>{
      initBakerNavigator();
      requestAnimationFrame(syncBakerNavigator);
    });
    setTimeout(syncBakerNavigator,150);
  }
- if(btn.dataset.sheet==='mother'){
+ if(targetSheet==='mother'){
    requestAnimationFrame(()=>{
      renderMotherSheet();
+     cronogramaViewDirty.mother=false;
      initMotherNavigator();
      requestAnimationFrame(syncMotherNavigator);
    });
@@ -9460,7 +9534,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'74.0',
+      appVersion:'75.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

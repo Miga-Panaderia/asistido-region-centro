@@ -522,3 +522,17 @@ Se optimiza la carga manual de cronogramas por sucursal.
 - el resto de las hojas se recalcula después de una breve pausa de 650 ms.
 
 Esto reduce de forma importante la sensación de demora durante la carga inicial de cronogramas.
+
+## v33 · Renderizado incremental
+
+Se optimiza la carga de cronogramas:
+
+- cada clic sigue respondiendo inmediatamente;
+- sólo se recalculan las referencias modificadas;
+- mientras el usuario permanece en Parámetros Suc no se reconstruyen las otras hojas;
+- Panadería Suc y Hoja del Panadero se refrescan cuando se abren;
+- Plan Elaboradora se recalcula al ingresar a su solapa;
+- el snapshot de configuración ya no clona las ventas antes de descartarlas;
+- el mismo snapshot se reutiliza para localStorage y Firebase.
+
+Esto reduce cálculos, serializaciones y renderizados innecesarios durante cargas intensivas de cronograma.
