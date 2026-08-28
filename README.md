@@ -536,3 +536,12 @@ Se optimiza la carga de cronogramas:
 - el mismo snapshot se reutiliza para localStorage y Firebase.
 
 Esto reduce cálculos, serializaciones y renderizados innecesarios durante cargas intensivas de cronograma.
+
+## v34 · Plan Elaboradora: imprimir y descargar Excel
+
+Se agregan dos acciones operativas en **Plan Elaboradora**:
+
+- **Imprimir**: imprime la tabla completa de la elaboradora y fecha seleccionadas, independientemente de la posición horizontal de la pantalla.
+- **Excel**: descarga un archivo `.xlsx` real con Artículo, Descripción, Marca, Aptitud, U/M, Bto, sucursales destino, kilos por producto, totales por sucursal y total general.
+
+El Excel incluye identificación de la elaboradora, zona y fecha de producción, encabezado congelado, filtro y formato preparado para impresión horizontal.

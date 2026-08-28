@@ -3768,6 +3768,157 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     font-size:9px;
   }
 }
+
+/* =========================================================
+   V76 - PLAN ELABORADORA · IMPRESIÓN + EXCEL
+   ========================================================= */
+.mother-output-actions{
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+  margin-left:auto;
+}
+.mother-output-actions button{
+  height:31px;
+  padding:0 12px;
+  border:1px solid #687984;
+  background:#fff;
+  color:#17324a;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.mother-output-actions button:hover{
+  background:#edf3f5;
+}
+@media(max-width:700px){
+  .mother-output-actions{
+    width:100%;
+    margin-left:0;
+  }
+  .mother-output-actions button{
+    flex:1 1 0;
+  }
+}
+
+@media print{
+  body.printing-mother .appbar,
+  body.printing-mother .excel-tabs,
+  body.printing-mother #assistantLauncher,
+  body.printing-mother #miniAssistant,
+  body.printing-mother #sheet-mother .mother-toolbar,
+  body.printing-mother #sheet-mother .mother-destinations-wrap,
+  body.printing-mother #sheet-mother #motherNav{
+    display:none !important;
+  }
+
+  body.printing-mother,
+  body.printing-mother .workspace{
+    width:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    background:#fff !important;
+  }
+
+  body.printing-mother .sheet-view{
+    display:none !important;
+  }
+
+  body.printing-mother #sheet-mother{
+    display:block !important;
+    position:static !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    overflow:visible !important;
+    background:#fff !important;
+  }
+
+  body.printing-mother #sheet-mother .mother-sheet-block,
+  body.printing-mother #motherTableWrap,
+  body.printing-mother #motherTable{
+    display:block !important;
+    position:static !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+
+  body.printing-mother .mother-grid-title{
+    display:flex !important;
+    width:100% !important;
+    min-height:30px !important;
+    margin:0 0 3mm !important;
+    border:1px solid #000 !important;
+    background:#fff !important;
+    color:#000 !important;
+  }
+  body.printing-mother #motherGridTitle{
+    font-size:14px !important;
+    color:#000 !important;
+    background:#fff !important;
+  }
+  body.printing-mother #motherDateBadge{
+    font-size:12px !important;
+    color:#000 !important;
+    background:#fff !important;
+    border-left:1px solid #000 !important;
+  }
+
+  body.printing-mother #motherTable .mother-grid{
+    display:table !important;
+    width:100% !important;
+    min-width:0 !important;
+    table-layout:fixed !important;
+    border-collapse:collapse !important;
+    font-size:7px !important;
+  }
+  body.printing-mother #motherTable .mother-grid thead{
+    display:table-header-group !important;
+  }
+  body.printing-mother #motherTable .mother-grid tr{
+    break-inside:avoid !important;
+    page-break-inside:avoid !important;
+  }
+  body.printing-mother #motherTable .mother-grid th,
+  body.printing-mother #motherTable .mother-grid td{
+    display:table-cell !important;
+    position:static !important;
+    padding:1px 2px !important;
+    border:1px solid #444 !important;
+    font-size:7px !important;
+    line-height:1.08 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+  }
+  body.printing-mother #motherTable .mother-grid .mobile-hide-mother{
+    display:table-cell !important;
+  }
+  body.printing-mother #motherTable .mother-grid .article{width:48px !important;}
+  body.printing-mother #motherTable .mother-grid .description{
+    width:180px !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+  body.printing-mother #motherTable .mother-grid .brand{width:68px !important;}
+  body.printing-mother #motherTable .mother-grid .aptitude{width:34px !important;}
+  body.printing-mother #motherTable .mother-grid .um{width:28px !important;}
+  body.printing-mother #motherTable .mother-grid .bto{width:25px !important;}
+  body.printing-mother #motherTable .mother-grid .branch-col{width:31px !important;}
+  body.printing-mother #motherTable .mother-grid .product-total{width:58px !important;}
+
+  @page{
+    size:A4 landscape;
+    margin:4mm;
+  }
+}
 </style>
 </head>
 <body>
@@ -3910,6 +4061,11 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
         <div class="mother-control mother-date-control">
           <label>Fecha de producción</label>
           <select id="motherDateSelect" onchange="changeMotherDate(this.value)"></select>
+        </div>
+
+        <div class="mother-output-actions" id="motherOutputActions">
+          <button type="button" onclick="printMotherFull()">🖨 Imprimir</button>
+          <button type="button" onclick="exportMotherExcel()">⬇ Excel</button>
         </div>
 
         <div class="mother-actions" id="motherDestinationActions" style="display:none">
@@ -7785,6 +7941,351 @@ function renderMotherTable(){
  setTimeout(syncMotherNavigator,60);
 }
 
+
+function motherOutputDataset(){
+ if(!motherBranchCode||!branchCatalog[motherBranchCode]){
+   alert('Primero seleccioná una sucursal elaboradora.');
+   return null;
+ }
+ if(!motherDateISO){
+   alert('Seleccioná una fecha de producción.');
+   return null;
+ }
+
+ const motherState=getBranchStateForMother(motherBranchCode);
+ const products=motherState.products||[];
+ const selected=motherSelectedBranches.filter(code=>branchCatalog[code]);
+ if(!selected.length){
+   alert('No hay sucursales seleccionadas para producir.');
+   return null;
+ }
+
+ const branchData={};
+ selected.forEach(code=>{
+   const st=getBranchStateForMother(code);
+   const index=dateIndexForBranch(st,motherDateISO);
+   const map={};
+   (st.products||[]).forEach(p=>{
+     const cp=computeProductForState(st,p);
+     map[p.article]=index>=0&&index<35?cp.plan[index]:null;
+   });
+   branchData[code]={state:st,index,map};
+ });
+
+ const branchTotals=Object.fromEntries(selected.map(c=>[c,0]));
+ const rows=products.map(p=>{
+   let total=0,hasAny=false;
+   const values={};
+   selected.forEach(code=>{
+     const raw=branchData[code].map[p.article];
+     if(raw===null||raw===undefined||!Number.isFinite(Number(raw))){
+       values[code]=null;
+     }else{
+       const v=Number(raw);
+       values[code]=v;
+       total+=v;
+       branchTotals[code]+=v;
+       hasAny=true;
+     }
+   });
+   return {product:p,values,total:hasAny?total:null};
+ });
+
+ const grandTotal=selected.reduce((sum,code)=>sum+branchTotals[code],0);
+ return {
+   elaborator:motherBranchCode,
+   elaboratorName:branchCatalog[motherBranchCode]?.name||'',
+   zone:branchZoneName(motherBranchCode)||'',
+   dateISO:motherDateISO,
+   dateLabel:spanishDayDate(motherDateISO),
+   selected,
+   rows,
+   branchTotals,
+   grandTotal
+ };
+}
+
+function printMotherFull(){
+ const data=motherOutputDataset();
+ if(!data)return;
+
+ const box=document.getElementById('motherTableWrap');
+ const previousLeft=box?box.scrollLeft:0;
+ const previousTop=box?box.scrollTop:0;
+
+ // Asegura que la tabla corresponda a la fecha/selección actual.
+ renderMotherTable();
+ document.body.classList.add('printing-mother');
+ if(box){box.scrollLeft=0;box.scrollTop=0;}
+
+ const cleanup=()=>{
+   document.body.classList.remove('printing-mother');
+   if(box){box.scrollLeft=previousLeft;box.scrollTop=previousTop;}
+   window.removeEventListener('afterprint',cleanup);
+ };
+ window.addEventListener('afterprint',cleanup);
+
+ requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()));
+ setTimeout(()=>{
+   if(document.body.classList.contains('printing-mother'))cleanup();
+ },5000);
+}
+
+function xlsxXmlEscape(v){
+ return String(v??'')
+   .replace(/&/g,'&amp;')
+   .replace(/</g,'&lt;')
+   .replace(/>/g,'&gt;')
+   .replace(/"/g,'&quot;')
+   .replace(/'/g,'&apos;');
+}
+function xlsxColName(n){
+ let s='';
+ while(n>0){
+   n--;
+   s=String.fromCharCode(65+(n%26))+s;
+   n=Math.floor(n/26);
+ }
+ return s;
+}
+function xlsxCellXml(value,row,col,style=0,forceText=false){
+ const ref=xlsxColName(col)+row;
+ if(value===null||value===undefined||value===''){
+   return `<c r="${ref}" s="${style}"/>`;
+ }
+ if(!forceText&&typeof value==='number'&&Number.isFinite(value)){
+   return `<c r="${ref}" s="${style}"><v>${value}</v></c>`;
+ }
+ return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xlsxXmlEscape(value)}</t></is></c>`;
+}
+function xlsxCrc32(bytes){
+ if(!xlsxCrc32.table){
+   const table=new Uint32Array(256);
+   for(let n=0;n<256;n++){
+     let c=n;
+     for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
+     table[n]=c>>>0;
+   }
+   xlsxCrc32.table=table;
+ }
+ let crc=0xFFFFFFFF;
+ const table=xlsxCrc32.table;
+ for(const b of bytes)crc=table[(crc^b)&0xFF]^(crc>>>8);
+ return (crc^0xFFFFFFFF)>>>0;
+}
+function xlsxConcatBytes(parts){
+ const total=parts.reduce((n,p)=>n+p.length,0);
+ const out=new Uint8Array(total);
+ let pos=0;
+ parts.forEach(p=>{out.set(p,pos);pos+=p.length;});
+ return out;
+}
+function xlsxDosDateTime(date=new Date()){
+ const year=Math.max(1980,date.getFullYear());
+ return {
+   time:((date.getHours()&31)<<11)|((date.getMinutes()&63)<<5)|((Math.floor(date.getSeconds()/2))&31),
+   date:(((year-1980)&127)<<9)|(((date.getMonth()+1)&15)<<5)|(date.getDate()&31)
+ };
+}
+function xlsxZipStore(entries){
+ const enc=new TextEncoder();
+ const locals=[];
+ const centrals=[];
+ let offset=0;
+ const dos=xlsxDosDateTime();
+
+ entries.forEach(entry=>{
+   const nameBytes=enc.encode(entry.name);
+   const data=typeof entry.data==='string'?enc.encode(entry.data):entry.data;
+   const crc=xlsxCrc32(data);
+
+   const local=new Uint8Array(30+nameBytes.length+data.length);
+   const ldv=new DataView(local.buffer);
+   ldv.setUint32(0,0x04034b50,true);
+   ldv.setUint16(4,20,true);
+   ldv.setUint16(6,0,true);
+   ldv.setUint16(8,0,true);
+   ldv.setUint16(10,dos.time,true);
+   ldv.setUint16(12,dos.date,true);
+   ldv.setUint32(14,crc,true);
+   ldv.setUint32(18,data.length,true);
+   ldv.setUint32(22,data.length,true);
+   ldv.setUint16(26,nameBytes.length,true);
+   ldv.setUint16(28,0,true);
+   local.set(nameBytes,30);
+   local.set(data,30+nameBytes.length);
+   locals.push(local);
+
+   const central=new Uint8Array(46+nameBytes.length);
+   const cdv=new DataView(central.buffer);
+   cdv.setUint32(0,0x02014b50,true);
+   cdv.setUint16(4,20,true);
+   cdv.setUint16(6,20,true);
+   cdv.setUint16(8,0,true);
+   cdv.setUint16(10,0,true);
+   cdv.setUint16(12,dos.time,true);
+   cdv.setUint16(14,dos.date,true);
+   cdv.setUint32(16,crc,true);
+   cdv.setUint32(20,data.length,true);
+   cdv.setUint32(24,data.length,true);
+   cdv.setUint16(28,nameBytes.length,true);
+   cdv.setUint16(30,0,true);
+   cdv.setUint16(32,0,true);
+   cdv.setUint16(34,0,true);
+   cdv.setUint16(36,0,true);
+   cdv.setUint32(38,0,true);
+   cdv.setUint32(42,offset,true);
+   central.set(nameBytes,46);
+   centrals.push(central);
+   offset+=local.length;
+ });
+
+ const centralSize=centrals.reduce((n,p)=>n+p.length,0);
+ const eocd=new Uint8Array(22);
+ const edv=new DataView(eocd.buffer);
+ edv.setUint32(0,0x06054b50,true);
+ edv.setUint16(4,0,true);
+ edv.setUint16(6,0,true);
+ edv.setUint16(8,entries.length,true);
+ edv.setUint16(10,entries.length,true);
+ edv.setUint32(12,centralSize,true);
+ edv.setUint32(16,offset,true);
+ edv.setUint16(20,0,true);
+
+ return xlsxConcatBytes([...locals,...centrals,eocd]);
+}
+function buildMotherXlsx(data){
+ const headers=['Artículo','Descripción','Marca','Aptitud','U/M','Bto',
+   ...data.selected.map(code=>`${code} - ${branchCatalog[code]?.name||''}`),
+   'Total Kilos x Producto'];
+ const lastCol=xlsxColName(headers.length);
+ const rows=[];
+
+ let r=1;
+ rows.push(`<row r="${r}" ht="24" customHeight="1">${xlsxCellXml('PLAN ELABORADORA',r,1,1,true)}</row>`);r++;
+ rows.push(`<row r="${r}">${xlsxCellXml(`Elaboradora: ${data.elaborator} - ${data.elaboratorName} - ${data.zone}`,r,1,0,true)}</row>`);r++;
+ rows.push(`<row r="${r}">${xlsxCellXml(`Fecha de producción: ${data.dateLabel} (${data.dateISO})`,r,1,0,true)}</row>`);r++;
+ r++;
+
+ const headerRow=r;
+ rows.push(`<row r="${r}">${headers.map((h,i)=>xlsxCellXml(h,r,i+1,2,true)).join('')}</row>`);r++;
+
+ data.rows.forEach(item=>{
+   const p=item.product;
+   const values=[p.article,p.description,p.brand,p.aptitude,p.um,p.bto,
+     ...data.selected.map(code=>item.values[code]),item.total];
+   const cells=values.map((v,i)=>{
+     const forceText=i<6;
+     return xlsxCellXml(v,r,i+1,0,forceText);
+   }).join('');
+   rows.push(`<row r="${r}">${cells}</row>`);r++;
+ });
+
+ const totalValues=['','TOTAL DE KILOS POR SUCURSAL','','','','',
+   ...data.selected.map(code=>data.branchTotals[code]),data.grandTotal];
+ rows.push(`<row r="${r}">${totalValues.map((v,i)=>xlsxCellXml(v,r,i+1,3,i<6)).join('')}</row>`);
+ const lastRow=r;
+
+ const cols=[];
+ headers.forEach((_,i)=>{
+   let width=12;
+   if(i===0)width=11;
+   else if(i===1)width=38;
+   else if(i===2)width=18;
+   else if(i===3)width=10;
+   else if(i===4)width=8;
+   else if(i===5)width=7;
+   else if(i===headers.length-1)width=19;
+   else width=17;
+   cols.push(`<col min="${i+1}" max="${i+1}" width="${width}" customWidth="1"/>`);
+ });
+
+ const sheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <dimension ref="A1:${lastCol}${lastRow}"/>
+ <sheetViews><sheetView workbookViewId="0"><pane ySplit="${headerRow}" topLeftCell="A${headerRow+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+ <cols>${cols.join('')}</cols>
+ <sheetData>${rows.join('')}</sheetData>
+ <mergeCells count="3">
+  <mergeCell ref="A1:${lastCol}1"/>
+  <mergeCell ref="A2:${lastCol}2"/>
+  <mergeCell ref="A3:${lastCol}3"/>
+ </mergeCells>
+ <autoFilter ref="A${headerRow}:${lastCol}${lastRow-1}"/>
+ <pageMargins left="0.2" right="0.2" top="0.3" bottom="0.3" header="0.1" footer="0.1"/>
+ <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
+</worksheet>`;
+
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <fonts count="3">
+  <font><sz val="10"/><name val="Calibri"/></font>
+  <font><b/><sz val="16"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+  <font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+ </fonts>
+ <fills count="3">
+  <fill><patternFill patternType="none"/></fill>
+  <fill><patternFill patternType="gray125"/></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FF1F4E68"/><bgColor indexed="64"/></patternFill></fill>
+ </fills>
+ <borders count="2">
+  <border><left/><right/><top/><bottom/><diagonal/></border>
+  <border><left style="thin"><color rgb="FF808080"/></left><right style="thin"><color rgb="FF808080"/></right><top style="thin"><color rgb="FF808080"/></top><bottom style="thin"><color rgb="FF808080"/></bottom><diagonal/></border>
+ </borders>
+ <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+ <cellXfs count="4">
+  <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center"/></xf>
+  <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="right" vertical="center"/></xf>
+ </cellXfs>
+ <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+
+ const entries=[
+  {name:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+ <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+ <Default Extension="xml" ContentType="application/xml"/>
+ <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+ <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+ <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>`},
+  {name:'_rels/.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+ <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`},
+  {name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+ <sheets><sheet name="Plan Elaboradora" sheetId="1" r:id="rId1"/></sheets>
+</workbook>`},
+  {name:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+ <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+ <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`},
+  {name:'xl/styles.xml',data:styles},
+  {name:'xl/worksheets/sheet1.xml',data:sheet}
+ ];
+ return xlsxZipStore(entries);
+}
+function exportMotherExcel(){
+ const data=motherOutputDataset();
+ if(!data)return;
+ try{
+   const bytes=buildMotherXlsx(data);
+   const safeDate=String(data.dateISO||'').replace(/[^0-9-]/g,'');
+   const name=`Plan_Elaboradora_Suc_${data.elaborator}_${safeDate||'Produccion'}.xlsx`;
+   downloadBlob(
+     new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+     name
+   );
+ }catch(e){
+   console.error('Exportar Plan Elaboradora:',e);
+   alert('No se pudo generar el Excel: '+(e?.message||e));
+ }
+}
+
 /* Navegador horizontal de Plan Elaboradora */
 function motherMaxScroll(){
  const box=document.getElementById('motherTableWrap');
@@ -8307,7 +8808,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='75.0';
+ x.sales={};x.salesRows=[];x.version='76.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -9534,7 +10035,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'75.0',
+      appVersion:'76.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
