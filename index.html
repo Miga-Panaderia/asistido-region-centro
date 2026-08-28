@@ -4204,6 +4204,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           Las referencias nuevas ingresan con <b>Coef. 0%</b> y cronograma sin días activos; las existentes conservan su Coef. y Cronograma.
           También podés seleccionar varias referencias para eliminarlas juntas o vaciar todo el padrón de la zona.
           El padrón se mantiene automáticamente <b>ordenado alfabéticamente por Descripción</b>.
+          La carga del cronograma utiliza <b>guardado agrupado</b>: los clics se muestran al instante y se sincronizan juntos después de una breve pausa.
         </div>
 
         <div class="admin-ref-search-line">
@@ -5250,13 +5251,32 @@ function persistState(obj=state){
  }catch(e){return false}
 }
 function saveNow(){try{persistState(state);document.getElementById('saveState').textContent='Config. Suc '+state.branch+' guardada '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}catch(e){document.getElementById('saveState').textContent='No se pudo guardar';}recalc()}
-let saveTimer;function scheduleSave(){
+let saveTimer;
+let cronogramaSaveTimer;
+function scheduleSave(){
  if(!canEditCurrentBranch()){
    const local=loadLocalFor(state.branch);if(local)state=attachSalesToState(local,state.branch);
    recalc();requireBranchCloudAccess();return;
  }
- clearTimeout(saveTimer);document.getElementById('saveState').textContent='Cambios sin guardar';
+ clearTimeout(cronogramaSaveTimer);
+ clearTimeout(saveTimer);
+ document.getElementById('saveState').textContent='Cambios sin guardar';
  saveTimer=setTimeout(saveNow,220);
+}
+function scheduleCronogramaSave(){
+ if(!canEditCurrentBranch()){
+   const local=loadLocalFor(state.branch);if(local)state=attachSalesToState(local,state.branch);
+   recalc();requireBranchCloudAccess();return;
+ }
+ clearTimeout(saveTimer);
+ clearTimeout(cronogramaSaveTimer);
+ const status=document.getElementById('saveState');
+ if(status)status.textContent='Cronograma modificado · guardado automático…';
+ // Agrupa una ráfaga de clics en un único persist + recalc + Firebase.
+ cronogramaSaveTimer=setTimeout(()=>{
+   cronogramaSaveTimer=null;
+   saveNow();
+ },650);
 }
 function monthNameFromDate(value){
  const d=new Date(String(value||'')+'T12:00:00');
@@ -7793,9 +7813,9 @@ function renderPatron(){
    <td class="apt"><span class="patron-master-value center">${esc(p.aptitude)}</span></td>
    <td class="um"><span class="patron-master-value center">${esc(p.um)}</span></td>
    <td class="bto"><span class="patron-master-value center">${esc(p.bto)}</span></td>`;
-   for(let d=0;d<7;d++)rows+=`<td class="day ${p.schedule[d]?'sched-on':'sched-off'}" onclick="toggleSchedule(${i},${d})">${p.schedule[d]?'1':''}</td>`;
+   for(let d=0;d<7;d++)rows+=`<td class="day ${p.schedule[d]?'sched-on':'sched-off'}" onclick="toggleSchedule(${i},${d},this)">${p.schedule[d]?'1':''}</td>`;
    const fullWeek=(p.schedule||[]).slice(0,7).every(v=>n(v)?1:0);
-   rows+=`<td class="week-fill"><button type="button" class="week-fill-btn ${fullWeek?'complete':''}" onclick="fillScheduleWeek(${i})" title="Marcar lunes a domingo">✓ 7/7</button></td>`;
+   rows+=`<td class="week-fill"><button type="button" class="week-fill-btn ${fullWeek?'complete':''}" onclick="fillScheduleWeek(${i},this)" title="Marcar lunes a domingo">✓ 7/7</button></td>`;
    rows+='</tr>';
  });
  document.getElementById('patronSheet').innerHTML=`<table class="excel-table patron"><thead>
@@ -7810,17 +7830,46 @@ function editProduct(i,k,v){
  state=normalizeStateArticles(state);
  scheduleSave();
 }
-function toggleSchedule(i,d){
- if(!requireBranchCloudAccess())return;
- state.products[i].schedule[d]=state.products[i].schedule[d]?0:1;scheduleSave();
+function paintScheduleCell(cell,on){
+ if(!cell)return;
+ cell.textContent=on?'1':'';
+ cell.classList.toggle('sched-on',!!on);
+ cell.classList.toggle('sched-off',!on);
 }
-function fillScheduleWeek(i){
+function refreshScheduleWeekButton(row,product){
+ if(!row||!product)return;
+ const full=(product.schedule||[]).slice(0,7).every(v=>n(v)?1:0);
+ const btn=row.querySelector('.week-fill-btn');
+ if(btn)btn.classList.toggle('complete',full);
+}
+function toggleSchedule(i,d,cell){
+ if(!requireBranchCloudAccess())return;
+ const product=state.products[i];
+ if(!product)return;
+ const on=product.schedule[d]?0:1;
+ product.schedule[d]=on;
+
+ // Respuesta visual inmediata: no esperamos al recálculo general.
+ paintScheduleCell(cell,on);
+ refreshScheduleWeekButton(cell?.parentElement,product);
+
+ // Persistencia/recalculo agrupados después de la ráfaga de clics.
+ scheduleCronogramaSave();
+}
+function fillScheduleWeek(i,button){
  if(!requireBranchCloudAccess())return;
  const product=state.products[i];
  if(!product)return;
  product.schedule=[1,1,1,1,1,1,1];
- renderPatron();
- scheduleSave();
+
+ // Actualiza sólo esta fila, sin reconstruir todo el padrón.
+ const row=button?.closest('tr');
+ if(row){
+   row.querySelectorAll('td.day').forEach(cell=>paintScheduleCell(cell,true));
+ }
+ if(button)button.classList.add('complete');
+
+ scheduleCronogramaSave();
 }
 
 function planMaxScroll(){
@@ -8187,7 +8236,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='73.0';
+ x.sales={};x.salesRows=[];x.version='74.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -9411,7 +9460,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'73.0',
+      appVersion:'74.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

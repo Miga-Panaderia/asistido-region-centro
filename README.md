@@ -510,3 +510,15 @@ Nuevo flujo al cambiar de una sucursal autenticada a otra:
 7. El usuario ingresa el PIN y comienza una sesión nueva.
 
 También se agrega recuperación automática ante errores internos no controlados de Firestore, incluidos `PersistentWriteStream`, `Unexpected state`, `Target ID already exists` y `pendingResponses`.
+
+## v32 · Cronograma de carga rápida
+
+Se optimiza la carga manual de cronogramas por sucursal.
+
+- el clic en una celda actualiza su aspecto inmediatamente;
+- no se reconstruye toda la tabla por cada día marcado;
+- una ráfaga de clics se agrupa en un solo guardado, recálculo y sincronización Firebase;
+- el botón `✓ 7/7` actualiza sólo la fila correspondiente;
+- el resto de las hojas se recalcula después de una breve pausa de 650 ms.
+
+Esto reduce de forma importante la sensación de demora durante la carga inicial de cronogramas.
