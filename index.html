@@ -1167,8 +1167,8 @@ button,input,select,textarea{font:inherit}
 }
 .mother-elaborator-tab{
   height:30px;
-  min-width:58px;
-  padding:0 10px;
+  min-width:54px;
+  padding:0 12px;
   border:1px solid #888;
   border-bottom:0;
   background:#dedede;
@@ -1191,9 +1191,7 @@ button,input,select,textarea{font:inherit}
   top:1px;
 }
 .mother-elaborator-tab .elab-name{
-  font-weight:400;
-  margin-left:4px;
-  color:#555;
+  display:none !important;
 }
 .mother-no-elaborators{
   padding:7px 10px;
@@ -3822,6 +3820,8 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     padding:0 !important;
     overflow:visible !important;
     background:#fff !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
   }
 
   body.printing-mother .sheet-view{
@@ -3855,20 +3855,24 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     width:100% !important;
     min-height:30px !important;
     margin:0 0 3mm !important;
-    border:1px solid #000 !important;
-    background:#fff !important;
-    color:#000 !important;
+    border:1px solid #17324a !important;
+    background:#e4eaee !important;
+    color:#17324a !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
   }
   body.printing-mother #motherGridTitle{
     font-size:14px !important;
-    color:#000 !important;
-    background:#fff !important;
+    color:#17324a !important;
+    background:#e4eaee !important;
+    font-weight:800 !important;
   }
   body.printing-mother #motherDateBadge{
     font-size:12px !important;
-    color:#000 !important;
-    background:#fff !important;
-    border-left:1px solid #000 !important;
+    color:#17232d !important;
+    background:#f5e7a8 !important;
+    border-left:1px solid #17324a !important;
+    font-weight:800 !important;
   }
 
   body.printing-mother #motherTable .mother-grid{
@@ -3898,6 +3902,28 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
     overflow:hidden !important;
     text-overflow:clip !important;
   }
+  body.printing-mother #motherTable .mother-grid thead tr:first-child th,
+  body.printing-mother #motherTable .mother-grid thead tr:nth-child(2) th,
+  body.printing-mother #motherTable .mother-grid thead th[rowspan="2"]{
+    background:#dfe6ea !important;
+    color:#17232d !important;
+    font-weight:800 !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+  body.printing-mother #motherTable .mother-grid tbody .product-total{
+    background:#e7eef2 !important;
+    color:#17232d !important;
+    font-weight:800 !important;
+  }
+  body.printing-mother #motherTable .mother-grid .total-row td{
+    background:#dbe5e0 !important;
+    color:#17232d !important;
+    font-weight:800 !important;
+    border-top:2px solid #2f7657 !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
   body.printing-mother #motherTable .mother-grid .mobile-hide-mother{
     display:table-cell !important;
   }
@@ -3911,7 +3937,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
   body.printing-mother #motherTable .mother-grid .aptitude{width:34px !important;}
   body.printing-mother #motherTable .mother-grid .um{width:28px !important;}
   body.printing-mother #motherTable .mother-grid .bto{width:25px !important;}
-  body.printing-mother #motherTable .mother-grid .branch-col{width:31px !important;}
+  body.printing-mother #motherTable .mother-grid .branch-col{width:27px !important;min-width:27px !important;max-width:27px !important;text-align:center !important;}
   body.printing-mother #motherTable .mother-grid .product-total{width:58px !important;}
 
   @page{
@@ -7726,9 +7752,8 @@ function renderMotherElaboratorTabs(){
 
  box.innerHTML=visible.map(code=>{
    const active=code===motherBranchCode?'active':'';
-   const name=branchCatalog[code]?.name||'';
-   return `<button type="button" class="mother-elaborator-tab ${active}" onclick="activateMotherTab('${code}')">
-     ${code}<span class="elab-name">${esc(name)}</span>
+   return `<button type="button" class="mother-elaborator-tab ${active}" onclick="activateMotherTab('${code}')" title="${esc(branchCatalog[code]?.name||'')}">
+     ${code}
    </button>`;
  }).join('');
 
@@ -8033,6 +8058,7 @@ function printMotherFull(){
 
 function xlsxXmlEscape(v){
  return String(v??'')
+   .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'')
    .replace(/&/g,'&amp;')
    .replace(/</g,'&lt;')
    .replace(/>/g,'&gt;')
@@ -8156,19 +8182,19 @@ function xlsxZipStore(entries){
 }
 function buildMotherXlsx(data){
  const headers=['Artículo','Descripción','Marca','Aptitud','U/M','Bto',
-   ...data.selected.map(code=>`${code} - ${branchCatalog[code]?.name||''}`),
+   ...data.selected.map(code=>code),
    'Total Kilos x Producto'];
  const lastCol=xlsxColName(headers.length);
  const rows=[];
 
  let r=1;
- rows.push(`<row r="${r}" ht="24" customHeight="1">${xlsxCellXml('PLAN ELABORADORA',r,1,1,true)}</row>`);r++;
- rows.push(`<row r="${r}">${xlsxCellXml(`Elaboradora: ${data.elaborator} - ${data.elaboratorName} - ${data.zone}`,r,1,0,true)}</row>`);r++;
- rows.push(`<row r="${r}">${xlsxCellXml(`Fecha de producción: ${data.dateLabel} (${data.dateISO})`,r,1,0,true)}</row>`);r++;
+ rows.push(`<row r="${r}" ht="26" customHeight="1">${xlsxCellXml('PLAN ELABORADORA',r,1,1,true)}</row>`);r++;
+ rows.push(`<row r="${r}" ht="20" customHeight="1">${xlsxCellXml(`Elaboradora: ${data.elaborator} - ${data.elaboratorName} - ${data.zone}`,r,1,2,true)}</row>`);r++;
+ rows.push(`<row r="${r}" ht="20" customHeight="1">${xlsxCellXml(`Fecha de producción: ${data.dateLabel} (${data.dateISO})`,r,1,3,true)}</row>`);r++;
  r++;
 
  const headerRow=r;
- rows.push(`<row r="${r}">${headers.map((h,i)=>xlsxCellXml(h,r,i+1,2,true)).join('')}</row>`);r++;
+ rows.push(`<row r="${r}" ht="30" customHeight="1">${headers.map((h,i)=>xlsxCellXml(h,r,i+1,4,true)).join('')}</row>`);r++;
 
  data.rows.forEach(item=>{
    const p=item.product;
@@ -8176,19 +8202,23 @@ function buildMotherXlsx(data){
      ...data.selected.map(code=>item.values[code]),item.total];
    const cells=values.map((v,i)=>{
      const forceText=i<6;
-     return xlsxCellXml(v,r,i+1,0,forceText);
+     let style=0;
+     if(i>=6 && i<headers.length-1)style=5;
+     if(i===headers.length-1)style=6;
+     return xlsxCellXml(v,r,i+1,style,forceText);
    }).join('');
-   rows.push(`<row r="${r}">${cells}</row>`);r++;
+   rows.push(`<row r="${r}" ht="18" customHeight="1">${cells}</row>`);r++;
  });
 
- const totalValues=['','TOTAL DE KILOS POR SUCURSAL','','','','',
+ const totalRow=r;
+ const totalValues=['TOTAL DE KILOS POR SUCURSAL','','','','','',
    ...data.selected.map(code=>data.branchTotals[code]),data.grandTotal];
- rows.push(`<row r="${r}">${totalValues.map((v,i)=>xlsxCellXml(v,r,i+1,3,i<6)).join('')}</row>`);
+ rows.push(`<row r="${r}" ht="20" customHeight="1">${totalValues.map((v,i)=>xlsxCellXml(v,r,i+1,7,i<6)).join('')}</row>`);
  const lastRow=r;
 
  const cols=[];
  headers.forEach((_,i)=>{
-   let width=12;
+   let width=11;
    if(i===0)width=11;
    else if(i===1)width=38;
    else if(i===2)width=18;
@@ -8196,48 +8226,63 @@ function buildMotherXlsx(data){
    else if(i===4)width=8;
    else if(i===5)width=7;
    else if(i===headers.length-1)width=19;
-   else width=17;
+   else width=7; // códigos de sucursal de 3 dígitos
    cols.push(`<col min="${i+1}" max="${i+1}" width="${width}" customWidth="1"/>`);
  });
 
+ // Orden OOXML importante: autoFilter debe ir ANTES de mergeCells.
  const sheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>
  <dimension ref="A1:${lastCol}${lastRow}"/>
  <sheetViews><sheetView workbookViewId="0"><pane ySplit="${headerRow}" topLeftCell="A${headerRow+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+ <sheetFormatPr defaultRowHeight="15"/>
  <cols>${cols.join('')}</cols>
  <sheetData>${rows.join('')}</sheetData>
- <mergeCells count="3">
+ <autoFilter ref="A${headerRow}:${lastCol}${lastRow-1}"/>
+ <mergeCells count="4">
   <mergeCell ref="A1:${lastCol}1"/>
   <mergeCell ref="A2:${lastCol}2"/>
   <mergeCell ref="A3:${lastCol}3"/>
+  <mergeCell ref="A${totalRow}:F${totalRow}"/>
  </mergeCells>
- <autoFilter ref="A${headerRow}:${lastCol}${lastRow-1}"/>
+ <printOptions horizontalCentered="1"/>
  <pageMargins left="0.2" right="0.2" top="0.3" bottom="0.3" header="0.1" footer="0.1"/>
  <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
 </worksheet>`;
 
  const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
- <fonts count="3">
-  <font><sz val="10"/><name val="Calibri"/></font>
-  <font><b/><sz val="16"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
-  <font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+ <numFmts count="1"><numFmt numFmtId="164" formatCode="0.0"/></numFmts>
+ <fonts count="4">
+  <font><sz val="10"/><color rgb="FF17232D"/><name val="Calibri"/></font>
+  <font><b/><sz val="16"/><color rgb="FF17324A"/><name val="Calibri"/></font>
+  <font><b/><sz val="10"/><color rgb="FF17232D"/><name val="Calibri"/></font>
+  <font><b/><sz val="10"/><color rgb="FF17324A"/><name val="Calibri"/></font>
  </fonts>
- <fills count="3">
+ <fills count="7">
   <fill><patternFill patternType="none"/></fill>
   <fill><patternFill patternType="gray125"/></fill>
-  <fill><patternFill patternType="solid"><fgColor rgb="FF1F4E68"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFE4EAEE"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFF5E7A8"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFDFE6EA"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFE7EEF2"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFDBE5E0"/><bgColor indexed="64"/></patternFill></fill>
  </fills>
  <borders count="2">
   <border><left/><right/><top/><bottom/><diagonal/></border>
-  <border><left style="thin"><color rgb="FF808080"/></left><right style="thin"><color rgb="FF808080"/></right><top style="thin"><color rgb="FF808080"/></top><bottom style="thin"><color rgb="FF808080"/></bottom><diagonal/></border>
+  <border><left style="thin"><color rgb="FF596A77"/></left><right style="thin"><color rgb="FF596A77"/></right><top style="thin"><color rgb="FF596A77"/></top><bottom style="thin"><color rgb="FF596A77"/></bottom><diagonal/></border>
  </borders>
  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
- <cellXfs count="4">
+ <cellXfs count="8">
   <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center"/></xf>
   <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
-  <xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
-  <xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="right" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="left" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+  <xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="164" fontId="2" fillId="5" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="164" fontId="2" fillId="6" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
  </cellXfs>
  <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
@@ -8808,7 +8853,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='76.0';
+ x.sales={};x.salesRows=[];x.version='77.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -10035,7 +10080,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'76.0',
+      appVersion:'77.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

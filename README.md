@@ -545,3 +545,18 @@ Se agregan dos acciones operativas en **Plan Elaboradora**:
 - **Excel**: descarga un archivo `.xlsx` real con Artículo, Descripción, Marca, Aptitud, U/M, Bto, sucursales destino, kilos por producto, totales por sucursal y total general.
 
 El Excel incluye identificación de la elaboradora, zona y fecha de producción, encabezado congelado, filtro y formato preparado para impresión horizontal.
+
+## v35 · Impresión y Excel Plan Elaboradora
+
+- Se corrige la estructura OOXML del archivo `.xlsx` para que Excel no solicite reparación.
+- `autoFilter` se ubica en el orden correcto dentro de `sheet1.xml`.
+- Se eliminan caracteres de control XML inválidos antes de exportar textos.
+- En Excel, los encabezados de sucursales muestran únicamente el código de 3 dígitos.
+- El Excel replica la estética de MIGA: título azul grisáceo, fecha destacada, encabezados suaves, total por producto y total general diferenciados.
+- La impresión conserva los colores de Plan Elaboradora y compacta las columnas de sucursal para evitar desbordes.
+
+## v36 · Solapas de elaboradoras solo con código
+
+- En **Plan Elaboradora**, las solapas de **Sucursales elaboradoras** muestran únicamente el código (`050`, `068`, `172`, etc.).
+- Se evita que algunos nombres largos queden desfasados o sobresalidos.
+- El nombre completo sigue disponible como ayuda emergente (`title`) al pasar el mouse en PC.
