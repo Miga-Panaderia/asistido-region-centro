@@ -695,3 +695,14 @@ El Excel es informativo; la restauración automática de MIGA continúa utilizan
 - La tarjeta **Accesos Firebase por sucursal** ocupa todo el ancho disponible del Administrador General en PC.
 - Se ampliaron las columnas de sucursal y PIN y se eliminó el scroll horizontal innecesario en escritorio.
 - En pantallas pequeñas conserva un ancho mínimo con desplazamiento horizontal controlado para no deformar los campos.
+
+
+## v51 · Acceso neutral por Zona y Sucursal
+
+- MIGA ya no presenta la Suc. 068 como una selección de acceso por defecto.
+- Sin una sesión Firebase válida aparece una pantalla neutral: **Zona → Sucursal → Ingresar PIN**.
+- Elegir una zona no selecciona ni abre automáticamente la primera sucursal de esa zona.
+- Ejemplo: un usuario de la Suc. 172 puede elegir Neuquén Interior → 172 sin pasar por la Suc. 050.
+- Si el dispositivo conserva una sesión Firebase válida de sucursal, MIGA abre directamente esa sucursal.
+- Si conserva una sesión válida de Administrador General, restaura el modo Admin General.
+- Cancelar un ingreso iniciado desde la pantalla neutral vuelve a la selección neutral, no a la Suc. 068.

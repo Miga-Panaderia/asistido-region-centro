@@ -2042,6 +2042,78 @@ html,body{
 }
 
 /* =========================================================
+   V51 - ACCESO NEUTRAL DE INICIO
+   ========================================================= */
+.neutral-entry{
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:
+    radial-gradient(circle at 18% 8%,rgba(65,108,135,.16),transparent 34%),
+    linear-gradient(145deg,#edf3f6 0%,#f8fafb 58%,#edf5f0 100%);
+}
+.neutral-entry.hidden{display:none!important}
+.neutral-entry-card{
+  width:min(520px,94vw);
+  background:#fff;
+  border:1px solid #b9c5cc;
+  border-radius:14px;
+  box-shadow:0 18px 48px rgba(18,43,59,.16);
+  padding:20px;
+}
+.neutral-entry-brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.neutral-entry-brand img{width:58px;height:58px;object-fit:contain}
+.neutral-entry-title{font-size:20px;font-weight:900;color:#17394f;line-height:1.1}
+.neutral-entry-sub{font-size:11px;color:#667983;margin-top:4px;line-height:1.35}
+.neutral-entry-note{
+  margin:8px 0 14px;
+  padding:8px 10px;
+  border:1px solid #d7e1e6;
+  background:#f7fafb;
+  color:#526872;
+  border-radius:9px;
+  font-size:10px;
+  line-height:1.35;
+}
+.neutral-entry-fields{display:grid;grid-template-columns:1fr;gap:10px}
+.neutral-entry-field{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:800;color:#17394f}
+.neutral-entry-field select{
+  width:100%;
+  height:38px;
+  border:1px solid #9faeb6;
+  border-radius:8px;
+  background:#fff;
+  padding:4px 9px;
+  font-size:13px;
+  color:#172f44;
+}
+.neutral-entry-field select:disabled{background:#f1f3f4;color:#8c999f}
+.neutral-entry-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.neutral-entry-actions button{
+  min-height:38px;
+  border:1px solid #8e9ca3;
+  border-radius:8px;
+  background:#fff;
+  color:#17394f;
+  font-weight:800;
+  cursor:pointer;
+}
+.neutral-entry-actions .primary{background:#217346;border-color:#1b613b;color:#fff}
+.neutral-entry-actions button:disabled{opacity:.45;cursor:not-allowed}
+.neutral-entry-status{min-height:16px;margin-top:9px;text-align:center;font-size:10px;color:#6a7d86}
+@media(max-width:600px){
+  .neutral-entry{padding:10px;align-items:flex-start;padding-top:9vh}
+  .neutral-entry-card{padding:16px;border-radius:12px}
+  .neutral-entry-brand img{width:50px;height:50px}
+  .neutral-entry-title{font-size:18px}
+  .neutral-entry-actions{grid-template-columns:1fr}
+}
+
+/* =========================================================
    PANTALLA DE PRECARGA
    ========================================================= */
 .startup-loader{
@@ -4115,6 +4187,44 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
   </div>
 </div>
 
+<div id="neutralEntry" class="neutral-entry" aria-label="Acceso a MIGA">
+  <div class="neutral-entry-card">
+    <div class="neutral-entry-brand">
+      <img src="assets/miga-avatar.png" alt="MIGA">
+      <div>
+        <div class="neutral-entry-title">MIGA · Pedidos Asistidos</div>
+        <div class="neutral-entry-sub">Módulo Inteligente de Gestión Asistida · Panadería</div>
+      </div>
+    </div>
+
+    <div class="neutral-entry-note">
+      Seleccioná primero tu <b>Zona</b> y después tu <b>Sucursal</b>. MIGA no selecciona ninguna sucursal automáticamente.
+      Si este dispositivo ya tiene una sesión válida, se abrirá directamente la sucursal correspondiente.
+    </div>
+
+    <div class="neutral-entry-fields">
+      <label class="neutral-entry-field">
+        <span>Zona</span>
+        <select id="neutralZoneSelect" onchange="neutralZoneChanged(this.value)">
+          <option value="">Seleccioná una zona…</option>
+        </select>
+      </label>
+      <label class="neutral-entry-field">
+        <span>Sucursal</span>
+        <select id="neutralBranchSelect" onchange="neutralBranchChanged(this.value)" disabled>
+          <option value="">Seleccioná una sucursal…</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="neutral-entry-actions">
+      <button id="neutralBranchLoginBtn" class="primary" type="button" onclick="neutralOpenSelectedBranch()" disabled>☁ Ingresar a sucursal</button>
+      <button type="button" onclick="neutralAdminLogin()">🔐 Administrador General</button>
+    </div>
+    <div id="neutralEntryStatus" class="neutral-entry-status">Esperando selección…</div>
+  </div>
+</div>
+
 <div class="appbar">
   <span class="title">MIGA · Pedidos Asistidos</span>
   <label id="salesLoadTopLabel" class="file-label admin-locked-control" title="Solo Administrador"><b>🔒 Ventas Asistido Panaderia.xlsx</b><input id="salesFile" type="file" accept=".xlsx" disabled></label>
@@ -6007,6 +6117,107 @@ function firebaseRecoverPageOnce(){
 }
 
 
+let neutralBranchLoginInProgress=false;
+
+function neutralSetStatus(message){
+ const el=document.getElementById('neutralEntryStatus');
+ if(el)el.textContent=message||'';
+}
+function populateNeutralAccess(){
+ const zoneSel=document.getElementById('neutralZoneSelect');
+ const branchSel=document.getElementById('neutralBranchSelect');
+ const loginBtn=document.getElementById('neutralBranchLoginBtn');
+ if(!zoneSel||!branchSel)return;
+
+ zoneSel.innerHTML='<option value="">Seleccioná una zona…</option>';
+ zoneOrder.forEach(id=>{
+   const z=zoneCatalog[id];if(!z)return;
+   const op=document.createElement('option');
+   op.value=id;
+   op.textContent=z.name+' ('+branchesForZone(id).length+')';
+   zoneSel.appendChild(op);
+ });
+ zoneSel.value='';
+ branchSel.innerHTML='<option value="">Seleccioná una sucursal…</option>';
+ branchSel.value='';
+ branchSel.disabled=true;
+ if(loginBtn)loginBtn.disabled=true;
+ neutralSetStatus('Esperando selección…');
+}
+function showNeutralEntry(reset=false){
+ const el=document.getElementById('neutralEntry');
+ if(!el)return;
+ if(reset)populateNeutralAccess();
+ el.classList.remove('hidden');
+}
+function hideNeutralEntry(){
+ const el=document.getElementById('neutralEntry');
+ if(el)el.classList.add('hidden');
+}
+function neutralZoneChanged(zoneId){
+ const branchSel=document.getElementById('neutralBranchSelect');
+ const loginBtn=document.getElementById('neutralBranchLoginBtn');
+ if(!branchSel)return;
+ branchSel.innerHTML='<option value="">Seleccioná una sucursal…</option>';
+ if(!zoneCatalog[zoneId]){
+   branchSel.disabled=true;
+   if(loginBtn)loginBtn.disabled=true;
+   neutralSetStatus('Seleccioná una zona.');
+   return;
+ }
+ branchesForZone(zoneId).forEach(code=>{
+   const op=document.createElement('option');
+   op.value=code;
+   const cloud=firebaseBranchDirectoryCache[code];
+   op.textContent=code+' - '+(branchCatalog[code]?.name||'')+(cloud?.enabled?' ☁':'');
+   branchSel.appendChild(op);
+ });
+ branchSel.disabled=false;
+ branchSel.value='';
+ if(loginBtn)loginBtn.disabled=true;
+ neutralSetStatus('Ahora seleccioná tu sucursal.');
+}
+function neutralBranchChanged(code){
+ const loginBtn=document.getElementById('neutralBranchLoginBtn');
+ code=normalizeBranch(code);
+ if(loginBtn)loginBtn.disabled=!(code&&branchCatalog[code]);
+ neutralSetStatus(code&&branchCatalog[code]?'Sucursal '+code+' seleccionada.':'Seleccioná una sucursal.');
+}
+function neutralOpenSelectedBranch(){
+ const zoneId=document.getElementById('neutralZoneSelect')?.value||'';
+ const code=normalizeBranch(document.getElementById('neutralBranchSelect')?.value||'');
+ if(!zoneCatalog[zoneId]||!code||!branchCatalog[code])return;
+ neutralBranchLoginInProgress=true;
+ currentZoneId=zoneId;
+ hideNeutralEntry();
+ openBranchLogin(code);
+}
+async function neutralAdminLogin(){
+ if(!window.MigaFirebase?.ready){
+   neutralSetStatus('Firebase todavía está iniciando. Intentá nuevamente en unos segundos.');
+   return;
+ }
+ const pass=prompt('Ingrese la contraseña de Administrador General:');
+ if(pass===null)return;
+ if(!pass){neutralSetStatus('Ingresá la contraseña de Administrador General.');return;}
+ neutralSetStatus('Validando Administrador General…');
+ try{
+   await firebaseMasterLogin(pass);
+   firebaseBranchSessionCode='';
+   motherAdminMode=true;adminRole='master';adminBranchCode='';
+   unlockedBranches.add(state.branch);
+   if(!enabledElaborators.length)enabledElaborators=loadEnabledElaborators();
+   hideNeutralEntry();
+   updateMotherAdminUI();
+   populateBranchSelector();
+   if(firebaseCloudInitialized)await firebasePullAll(true);
+   else firebaseSetStatus('✅ Administrador General autenticado.<br>⚠ Firebase todavía está vacío.','pending');
+ }catch(e){
+   const ec=String(e?.code||'');
+   neutralSetStatus(ec.includes('invalid-credential')||ec.includes('wrong-password')?'Contraseña incorrecta.':'No se pudo validar el acceso.');
+ }
+}
+
 const FIREBASE_PENDING_BRANCH_LOGIN='miga_pending_branch_login_v72';
 
 async function firebasePrepareCleanBranchSwitch(code){
@@ -6086,6 +6297,11 @@ function cancelBranchLogin(){
  const modal=document.getElementById('branchLoginModal');
  if(modal)modal.classList.remove('show');
  pendingBranchLogin='';
+ if(neutralBranchLoginInProgress){
+   neutralBranchLoginInProgress=false;
+   showNeutralEntry(false);
+   return;
+ }
  syncZoneToBranch(state.branch,false);populateZoneSelector();populateBranchSelector();
  const sel=document.getElementById('branchSelect');if(sel)sel.value=state.branch;
 }
@@ -6115,6 +6331,8 @@ async function confirmBranchLogin(){
    unlockedBranches.clear();unlockedBranches.add(code);
    const modal=document.getElementById('branchLoginModal');if(modal)modal.classList.remove('show');
    pendingBranchLogin='';
+   neutralBranchLoginInProgress=false;
+   hideNeutralEntry();
    finishBranchSwitch(code);
    firebaseStartBranchRealtime(code);
    updateBranchCloudBodyClass();
@@ -10485,17 +10703,16 @@ function populateZoneSelector(){
 }
 function switchZone(zoneId){
  if(!zoneCatalog[zoneId])return;
- if(zoneId===currentZoneId&&branchesForZone(zoneId).includes(state.branch))return;
  currentZoneId=zoneId;
  try{localStorage.setItem(ZONE_STORAGE_KEY,zoneId)}catch(e){}
  populateZoneSelector();
  populateBranchSelector();
- const codes=branchesForZone(zoneId);
- if(!codes.length)return;
- const first=codes[0];
+
+ // Elegir una zona NUNCA abre automáticamente la primera sucursal.
+ // Si la sucursal actual no pertenece a la zona elegida, el selector queda neutral
+ // hasta que el usuario elija explícitamente el código correcto.
  const branchSel=document.getElementById('branchSelect');
- if(branchSel)branchSel.value=first;
- switchBranch(first);
+ if(branchSel && !branchesForZone(zoneId).includes(state.branch))branchSel.value='';
 }
 
 function populateBranchSelector(){
@@ -10510,7 +10727,6 @@ function populateBranchSelector(){
    const placeholder=document.createElement('option');
    placeholder.value='';
    placeholder.textContent='Seleccioná una sucursal…';
-   placeholder.disabled=true;
    placeholder.selected=true;
    sel.appendChild(placeholder);
  }
@@ -11083,6 +11299,7 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
 }));
 window.addEventListener('miga-firebase-ready',async()=>{
  await firebaseRefreshBranchDirectory();
+ if(document.getElementById('neutralEntry')&&!document.getElementById('neutralEntry').classList.contains('hidden'))populateNeutralAccess();
 
  try{
    const profile=await window.MigaFirebase.restoreSession();
@@ -11097,14 +11314,20 @@ window.addEventListener('miga-firebase-ready',async()=>{
      unlockedBranches.clear();
      unlockedBranches.add(code);
 
+     hideNeutralEntry();
+     neutralBranchLoginInProgress=false;
      finishBranchSwitch(code);
      firebaseLastRealtimeAt=Date.now();
      firebaseStartBranchRealtime(code);
      updateBranchCloudBodyClass();
    }else if(profile?.role==='admin'){
      firebaseCloudInitialized=await window.MigaFirebase.isInitialized();
+     motherAdminMode=true;adminRole='master';adminBranchCode='';
+     hideNeutralEntry();
+     updateMotherAdminUI();
      if(firebaseCloudInitialized){
        firebaseSetStatus('✅ Sesión Firebase del Administrador General restaurada.','ok');
+       await firebasePullAll(true);
      }
    }else{
      firebaseCloudInitialized=false;
@@ -11118,7 +11341,12 @@ window.addEventListener('miga-firebase-ready',async()=>{
      }catch(e){}
 
      if(pending && branchCatalog[pending]){
+       neutralBranchLoginInProgress=true;
+       hideNeutralEntry();
        setTimeout(()=>openBranchLogin(pending),120);
+     }else{
+       populateNeutralAccess();
+       showNeutralEntry(false);
      }
    }
  }catch(e){
@@ -11126,6 +11354,8 @@ window.addEventListener('miga-firebase-ready',async()=>{
    firebaseCloudInitialized=false;
    firebaseSetStatus('⚠ No se pudo restaurar la sesión Firebase.','error');
    updateBranchCloudBodyClass();
+   populateNeutralAccess();
+   showNeutralEntry(false);
  }
 });
 
@@ -11173,6 +11403,7 @@ branchCatalog[state.branch]={...(branchCatalog[state.branch]||{}),code:state.bra
 syncZoneToBranch(state.branch,false);
 populateZoneSelector();
 populateBranchSelector();
+populateNeutralAccess();
 setStartupState(10,'Leyendo configuración…','Preparando datos de trabajo');
 recalc();
 initMobileTouchScrolling();
@@ -11676,7 +11907,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'93.0',
+      appVersion:'94.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
