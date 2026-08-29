@@ -2691,16 +2691,21 @@ html,body{
 }
 
 /* =========================================================
-   V46 - PLAN ELABORADORA SIN BARRA GENERAL
+   V91 - ENCABEZADO GENERAL SOLO EN PARÁMETROS SUC
    ========================================================= */
-body.mother-sheet-active .appbar{
+body.non-params-sheet-active .appbar{
   display:none !important;
 }
-body.mother-sheet-active .workspace{
+body.non-params-sheet-active .workspace{
   min-height:calc(100vh - 38px) !important;
 }
-body.mother-sheet-active #sheet-mother{
+body.non-params-sheet-active .sheet-view.active{
   min-height:calc(100vh - 38px) !important;
+}
+
+/* Se conserva la clase histórica de Plan Elaboradora por compatibilidad. */
+body.mother-sheet-active .appbar{
+  display:none !important;
 }
 
 /* =========================================================
@@ -3950,92 +3955,68 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 /* =========================================================
    V90 - CONTROL PRESENCIA · SUCURSAL · CHECKLIST POR REFERENCIA
    ========================================================= */
-.presence-page{padding:8px 10px 58px;min-width:840px}
-.presence-titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#204d69;color:#fff;border:1px solid #173c54;font-size:12px;font-weight:800;letter-spacing:.2px}
-.presence-toolbar{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid #c4ccd1;border-top:0;background:#f7f8f8}
-.presence-field{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;color:#17394f}
-.presence-field select,.presence-field input{height:31px;min-width:205px;border:1px solid #9da8ae;background:#fff;padding:4px 8px;font:inherit;color:#111;border-radius:8px}
-.presence-pill{height:31px;display:flex;align-items:center;padding:0 10px;border:1px solid #c1c8cc;background:#fff;color:#435b69;font-size:10px;font-weight:700;white-space:nowrap;border-radius:999px}
-.presence-mode{border-color:#8eb29e;background:#eff7f2;color:#246546}
-.presence-warning{padding:9px 10px;border:1px solid #c59a56;background:#fff9ed;color:#76501f;font-size:11px;margin-top:8px;border-radius:10px}
-.presence-shell{display:grid;grid-template-columns:330px minmax(0,1fr);gap:12px;margin-top:10px}
-.presence-stack{display:flex;flex-direction:column;gap:12px}
-.presence-card{background:#fff;border:1px solid #d3d9de;border-radius:16px;padding:14px;box-shadow:0 3px 10px rgba(23,50,74,.06)}
-.presence-card-title{font-size:12px;font-weight:800;color:#17394f;margin-bottom:4px}
-.presence-card-sub{font-size:10px;color:#6d7c85;margin-bottom:10px}
-.presence-turns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.presence-turn-btn{height:38px;border:1px solid #cfd6db;border-radius:11px;background:#f6f6f7;color:#17394f;font-size:11px;font-weight:800;cursor:pointer}
-.presence-turn-btn.active{background:#e7880a;color:#fff;border-color:#c46f08;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
-.presence-summary-card{background:linear-gradient(180deg,#9c4b06 0%,#7f3903 100%);color:#fff;border-color:#7d3a06}
-.presence-summary-card .presence-card-title,.presence-summary-card .presence-card-sub,.presence-summary-card .presence-summary-foot,.presence-summary-card .presence-summary-label{color:#fff}
-.presence-summary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.presence-summary-main{display:flex;align-items:flex-end;gap:4px;line-height:1;margin:10px 0 12px}
-.presence-summary-main b{font-size:54px;font-weight:900}
-.presence-summary-main span{font-size:28px;font-weight:800;margin-bottom:5px}
-.presence-summary-label{font-size:13px;font-weight:700;opacity:.94}
-.presence-mini-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.14);font-size:10px;font-weight:800;border:1px solid rgba(255,255,255,.18)}
-.presence-progress{height:10px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden;margin-bottom:14px}
-.presence-progress>span{display:block;height:100%;background:#f2c14e;border-radius:999px}
-.presence-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.presence-summary-foot{font-size:11px;font-weight:700;display:flex;justify-content:space-between;gap:8px;opacity:.95}
-.presence-calendar-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
-.presence-calendar-title span{display:block;font-size:10px;color:#6a7a83;margin-top:2px}
-.presence-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-.presence-day{border:1px solid #d8dfe4;border-radius:14px;padding:8px;min-height:108px;background:#fff;display:flex;flex-direction:column;gap:6px}
-.presence-day.empty{visibility:hidden}
-.presence-day.selected{border-color:#2f7657;box-shadow:0 0 0 2px rgba(47,118,87,.12)}
-.presence-day.future{background:#fafafa}
-.presence-day-top{display:flex;justify-content:space-between;align-items:flex-start;gap:4px}
-.presence-day-number{font-size:24px;font-weight:900;color:#172f44;line-height:1}
-.presence-day-dow{font-size:10px;font-weight:800;color:#9aa4ab;text-transform:uppercase}
-.presence-day-shifts{display:flex;flex-direction:column;gap:6px;margin-top:auto}
-.presence-shift-chip{width:100%;border:1px solid #d8dfe4;background:#f7f7f8;color:#485860;min-height:29px;border-radius:999px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;font-size:10px;font-weight:800;cursor:pointer}
-.presence-shift-chip.active{box-shadow:0 0 0 2px rgba(47,118,87,.12)}
-.presence-shift-chip.done{background:#daf5e5;border-color:#80d5a8;color:#11633e}
-.presence-shift-chip.partial{background:#fff3d6;border-color:#f1c44b;color:#8a5d00}
-.presence-shift-chip.zero{background:#f3f4f5;color:#85939b}
-.presence-shift-chip.future{opacity:.6;cursor:default}
-.presence-shift-chip span:last-child{font-size:9px}
-.presence-checklist-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
-.presence-checklist-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.presence-sync-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid #8fd0ae;background:#eaf8f1;color:#1c8a57;font-size:10px;font-weight:800}
-.presence-sync-badge.local{border-color:#d7b36a;background:#fff7e1;color:#92640a}
-.presence-action-btn{height:31px;padding:0 10px;border:1px solid #cfd6db;border-radius:10px;background:#fff;font-size:10px;font-weight:800;color:#17394f;cursor:pointer}
-.presence-search{width:100%;height:38px;border:1px solid #cfd6db;border-radius:10px;padding:0 12px;font-size:12px;background:#fff}
-.presence-inline-stats{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11px;color:#5f7079;margin:10px 0}
-.presence-inline-stats strong{color:#17394f}
-.presence-empty{padding:22px 14px;border:1px dashed #cfd6db;border-radius:14px;background:#fafbfb;font-size:12px;color:#6d7c85;text-align:center}
-.presence-checklist{display:flex;flex-direction:column;gap:10px;max-height:940px;overflow:auto;padding-right:2px}
-.presence-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 12px;border:1px solid #e2e7ea;border-radius:14px;background:#fff}
-.presence-item.present{border-color:#c0e8cf;background:#fbfffc}
-.presence-item-main{min-width:0}
-.presence-item-code{font-size:11px;font-weight:800;color:#8f9aa1;margin-bottom:4px}
-.presence-item-name{font-size:13px;font-weight:800;color:#17394f;line-height:1.25}
-.presence-item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
-.presence-item-meta span{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#f1eee0;color:#6a5a2a;font-size:9px;font-weight:800}
-.presence-item-check{display:flex;align-items:center;gap:10px}
-.presence-item-label{font-size:11px;font-weight:800;color:#19a66b}
-.presence-item:not(.present) .presence-item-label{color:#b24d4d}
-.presence-switch{position:relative;display:inline-flex;width:48px;height:28px}
-.presence-switch input{position:absolute;opacity:0;pointer-events:none}
-.presence-slider{position:absolute;inset:0;border-radius:999px;background:#e3e6e8;border:1px solid #c3cacf;transition:all .15s ease}
-.presence-slider:before{content:'';position:absolute;width:22px;height:22px;left:3px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:transform .15s ease}
-.presence-switch input:checked + .presence-slider{background:#1ab26b;border-color:#169b5e}
-.presence-switch input:checked + .presence-slider:before{transform:translateX(20px)}
-.presence-readonly-note{font-size:10px;color:#7a6b40;background:#fff7e0;border:1px solid #e1c888;padding:7px 9px;border-radius:10px}
-.presence-admin-hidden{display:none!important}
+.presence-page{padding:6px 8px 54px;min-width:720px}
+.presence-titlebar{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;background:#204d69;color:#fff;border:1px solid #173c54;font-size:10px;font-weight:800}
+.presence-toolbar{display:flex;align-items:flex-end;gap:6px;flex-wrap:wrap;padding:6px 8px;border:1px solid #c4ccd1;border-top:0;background:#f7f8f8}
+.presence-field{display:flex;flex-direction:column;gap:2px;font-size:9px;font-weight:700;color:#17394f}
+.presence-field select,.presence-field input{height:28px;min-width:170px;border:1px solid #a6b0b6;background:#fff;padding:3px 7px;border-radius:6px;font:inherit}
+.presence-pill{height:28px;display:flex;align-items:center;padding:0 8px;border:1px solid #ccd3d7;background:#fff;color:#526771;font-size:9px;font-weight:700;border-radius:999px;white-space:nowrap}
+.presence-mode{background:#eff7f2;border-color:#b7d5c4;color:#2d6f50}
+.presence-warning{padding:7px 9px;border:1px solid #d5ba80;background:#fff9eb;color:#775824;font-size:9px;margin-top:6px;border-radius:8px}
+.presence-shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:8px;margin-top:8px;align-items:start}
+.presence-stack{display:flex;flex-direction:column;gap:8px}
+.presence-card{background:#fff;border:1px solid #d7dde1;border-radius:10px;padding:8px 9px;box-shadow:none}
+.presence-card-title{font-size:10px;font-weight:800;color:#17394f;margin-bottom:2px}
+.presence-card-sub{font-size:8px;color:#73828a;margin-bottom:6px;line-height:1.25}
+.presence-turns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
+.presence-turn-btn{height:29px;border:1px solid #cfd6db;border-radius:7px;background:#f5f6f7;color:#17394f;font-size:9px;font-weight:800;cursor:pointer}
+.presence-turn-btn.active{background:#e7880a;color:#fff;border-color:#ca770c}
+.presence-summary-card{background:#f8fbf9;border-color:#cfe2d7}
+.presence-summary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.presence-summary-main{display:flex;align-items:flex-end;gap:2px;line-height:1;margin:5px 0}
+.presence-summary-main b{font-size:26px;font-weight:900;color:#217346}
+.presence-summary-main span{font-size:14px;font-weight:800;color:#217346;margin-bottom:2px}
+.presence-summary-label{font-size:9px;font-weight:700;color:#5f727b}
+.presence-mini-chip{display:inline-flex;align-items:center;padding:3px 6px;border-radius:999px;background:#edf6f1;border:1px solid #d7e9df;color:#246546;font-size:8px;font-weight:800}
+.presence-progress{height:6px;background:#e8edef;border-radius:999px;overflow:hidden;margin:7px 0}
+.presence-progress>span{display:block;height:100%;background:#2ba56c;border-radius:999px}
+.presence-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.presence-summary-foot{font-size:8px;font-weight:700;display:flex;justify-content:space-between;gap:5px;color:#60727b}
+.presence-summary-foot strong{color:#17394f}
+.presence-service-chart{display:flex;align-items:flex-end;gap:3px;height:82px;overflow-x:auto;overflow-y:hidden;padding:2px 0 1px}
+.presence-service-day{flex:0 0 16px;background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.presence-service-day.future{opacity:.35;cursor:default}
+.presence-service-day.selected .presence-service-bar-wrap{outline:2px solid rgba(47,118,87,.18)}
+.presence-service-label,.presence-service-value{font-size:7px;font-weight:800;color:#667983;line-height:1}
+.presence-service-bar-wrap{width:11px;height:50px;border-radius:999px;background:#f1f3f4;border:1px solid #dde3e6;display:flex;align-items:flex-end;overflow:hidden}
+.presence-service-bar{display:block;width:100%;background:#cfd6db}.presence-service-bar.good{background:#35b779}.presence-service-bar.mid{background:#e4b53c}.presence-service-bar.low{background:#df7a4d}.presence-service-bar.none{background:#cfd6db}
+.presence-service-legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;font-size:7px;color:#73828a}.presence-service-legend span{display:inline-flex;align-items:center;gap:3px}.presence-service-dot{width:7px;height:7px;border-radius:50%}
+.presence-calendar-title{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:5px}.presence-calendar-title span{display:block;font-size:8px;color:#73828a;margin-top:1px}
+.presence-calendar{display:grid;grid-template-columns:repeat(7,minmax(36px,1fr));gap:3px}
+.presence-day{border:1px solid #dbe1e4;border-radius:8px;padding:4px;min-height:48px;background:#fff;display:flex;flex-direction:column;gap:3px}
+.presence-day.empty{visibility:hidden}.presence-day.selected{border-color:#2f7657;background:#fbfffc}.presence-day.future{background:#fafafa}
+.presence-day-top{display:flex;justify-content:space-between;align-items:center;gap:3px}.presence-day-number{font-size:12px;font-weight:900;color:#17394f}.presence-day-dow{font-size:6px;font-weight:800;color:#9aa4ab}
+.presence-day-shifts{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:auto}
+.presence-shift-chip{width:100%;min-height:18px;border:1px solid #d8dfe4;background:#f4f5f6;color:#697a82;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:2px;padding:0 3px;font-size:6px;font-weight:800;cursor:pointer}
+.presence-shift-chip.done{background:#dff4e7;border-color:#97d0ad;color:#17613e}.presence-shift-chip.partial{background:#fff2d3;border-color:#e9c45c;color:#8a6207}.presence-shift-chip.zero{background:#f2f3f4;color:#89969d}.presence-shift-chip.active{outline:1px solid #2f7657}.presence-shift-chip.future{opacity:.6;cursor:default}
+.presence-checklist-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}.presence-checklist-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.presence-sync-badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;border:1px solid #9ed2b4;background:#edf8f2;color:#1f8354;font-size:8px;font-weight:800}.presence-sync-badge.local{border-color:#d7b36a;background:#fff7e1;color:#92640a}
+.presence-action-btn{height:25px;padding:0 8px;border:1px solid #cfd6db;border-radius:7px;background:#fff;font-size:8px;font-weight:800;color:#17394f;cursor:pointer}
+.presence-search{width:100%;height:28px;border:1px solid #cfd6db;border-radius:7px;padding:0 8px;font-size:9px;background:#fff}
+.presence-inline-stats{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;font-size:8px;color:#687981;margin:6px 0}.presence-inline-stats strong{color:#17394f}
+.presence-empty{padding:12px 9px;border:1px dashed #cfd6db;border-radius:8px;background:#fafbfb;font-size:9px;color:#74838a;text-align:center}
+.presence-checklist{display:flex;flex-direction:column;gap:4px;max-height:560px;overflow:auto;padding-right:2px}
+.presence-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 7px;border:1px solid #e1e6e9;border-radius:8px;background:#fff}.presence-item.present{border-color:#c4e5d1;background:#fbfffc}
+.presence-item-main{min-width:0}.presence-item-code{font-size:8px;font-weight:800;color:#91a0a7;margin-bottom:1px}.presence-item-name{font-size:10px;font-weight:800;color:#17394f;line-height:1.15}
+.presence-item-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.presence-item-meta span{display:inline-flex;align-items:center;padding:1px 5px;border-radius:999px;background:#f3f0e3;color:#6f612e;font-size:7px;font-weight:800}
+.presence-item-check{display:flex;align-items:center;gap:6px}.presence-item-label{font-size:8px;font-weight:800;color:#1b9b63}.presence-item:not(.present) .presence-item-label{color:#b34d4d}
+.presence-switch{position:relative;display:inline-flex;width:36px;height:20px}.presence-switch input{position:absolute;opacity:0;pointer-events:none}.presence-slider{position:absolute;inset:0;border-radius:999px;background:#e3e6e8;border:1px solid #c3cacf}.presence-slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .15s}.presence-switch input:checked + .presence-slider{background:#1ab26b;border-color:#169b5e}.presence-switch input:checked + .presence-slider:before{transform:translateX(15px)}
+.presence-readonly-note{font-size:8px;color:#7a6b40;background:#fff7e0;border:1px solid #e1c888;padding:5px 7px;border-radius:7px}.presence-admin-hidden{display:none!important}
 @media(max-width:900px){
- #sheet-presence{overflow:visible}
- .presence-page{min-width:0;padding:6px 6px 64px}
- .presence-toolbar{align-items:stretch}
- .presence-field{width:100%}
- .presence-field select,.presence-field input{width:100%;min-width:0}
- .presence-pill{width:100%;justify-content:center;box-sizing:border-box}
- .presence-shell{grid-template-columns:1fr}
- .presence-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}
- .presence-checklist-head{flex-direction:column;align-items:stretch}
- .presence-checklist-actions{justify-content:flex-start}
- .presence-summary-main b{font-size:42px}
+ #sheet-presence{overflow:visible}.presence-page{min-width:0;padding:5px 5px 62px}.presence-toolbar{align-items:stretch}.presence-field{width:calc(50% - 3px)}.presence-field select,.presence-field input{width:100%;min-width:0;box-sizing:border-box}.presence-pill{flex:1 1 auto;justify-content:center;box-sizing:border-box}.presence-shell{grid-template-columns:1fr}.presence-stack{display:grid;grid-template-columns:1fr 1fr;gap:6px}.presence-stack .presence-card:nth-child(n+3){grid-column:1/-1}.presence-calendar{grid-template-columns:repeat(7,minmax(34px,1fr));min-width:266px}.presence-card{padding:7px}.presence-checklist{max-height:380px}.presence-item-meta{display:none}.presence-item-name{font-size:9px}.presence-item{padding:5px 6px}.presence-item-label{font-size:7px}.presence-service-chart{height:74px}.presence-service-bar-wrap{height:44px}.presence-summary-main b{font-size:24px}
+}
+@media(max-width:520px){
+ .presence-field{width:100%}.presence-stack{grid-template-columns:1fr 1fr}.presence-calendar{grid-template-columns:repeat(7,42px);overflow-x:auto}.presence-day{min-height:46px}.presence-day-dow{display:none}.presence-summary-grid{grid-template-columns:1fr 1fr}.presence-turn-btn{font-size:8px}.presence-checklist-actions{justify-content:flex-start}.presence-checklist-head{flex-direction:column}.presence-service-day{flex-basis:15px}
 }
 </style>
 </head>
@@ -4238,7 +4219,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
         <div class="presence-stack">
           <div class="presence-card">
             <div class="presence-card-title">Fecha y turno</div>
-            <div class="presence-card-sub">Seleccioná el día dentro del ciclo de producción y el turno a controlar.</div>
+            <div class="presence-card-sub">Seleccioná el día y el turno a controlar.</div>
             <div class="presence-turns">
               <button type="button" id="presenceShiftAmBtn" class="presence-turn-btn" onclick="changePresenceShift('am')">🌅 Turno Mañana</button>
               <button type="button" id="presenceShiftPmBtn" class="presence-turn-btn" onclick="changePresenceShift('pm')">🌆 Turno Tarde</button>
@@ -4249,7 +4230,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
             <div class="presence-summary-top">
               <div>
                 <div class="presence-card-title">Resultado del control</div>
-                <div class="presence-card-sub">Cumplimiento de referencias programadas para la fecha y turno seleccionados.</div>
+                <div class="presence-card-sub">Cumplimiento de referencias activas para la fecha y turno seleccionados.</div>
               </div>
               <div id="presenceSummaryShift" class="presence-mini-chip">MAÑANA</div>
             </div>
@@ -4258,9 +4239,20 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
             <div class="presence-progress"><span id="presenceProgressBar" style="width:0%"></span></div>
             <div class="presence-summary-grid">
               <div class="presence-summary-foot"><span>Presentes</span><strong id="presenceKpiPresent">0</strong></div>
-              <div class="presence-summary-foot"><span>Programadas</span><strong id="presenceKpiTotal">0</strong></div>
-              <div class="presence-summary-foot"><span>Ausentes</span><strong id="presenceKpiMissing">0</strong></div>
+              <div class="presence-summary-foot"><span>Referencias</span><strong id="presenceKpiTotal">0</strong></div>
+              <div class="presence-summary-foot"><span>Sin marcar</span><strong id="presenceKpiMissing">0</strong></div>
               <div class="presence-summary-foot"><span>Ciclo acumulado</span><strong id="presenceKpiCycle">0%</strong></div>
+            </div>
+          </div>
+
+          <div class="presence-card">
+            <div class="presence-card-title">Nivel de servicio diario</div>
+            <div class="presence-card-sub">Resumen del ciclo. Tocá una barra para ir al día.</div>
+            <div id="presenceServiceChart" class="presence-service-chart"></div>
+            <div class="presence-service-legend">
+              <span><i class="presence-service-dot" style="background:#35b779"></i> 90% o más</span>
+              <span><i class="presence-service-dot" style="background:#e5b63b"></i> 75% a 89%</span>
+              <span><i class="presence-service-dot" style="background:#df7a4d"></i> Menor a 75%</span>
             </div>
           </div>
 
@@ -4280,7 +4272,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           <div class="presence-checklist-head">
             <div>
               <div class="presence-card-title">Checklist por referencia</div>
-              <div class="presence-card-sub" id="presenceChecklistSubtitle">Control diario de referencias programadas.</div>
+              <div class="presence-card-sub" id="presenceChecklistSubtitle">Control diario de referencias activas.</div>
             </div>
             <div class="presence-checklist-actions">
               <div id="presenceSyncBadge" class="presence-sync-badge">● Sincronizado</div>
@@ -7659,9 +7651,13 @@ function presenceDayIndex(date){
 function presenceRowsForDate(code,date){
  const cfg=presenceBranchState(code);
  if(!cfg||!Array.isArray(cfg.products))return [];
- const dayIndex=presenceDayIndex(date);
  return cfg.products
-   .filter(p=>safeArticle(p.article) && Array.isArray(p.schedule) && Number(p.schedule[dayIndex])>0)
+   .filter(p=>{
+     const art=safeArticle(p.article);
+     if(!art)return false;
+     if(!Array.isArray(p.schedule))return true;
+     return p.schedule.some(v=>Number(v)>0);
+   })
    .slice()
    .sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
 }
@@ -7786,6 +7782,7 @@ function presenceToggleItem(article,checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
  presenceSetItemValue(presenceBranchCode,presenceDateISO,presenceShift,article,!!checked);
  renderPresenceSummary();
+ renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklistStats();
 }
@@ -7808,6 +7805,7 @@ function presenceSetAll(checked){
  storePresenceLocal(presenceBranchCode,data);
  queuePresenceCloudSync(presenceBranchCode);
  renderPresenceSummary();
+ renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklist();
 }
@@ -7832,6 +7830,36 @@ function renderPresenceSummary(){
  const pmBtn=document.getElementById('presenceShiftPmBtn');
  if(amBtn)amBtn.classList.toggle('active',presenceShift==='am');
  if(pmBtn)pmBtn.classList.toggle('active',presenceShift==='pm');
+}
+function renderPresenceServiceChart(){
+ const box=document.getElementById('presenceServiceChart');
+ if(!box||!presenceBranchCode)return;
+ const range=presenceProductionRange(presenceBranchCode);
+ let h='';
+ for(let i=0;i<range.days;i++){
+   const d=new Date(range.start);d.setDate(d.getDate()+i);
+   const date=presenceDateKeyFromDate(d);
+   const rows=presenceRowsForDate(presenceBranchCode,date);
+   const am=presenceShiftTotals(presenceBranchCode,date,'am',rows);
+   const pm=presenceShiftTotals(presenceBranchCode,date,'pm',rows);
+   const totalRefs=am.total+pm.total;
+   const totalPresent=am.present+pm.present;
+   const pct=totalRefs?Math.round((totalPresent/totalRefs)*100):0;
+   const future=presenceDateIsFuture(date);
+   let cls='none';
+   if(totalRefs){
+     if(pct>=90)cls='good';
+     else if(pct>=75)cls='mid';
+     else cls='low';
+   }
+   const selected=presenceDateISO===date;
+   const fillHeight=totalRefs?Math.max(6,Math.min(100,pct)):6;
+   const label=String(d.getDate());
+   const value=totalRefs?(String(pct)+'%'):'—';
+   const disabled=future?' disabled':'';
+   h+=`<button type="button" class="presence-service-day${selected?' selected':''}${future?' future':''}" onclick="presenceSelectDateShift('${date}','${presenceShift}')" title="${presenceFormatDate(d)} · Nivel de servicio ${value}"${disabled}><span class="presence-service-label">${label}</span><span class="presence-service-bar-wrap"><span class="presence-service-bar ${cls}" style="height:${fillHeight}%"></span></span><span class="presence-service-value">${value}</span></button>`;
+ }
+ box.innerHTML=h;
 }
 function renderPresenceCalendar(){
  const box=document.getElementById('presenceCalendar');
@@ -7867,8 +7895,8 @@ function renderPresenceCalendar(){
    h+=`<div class="presence-day${selected?' selected':''}${future?' future':''}">
      <div class="presence-day-top"><span class="presence-day-number">${d.getDate()}</span><span class="presence-day-dow">${dayNames[d.getDay()]}</span></div>
      <div class="presence-day-shifts">
-       <button type="button" class="${chipClass('am',am)}" onclick="presenceSelectDateShift('${date}','am')"${disabled}><span>Mañana</span><span>${pctText(am)}</span></button>
-       <button type="button" class="${chipClass('pm',pm)}" onclick="presenceSelectDateShift('${date}','pm')"${disabled}><span>Tarde</span><span>${pctText(pm)}</span></button>
+       <button type="button" class="${chipClass('am',am)}" onclick="presenceSelectDateShift('${date}','am')" title="${presenceFormatDate(d)} · Turno Mañana"${disabled}><span>M</span><span>${pctText(am)}</span></button>
+       <button type="button" class="${chipClass('pm',pm)}" onclick="presenceSelectDateShift('${date}','pm')" title="${presenceFormatDate(d)} · Turno Tarde"${disabled}><span>T</span><span>${pctText(pm)}</span></button>
      </div>
    </div>`;
  }
@@ -7882,7 +7910,7 @@ function renderPresenceChecklistStats(){
  const allRows=presenceRowsForDate(presenceBranchCode,presenceDateISO);
  const visibleRows=presenceFilteredRows(presenceBranchCode,presenceDateISO);
  const total=presenceShiftTotals(presenceBranchCode,presenceDateISO,presenceShift,allRows);
- statsBox.innerHTML=`<span><strong>${visibleRows.length}</strong> referencias visibles</span><span><strong>${total.present}</strong> marcadas como presentes</span><span><strong>${total.total}</strong> programadas para ${presenceShift==='am'?'Mañana':'Tarde'}</span>`;
+ statsBox.innerHTML=`<span><strong>${visibleRows.length}</strong> referencias visibles</span><span><strong>${total.present}</strong> presentes marcadas</span><span><strong>${total.total}</strong> referencias activas para ${presenceShift==='am'?'Mañana':'Tarde'}</span>`;
 }
 function renderPresenceChecklist(){
  const box=document.getElementById('presenceChecklist');
@@ -7907,7 +7935,7 @@ function renderPresenceChecklist(){
  if(!rows.length){
    box.innerHTML='';
    empty.style.display='block';
-   empty.textContent='No hay referencias programadas para esta fecha o no coinciden con la búsqueda.';
+   empty.textContent='No hay referencias activas para mostrar o no coinciden con la búsqueda.';
    return;
  }
  empty.style.display='none';
@@ -7951,6 +7979,7 @@ function renderPresenceSheet(){
  if(search && search.value!==presenceSearchText)search.value=presenceSearchText;
  if(!allowed.length||!presenceBranchCode){
    if(warning){warning.style.display='block';warning.textContent='No hay sucursal seleccionada para Control Presencia.'}
+   const service=document.getElementById('presenceServiceChart');if(service)service.innerHTML='';
    const calendar=document.getElementById('presenceCalendar');if(calendar)calendar.innerHTML='';
    const checklist=document.getElementById('presenceChecklist');if(checklist)checklist.innerHTML='';
    return;
@@ -7972,6 +8001,7 @@ function renderPresenceSheet(){
  }
  renderPresenceSyncBadge();
  renderPresenceSummary();
+ renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklist();
 }
@@ -10123,7 +10153,9 @@ function initMobileTouchScrolling(){
 }
 
 function syncSheetChrome(sheetName){
+ const isParams=sheetName==='params';
  const isMother=sheetName==='mother';
+ document.body.classList.toggle('non-params-sheet-active',!isParams);
  document.body.classList.toggle('mother-sheet-active',isMother);
 }
 
@@ -10758,7 +10790,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'90.0',
+      appVersion:'91.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

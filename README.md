@@ -604,4 +604,15 @@ Se incorpora la colección `miga_presence/{branchId}`. Esta versión **sí requi
 - La solapa **Presencia** sólo aparece con **Administrador General** activo.
 - Ingresar el PIN/clave de una sucursal no muestra ni habilita Presencia.
 - Firebase también restringe `miga_presence` exclusivamente al UID del Administrador General.
+## v43 · Presencia más limpia y compacta
 
+- Se simplifica la vista de Control Presencia para PC y móvil.
+- Calendario de ciclo más pequeño, sin tarjetas sobredimensionadas.
+- Checklist por referencia más compacto.
+- El gráfico de nivel de servicio diario se mantiene, pero ocupa menos altura.
+- En móvil se ocultan detalles secundarios de cada referencia para priorizar descripción + estado.
+- No cambia la lógica de cálculo ni la estructura Firebase.
+
+## v44 · Encabezado general solo en Parámetros Suc
+
+La barra superior con MIGA, archivo de ventas, Zona, Sucursal, Inicio, Administrador y WhatsApp se muestra únicamente en **Parámetros Suc**. En Panadería Suc, Ventas Prisma Suc, Hoja del Panadero Suc, Plan Elaboradora y Presencia se oculta automáticamente para aprovechar mejor el espacio de trabajo.
