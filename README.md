@@ -625,3 +625,9 @@ La barra superior con MIGA, archivo de ventas, Zona, Sucursal, Inicio, Administr
 - Resumen incluye cumplimiento Mañana, Tarde y nivel de servicio total por día, más dos gráficos de Excel.
 - Detalle incluye fecha, turno, referencia, descripción, marca, aptitud, U/M y estado.
 - Se eliminan del paquete los archivos históricos `MIGA_v39/v40/v41_firestore.rules`; queda únicamente `firebase/firestore.rules` como regla vigente del proyecto.
+## v46 · Excel de Control Presencia corregido
+
+- Se corrige el orden OOXML de `sheet1.xml` en la exportación de Control Presencia.
+- El elemento `drawing` de los gráficos ahora se escribe después de `pageMargins` y `pageSetup`, como requiere la estructura de una worksheet de Excel.
+- Esto evita el mensaje **“Excel pudo abrir el archivo reparando o quitando contenido”** que indicaba error en `xl/worksheets/sheet1.xml`.
+- Se mantienen las hojas **Resumen** y **Detalle** y los dos gráficos del cumplimiento.

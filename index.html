@@ -8843,9 +8843,9 @@ function buildPresenceXlsx(data){
  <sheetData>${summaryRows.join('')}</sheetData>
  <autoFilter ref="A${headerRow}:F${lastDataRow}"/>
  <mergeCells count="3"><mergeCell ref="A1:F1"/><mergeCell ref="A2:F2"/><mergeCell ref="A3:F3"/></mergeCells>
- <drawing r:id="rId1"/>
  <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
  <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
+ <drawing r:id="rId1"/>
 </worksheet>`;
 
  const detailSheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -11006,7 +11006,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'91.0',
+      appVersion:'92.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
