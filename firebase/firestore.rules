@@ -68,9 +68,9 @@ service cloud.firestore {
       allow write: if isMigaAdmin();
     }
 
-    // Control de presencia de elaboradoras: exclusivo del Administrador General.
+    // Control de presencia por referencia: cada sucursal gestiona el suyo y Admin General puede ver/editar todos.
     match /miga_presence/{branchId} {
-      allow read, write: if isMigaAdmin();
+      allow read, write: if isMigaAdmin() || isOwnBranch(branchId);
     }
 
     match /miga_elaborators/{branchId} {

@@ -3963,9 +3963,9 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 .presence-pill{height:28px;display:flex;align-items:center;padding:0 8px;border:1px solid #ccd3d7;background:#fff;color:#526771;font-size:9px;font-weight:700;border-radius:999px;white-space:nowrap}
 .presence-mode{background:#eff7f2;border-color:#b7d5c4;color:#2d6f50}
 .presence-warning{padding:7px 9px;border:1px solid #d5ba80;background:#fff9eb;color:#775824;font-size:9px;margin-top:6px;border-radius:8px}
-.presence-shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:8px;margin-top:8px;align-items:start}
-.presence-stack{display:flex;flex-direction:column;gap:8px}
-.presence-card{background:#fff;border:1px solid #d7dde1;border-radius:10px;padding:8px 9px;box-shadow:none}
+.presence-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:10px;margin-top:8px;align-items:start;max-width:100%;overflow:hidden}
+.presence-stack{display:flex;flex-direction:column;gap:8px;min-width:0;width:100%;max-width:100%}
+.presence-card{background:#fff;border:1px solid #d7dde1;border-radius:10px;padding:8px 9px;box-shadow:none;min-width:0;max-width:100%;box-sizing:border-box}
 .presence-card-title{font-size:10px;font-weight:800;color:#17394f;margin-bottom:2px}
 .presence-card-sub{font-size:8px;color:#73828a;margin-bottom:6px;line-height:1.25}
 .presence-turns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
@@ -3992,8 +3992,8 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 .presence-service-bar{display:block;width:100%;background:#cfd6db}.presence-service-bar.good{background:#35b779}.presence-service-bar.mid{background:#e4b53c}.presence-service-bar.low{background:#df7a4d}.presence-service-bar.none{background:#cfd6db}
 .presence-service-legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;font-size:7px;color:#73828a}.presence-service-legend span{display:inline-flex;align-items:center;gap:3px}.presence-service-dot{width:7px;height:7px;border-radius:50%}
 .presence-calendar-title{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:5px}.presence-calendar-title span{display:block;font-size:8px;color:#73828a;margin-top:1px}
-.presence-calendar{display:grid;grid-template-columns:repeat(7,minmax(36px,1fr));gap:3px}
-.presence-day{border:1px solid #dbe1e4;border-radius:8px;padding:4px;min-height:48px;background:#fff;display:flex;flex-direction:column;gap:3px}
+.presence-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;width:100%;max-width:100%;min-width:0;overflow:hidden}
+.presence-day{border:1px solid #dbe1e4;border-radius:8px;padding:3px;min-height:48px;background:#fff;display:flex;flex-direction:column;gap:3px;min-width:0;overflow:hidden}
 .presence-day.empty{visibility:hidden}.presence-day.selected{border-color:#2f7657;background:#fbfffc}.presence-day.future{background:#fafafa}
 .presence-day-top{display:flex;justify-content:space-between;align-items:center;gap:3px}.presence-day-number{font-size:12px;font-weight:900;color:#17394f}.presence-day-dow{font-size:6px;font-weight:800;color:#9aa4ab}
 .presence-day-shifts{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:auto}
@@ -4005,18 +4005,19 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 .presence-search{width:100%;height:28px;border:1px solid #cfd6db;border-radius:7px;padding:0 8px;font-size:9px;background:#fff}
 .presence-inline-stats{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;font-size:8px;color:#687981;margin:6px 0}.presence-inline-stats strong{color:#17394f}
 .presence-empty{padding:12px 9px;border:1px dashed #cfd6db;border-radius:8px;background:#fafbfb;font-size:9px;color:#74838a;text-align:center}
-.presence-checklist{display:flex;flex-direction:column;gap:4px;max-height:560px;overflow:auto;padding-right:2px}
-.presence-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 7px;border:1px solid #e1e6e9;border-radius:8px;background:#fff}.presence-item.present{border-color:#c4e5d1;background:#fbfffc}
-.presence-item-main{min-width:0}.presence-item-code{font-size:8px;font-weight:800;color:#91a0a7;margin-bottom:1px}.presence-item-name{font-size:10px;font-weight:800;color:#17394f;line-height:1.15}
+.presence-checklist{display:flex;flex-direction:column;gap:4px;max-height:560px;overflow:auto;padding-right:2px;min-width:0;max-width:100%}
+.presence-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 7px;border:1px solid #e1e6e9;border-radius:8px;background:#fff;min-width:0;max-width:100%;box-sizing:border-box}.presence-item.present{border-color:#c4e5d1;background:#fbfffc}
+.presence-item-main{min-width:0;max-width:100%;overflow:hidden}.presence-item-code{font-size:8px;font-weight:800;color:#91a0a7;margin-bottom:1px}.presence-item-name{font-size:10px;font-weight:800;color:#17394f;line-height:1.15;white-space:normal;overflow-wrap:anywhere}
 .presence-item-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.presence-item-meta span{display:inline-flex;align-items:center;padding:1px 5px;border-radius:999px;background:#f3f0e3;color:#6f612e;font-size:7px;font-weight:800}
 .presence-item-check{display:flex;align-items:center;gap:6px}.presence-item-label{font-size:8px;font-weight:800;color:#1b9b63}.presence-item:not(.present) .presence-item-label{color:#b34d4d}
 .presence-switch{position:relative;display:inline-flex;width:36px;height:20px}.presence-switch input{position:absolute;opacity:0;pointer-events:none}.presence-slider{position:absolute;inset:0;border-radius:999px;background:#e3e6e8;border:1px solid #c3cacf}.presence-slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .15s}.presence-switch input:checked + .presence-slider{background:#1ab26b;border-color:#169b5e}.presence-switch input:checked + .presence-slider:before{transform:translateX(15px)}
 .presence-readonly-note{font-size:8px;color:#7a6b40;background:#fff7e0;border:1px solid #e1c888;padding:5px 7px;border-radius:7px}.presence-admin-hidden{display:none!important}
+.presence-shell>*{min-width:0;max-width:100%}.presence-calendar-card{overflow:hidden}.presence-checklist-card{overflow:hidden;min-width:0}.presence-checklist-card .presence-checklist-head,.presence-checklist-card .presence-search,.presence-checklist-card .presence-inline-stats{max-width:100%;box-sizing:border-box}
 @media(max-width:900px){
- #sheet-presence{overflow:visible}.presence-page{min-width:0;padding:5px 5px 62px}.presence-toolbar{align-items:stretch}.presence-field{width:calc(50% - 3px)}.presence-field select,.presence-field input{width:100%;min-width:0;box-sizing:border-box}.presence-pill{flex:1 1 auto;justify-content:center;box-sizing:border-box}.presence-shell{grid-template-columns:1fr}.presence-stack{display:grid;grid-template-columns:1fr 1fr;gap:6px}.presence-stack .presence-card:nth-child(n+3){grid-column:1/-1}.presence-calendar{grid-template-columns:repeat(7,minmax(34px,1fr));min-width:266px}.presence-card{padding:7px}.presence-checklist{max-height:380px}.presence-item-meta{display:none}.presence-item-name{font-size:9px}.presence-item{padding:5px 6px}.presence-item-label{font-size:7px}.presence-service-chart{height:74px}.presence-service-bar-wrap{height:44px}.presence-summary-main b{font-size:24px}
+ #sheet-presence{overflow:visible}.presence-page{min-width:0;padding:5px 5px 62px}.presence-toolbar{align-items:stretch}.presence-field{width:calc(50% - 3px)}.presence-field select,.presence-field input{width:100%;min-width:0;box-sizing:border-box}.presence-pill{flex:1 1 auto;justify-content:center;box-sizing:border-box}.presence-shell{grid-template-columns:1fr}.presence-stack{display:grid;grid-template-columns:1fr 1fr;gap:6px}.presence-stack .presence-card:nth-child(n+3){grid-column:1/-1}.presence-calendar{grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;width:100%}.presence-card{padding:7px}.presence-checklist{max-height:380px}.presence-item-meta{display:none}.presence-item-name{font-size:9px}.presence-item{padding:5px 6px}.presence-item-label{font-size:7px}.presence-service-chart{height:74px}.presence-service-bar-wrap{height:44px}.presence-summary-main b{font-size:24px}
 }
 @media(max-width:520px){
- .presence-field{width:100%}.presence-stack{grid-template-columns:1fr 1fr}.presence-calendar{grid-template-columns:repeat(7,42px);overflow-x:auto}.presence-day{min-height:46px}.presence-day-dow{display:none}.presence-summary-grid{grid-template-columns:1fr 1fr}.presence-turn-btn{font-size:8px}.presence-checklist-actions{justify-content:flex-start}.presence-checklist-head{flex-direction:column}.presence-service-day{flex-basis:15px}
+ .presence-field{width:100%}.presence-stack{grid-template-columns:1fr 1fr}.presence-calendar{grid-template-columns:repeat(7,minmax(0,1fr));overflow:hidden;width:100%}.presence-day{min-height:46px}.presence-day-dow{display:none}.presence-summary-grid{grid-template-columns:1fr 1fr}.presence-turn-btn{font-size:8px}.presence-checklist-actions{justify-content:flex-start}.presence-checklist-head{flex-direction:column}.presence-service-day{flex-basis:15px}
 }
 </style>
 </head>
@@ -4256,7 +4257,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
             </div>
           </div>
 
-          <div class="presence-card">
+          <div class="presence-card presence-calendar-card">
             <div class="presence-calendar-title">
               <div>
                 <div class="presence-card-title">Calendario del ciclo</div>
@@ -4268,7 +4269,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           </div>
         </div>
 
-        <div class="presence-card">
+        <div class="presence-card presence-checklist-card">
           <div class="presence-checklist-head">
             <div>
               <div class="presence-card-title">Checklist por referencia</div>
@@ -4276,6 +4277,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
             </div>
             <div class="presence-checklist-actions">
               <div id="presenceSyncBadge" class="presence-sync-badge">● Sincronizado</div>
+              <button type="button" class="presence-action-btn" onclick="exportPresenceExcel()">⬇ Excel</button>
               <button type="button" class="presence-action-btn" onclick="presenceSetAll(true)">Marcar todo</button>
               <button type="button" class="presence-action-btn" onclick="presenceSetAll(false)">Limpiar</button>
             </div>
@@ -8740,6 +8742,220 @@ function printMotherFull(){
  setTimeout(()=>{
    if(document.body.classList.contains('printing-mother'))cleanup();
  },5000);
+}
+
+function presenceExportDataset(){
+ const code=normalizeBranch(presenceBranchCode||state.branch);
+ if(!code||!branchCatalog[code])return null;
+ const range=presenceProductionRange(code);
+ const branchName=branchCatalog[code]?.name||'';
+ const detail=[];
+ const daily=[];
+ let cyclePresent=0,cycleTotal=0;
+
+ for(let i=0;i<range.days;i++){
+   const d=new Date(range.start);d.setDate(d.getDate()+i);
+   const date=presenceDateKeyFromDate(d);
+   const future=presenceDateIsFuture(date);
+   const rows=presenceRowsForDate(code,date);
+   const am=presenceShiftTotals(code,date,'am',rows);
+   const pm=presenceShiftTotals(code,date,'pm',rows);
+   const totalDen=am.total+pm.total;
+   const totalNum=am.present+pm.present;
+   const dailyPct=!future&&totalDen?totalNum/totalDen:null;
+   const amPct=!future&&am.total?am.present/am.total:null;
+   const pmPct=!future&&pm.total?pm.present/pm.total:null;
+   if(!future){cyclePresent+=totalNum;cycleTotal+=totalDen;}
+   daily.push({
+     date,dateObj:d,day:d.toLocaleDateString('es-AR',{weekday:'short'}),
+     amPct,pmPct,totalPct:dailyPct,refs:rows.length,future
+   });
+
+   ['am','pm'].forEach(shift=>{
+     const map=presenceShiftMap(code,date,shift);
+     rows.forEach(item=>{
+       const art=safeArticle(item.article);
+       const status=future?'PENDIENTE':(map[art]?'PRESENTE':'AUSENTE');
+       detail.push({
+         date,day:d.toLocaleDateString('es-AR',{weekday:'long'}),
+         shift:shift==='am'?'Mañana':'Tarde',article:art,
+         description:item.description||'',brand:item.brand||'',
+         aptitude:item.aptitude||'',um:item.um||'',status
+       });
+     });
+   });
+ }
+ return {
+   code,branchName,range,daily,detail,
+   cyclePct:cycleTotal?cyclePresent/cycleTotal:0,
+   cyclePresent,cycleTotal,
+   generatedAt:new Date()
+ };
+}
+
+function buildPresenceXlsx(data){
+ const summaryHeaders=['Fecha','Día','Mañana %','Tarde %','Nivel servicio %','Referencias'];
+ const summaryRows=[];
+ let r=1;
+ summaryRows.push(`<row r="${r}" ht="25" customHeight="1">${xlsxCellXml('CONTROL DE PRESENCIA · CUMPLIMIENTO',r,1,1,true)}</row>`);r++;
+ summaryRows.push(`<row r="${r}">${xlsxCellXml(`Sucursal: ${data.code} - ${data.branchName}`,r,1,2,true)}</row>`);r++;
+ summaryRows.push(`<row r="${r}">${xlsxCellXml(`Ciclo: ${presenceFormatDate(data.range.start)} → ${presenceFormatDate(data.range.end)} · ${data.range.days} días`,r,1,2,true)}</row>`);r++;
+ summaryRows.push(`<row r="${r}">${xlsxCellXml('Cumplimiento acumulado',r,1,3,true)}${xlsxCellXml(data.cyclePct,r,2,7,false)}${xlsxCellXml('Presentes',r,3,3,true)}${xlsxCellXml(data.cyclePresent,r,4,5,false)}${xlsxCellXml('Controles posibles',r,5,3,true)}${xlsxCellXml(data.cycleTotal,r,6,5,false)}</row>`);r++;
+ r++;
+ const headerRow=r;
+ summaryRows.push(`<row r="${r}" ht="22" customHeight="1">${summaryHeaders.map((h,i)=>xlsxCellXml(h,r,i+1,4,true)).join('')}</row>`);r++;
+ const firstDataRow=r;
+ data.daily.forEach(day=>{
+   const values=[day.date,day.day,day.amPct,day.pmPct,day.totalPct,day.refs];
+   const cells=values.map((v,i)=>{
+     if(i===0||i===1)return xlsxCellXml(v,r,i+1,0,true);
+     if(i>=2&&i<=4)return xlsxCellXml(v,r,i+1,7,false);
+     return xlsxCellXml(v,r,i+1,5,false);
+   }).join('');
+   summaryRows.push(`<row r="${r}">${cells}</row>`);r++;
+ });
+ const lastDataRow=r-1;
+ const lastSummaryRow=r;
+ summaryRows.push(`<row r="${r}">${xlsxCellXml('ACUMULADO',r,1,6,true)}${xlsxCellXml('',r,2,6,true)}${xlsxCellXml('',r,3,6,true)}${xlsxCellXml('',r,4,6,true)}${xlsxCellXml(data.cyclePct,r,5,8,false)}${xlsxCellXml(data.daily[0]?.refs||0,r,6,6,false)}</row>`);
+
+ const detailHeaders=['Fecha','Día','Turno','Artículo','Descripción','Marca','Aptitud','U/M','Estado'];
+ const detailRows=[];
+ let dr=1;
+ detailRows.push(`<row r="${dr}" ht="25" customHeight="1">${xlsxCellXml('DETALLE CONTROL DE PRESENCIA',dr,1,1,true)}</row>`);dr++;
+ detailRows.push(`<row r="${dr}">${xlsxCellXml(`Sucursal: ${data.code} - ${data.branchName}`,dr,1,2,true)}</row>`);dr++;
+ detailRows.push(`<row r="${dr}">${xlsxCellXml(`Ciclo: ${presenceFormatDate(data.range.start)} → ${presenceFormatDate(data.range.end)}`,dr,1,2,true)}</row>`);dr++;
+ dr++;
+ const detailHeaderRow=dr;
+ detailRows.push(`<row r="${dr}" ht="22" customHeight="1">${detailHeaders.map((h,i)=>xlsxCellXml(h,dr,i+1,4,true)).join('')}</row>`);dr++;
+ data.detail.forEach(item=>{
+   const styleStatus=item.status==='PRESENTE'?9:item.status==='AUSENTE'?10:11;
+   const values=[item.date,item.day,item.shift,item.article,item.description,item.brand,item.aptitude,item.um,item.status];
+   const cells=values.map((v,i)=>xlsxCellXml(v,dr,i+1,i===8?styleStatus:0,true)).join('');
+   detailRows.push(`<row r="${dr}">${cells}</row>`);dr++;
+ });
+ const detailLastRow=Math.max(detailHeaderRow,dr-1);
+
+ const summarySheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+ <sheetViews><sheetView workbookViewId="0"><pane ySplit="${headerRow}" topLeftCell="A${headerRow+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+ <sheetFormatPr defaultRowHeight="15"/>
+ <cols><col min="1" max="1" width="13" customWidth="1"/><col min="2" max="2" width="12" customWidth="1"/><col min="3" max="5" width="14" customWidth="1"/><col min="6" max="6" width="12" customWidth="1"/></cols>
+ <sheetData>${summaryRows.join('')}</sheetData>
+ <autoFilter ref="A${headerRow}:F${lastDataRow}"/>
+ <mergeCells count="3"><mergeCell ref="A1:F1"/><mergeCell ref="A2:F2"/><mergeCell ref="A3:F3"/></mergeCells>
+ <drawing r:id="rId1"/>
+ <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
+ <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
+</worksheet>`;
+
+ const detailSheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <sheetViews><sheetView workbookViewId="0"><pane ySplit="${detailHeaderRow}" topLeftCell="A${detailHeaderRow+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+ <sheetFormatPr defaultRowHeight="15"/>
+ <cols><col min="1" max="1" width="13" customWidth="1"/><col min="2" max="3" width="12" customWidth="1"/><col min="4" max="4" width="12" customWidth="1"/><col min="5" max="5" width="38" customWidth="1"/><col min="6" max="6" width="18" customWidth="1"/><col min="7" max="8" width="11" customWidth="1"/><col min="9" max="9" width="14" customWidth="1"/></cols>
+ <sheetData>${detailRows.join('')}</sheetData>
+ <autoFilter ref="A${detailHeaderRow}:I${detailLastRow}"/>
+ <mergeCells count="3"><mergeCell ref="A1:I1"/><mergeCell ref="A2:I2"/><mergeCell ref="A3:I3"/></mergeCells>
+ <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
+ <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
+</worksheet>`;
+
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <numFmts count="1"><numFmt numFmtId="164" formatCode="0.0%"/></numFmts>
+ <fonts count="4">
+  <font><sz val="10"/><color rgb="FF17324A"/><name val="Calibri"/></font>
+  <font><b/><sz val="15"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+  <font><b/><sz val="10"/><color rgb="FF17324A"/><name val="Calibri"/></font>
+  <font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+ </fonts>
+ <fills count="8">
+  <fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FF204D69"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFE8F3ED"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FF6F8999"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFE9EEF1"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFDFF4E7"/><bgColor indexed="64"/></patternFill></fill>
+  <fill><patternFill patternType="solid"><fgColor rgb="FFFBE5E5"/><bgColor indexed="64"/></patternFill></fill>
+ </fills>
+ <borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD0D8DD"/></left><right style="thin"><color rgb="FFD0D8DD"/></right><top style="thin"><color rgb="FFD0D8DD"/></top><bottom style="thin"><color rgb="FFD0D8DD"/></bottom><diagonal/></border></borders>
+ <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+ <cellXfs count="12">
+  <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center"/></xf>
+  <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"><alignment vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment vertical="center"/></xf>
+  <xf numFmtId="0" fontId="3" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+  <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment vertical="center"/></xf>
+  <xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="164" fontId="2" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+  <xf numFmtId="0" fontId="2" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+ </cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+
+ const catFormula=`'Resumen'!$A$${firstDataRow}:$A$${lastDataRow}`;
+ const chart1=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+ <c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="es-AR"/><a:t>Cumplimiento por turno</a:t></a:r></a:p></c:rich></c:tx><c:layout/><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/>
+ <c:barChart><c:barDir val="col"/><c:grouping val="clustered"/>
+  <c:ser><c:idx val="0"/><c:order val="0"/><c:tx><c:v>Mañana</c:v></c:tx><c:cat><c:strRef><c:f>${catFormula}</c:f></c:strRef></c:cat><c:val><c:numRef><c:f>'Resumen'!$C$${firstDataRow}:$C$${lastDataRow}</c:f></c:numRef></c:val></c:ser>
+  <c:ser><c:idx val="1"/><c:order val="1"/><c:tx><c:v>Tarde</c:v></c:tx><c:cat><c:strRef><c:f>${catFormula}</c:f></c:strRef></c:cat><c:val><c:numRef><c:f>'Resumen'!$D$${firstDataRow}:$D$${lastDataRow}</c:f></c:numRef></c:val></c:ser>
+  <c:axId val="100"/><c:axId val="200"/>
+ </c:barChart>
+ <c:catAx><c:axId val="100"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:tickLblPos val="nextTo"/><c:crossAx val="200"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/></c:catAx>
+ <c:valAx><c:axId val="200"/><c:scaling><c:orientation val="minMax"/><c:max val="1"/><c:min val="0"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:numFmt formatCode="0%" sourceLinked="0"/><c:majorGridlines/><c:tickLblPos val="nextTo"/><c:crossAx val="100"/><c:crosses val="autoZero"/><c:crossBetween val="between"/></c:valAx>
+ </c:plotArea><c:legend><c:legendPos val="b"/><c:layout/><c:overlay val="0"/></c:legend><c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>
+</c:chartSpace>`;
+
+ const chart2=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+ <c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="es-AR"/><a:t>Nivel de servicio diario</a:t></a:r></a:p></c:rich></c:tx><c:layout/><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/>
+ <c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>
+  <c:ser><c:idx val="0"/><c:order val="0"/><c:tx><c:v>Nivel de servicio</c:v></c:tx><c:marker><c:symbol val="circle"/><c:size val="5"/></c:marker><c:cat><c:strRef><c:f>${catFormula}</c:f></c:strRef></c:cat><c:val><c:numRef><c:f>'Resumen'!$E$${firstDataRow}:$E$${lastDataRow}</c:f></c:numRef></c:val><c:smooth val="0"/></c:ser>
+  <c:marker val="1"/><c:smooth val="0"/><c:axId val="300"/><c:axId val="400"/>
+ </c:lineChart>
+ <c:catAx><c:axId val="300"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:tickLblPos val="nextTo"/><c:crossAx val="400"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/></c:catAx>
+ <c:valAx><c:axId val="400"/><c:scaling><c:orientation val="minMax"/><c:max val="1"/><c:min val="0"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:numFmt formatCode="0%" sourceLinked="0"/><c:majorGridlines/><c:tickLblPos val="nextTo"/><c:crossAx val="300"/><c:crosses val="autoZero"/></c:valAx>
+ </c:plotArea><c:legend><c:delete val="1"/></c:legend><c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>
+</c:chartSpace>`;
+
+ const drawing=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+ <xdr:twoCellAnchor><xdr:from><xdr:col>7</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>1</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>18</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Cumplimiento por turno"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId1"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>
+ <xdr:twoCellAnchor><xdr:from><xdr:col>7</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>19</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>36</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="3" name="Nivel de servicio diario"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId2"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>
+</xdr:wsDr>`;
+
+ const entries=[
+  {name:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/><Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/><Override PartName="/xl/charts/chart2.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/></Types>`},
+  {name:'_rels/.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+  {name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Resumen" sheetId="1" r:id="rId1"/><sheet name="Detalle" sheetId="2" r:id="rId2"/></sheets></workbook>`},
+  {name:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+  {name:'xl/styles.xml',data:styles},
+  {name:'xl/worksheets/sheet1.xml',data:summarySheet},
+  {name:'xl/worksheets/_rels/sheet1.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`},
+  {name:'xl/worksheets/sheet2.xml',data:detailSheet},
+  {name:'xl/drawings/drawing1.xml',data:drawing},
+  {name:'xl/drawings/_rels/drawing1.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart2.xml"/></Relationships>`},
+  {name:'xl/charts/chart1.xml',data:chart1},
+  {name:'xl/charts/chart2.xml',data:chart2}
+ ];
+ return xlsxZipStore(entries);
+}
+
+function exportPresenceExcel(){
+ const data=presenceExportDataset();
+ if(!data){alert('No hay datos de Control Presencia para exportar.');return;}
+ try{
+   const bytes=buildPresenceXlsx(data);
+   const file=`Control_Presencia_Suc_${data.code}_${data.range.startRaw}_a_${data.range.endRaw}.xlsx`;
+   downloadBlob(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),file);
+ }catch(e){
+   console.error('Exportar Control Presencia:',e);
+   alert('No se pudo generar el Excel de Control Presencia: '+(e?.message||e));
+ }
 }
 
 function xlsxXmlEscape(v){

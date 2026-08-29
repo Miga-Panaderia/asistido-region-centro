@@ -616,3 +616,12 @@ Se incorpora la colección `miga_presence/{branchId}`. Esta versión **sí requi
 ## v44 · Encabezado general solo en Parámetros Suc
 
 La barra superior con MIGA, archivo de ventas, Zona, Sucursal, Inicio, Administrador y WhatsApp se muestra únicamente en **Parámetros Suc**. En Panadería Suc, Ventas Prisma Suc, Hoja del Panadero Suc, Plan Elaboradora y Presencia se oculta automáticamente para aprovechar mejor el espacio de trabajo.
+## v45 · Control Presencia: layout estable + Excel con gráficos
+
+- Se corrige el desborde del calendario sobre el checklist mediante columnas realmente acotadas y `min-width: 0`.
+- El calendario conserva 7 columnas sin invadir el listado, tanto en PC como en móvil.
+- Se agrega **⬇ Excel** en Control Presencia.
+- El archivo exportado contiene **Resumen** y **Detalle**.
+- Resumen incluye cumplimiento Mañana, Tarde y nivel de servicio total por día, más dos gráficos de Excel.
+- Detalle incluye fecha, turno, referencia, descripción, marca, aptitud, U/M y estado.
+- Se eliminan del paquete los archivos históricos `MIGA_v39/v40/v41_firestore.rules`; queda únicamente `firebase/firestore.rules` como regla vigente del proyecto.
