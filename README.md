@@ -586,3 +586,22 @@ La edición es exclusiva del **Administrador General**. Una sucursal elaboradora
 ### Firebase
 
 Se incorpora la colección `miga_presence/{branchId}`. Esta versión **sí requiere publicar las nuevas reglas de Firestore** incluidas en `firebase/firestore.rules`.
+
+## v38 · Control Presencia desacoplado de la sincronización principal
+
+- `miga_presence` pasa a ser una función adicional: si sus reglas aún no están publicadas, ya no bloquea sucursales, ventas, padrones ni configuración.
+- Los listeners de presencia manejan su propio error y no fuerzan la reconexión global.
+- La hoja muestra un aviso específico cuando Presencia funciona localmente pero no tiene acceso cloud.
+- Se declara el avatar de MIGA como favicon para evitar el `404 /favicon.ico`.
+
+**Para sincronizar Control Presencia sigue siendo obligatorio publicar `firebase/firestore.rules` incluido en esta versión.**
+## v39 · Presencia por ciclo de producción y sólo Admin General
+
+- **Control Presencia** deja de usar un mes calendario aislado.
+- El período se genera con `Inicio + Días` de la configuración de la elaboradora. Con el ciclo actual: **10/08/2026 al 13/09/2026 (35 días)**.
+- El calendario muestra todo el ciclo aunque cruce de mes.
+- El dashboard se compacta para quedar más sutil y alineado visualmente con MIGA.
+- La solapa **Presencia** sólo aparece con **Administrador General** activo.
+- Ingresar el PIN/clave de una sucursal no muestra ni habilita Presencia.
+- Firebase también restringe `miga_presence` exclusivamente al UID del Administrador General.
+
