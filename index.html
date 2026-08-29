@@ -4364,6 +4364,45 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
         <div class="admin-help">La carga del archivo madre de ventas y la Fecha de inicio quedan bloqueadas fuera de este menú.</div>
       </section>
 
+      <section class="admin-card master-admin-only" id="adminCycleCard">
+        <div class="admin-card-title">🔄 CICLO DE PRODUCCIÓN</div>
+        <div class="admin-help" style="margin-top:0">
+          Al iniciar un ciclo, MIGA genera primero una <b>línea base y respaldo por zona y sucursal</b>.
+          Esa copia permite comparar al cierre cómo cambió cada cronograma.
+        </div>
+
+        <div class="admin-three">
+          <label class="admin-field">
+            <span>Inicio del nuevo ciclo</span>
+            <input id="cycleStartDate" type="date" onchange="updateCycleEndDate();updateCycleAdminStatus()">
+          </label>
+          <label class="admin-field">
+            <span>Días del ciclo</span>
+            <input id="cycleDays" type="number" step="1" min="1" value="35" oninput="updateCycleEndDate();updateCycleAdminStatus()">
+          </label>
+          <label class="admin-field">
+            <span>Fin estimado</span>
+            <input id="cycleEndDate" type="text" readonly>
+          </label>
+        </div>
+
+        <label class="admin-check">
+          <input id="cycleResetCoefficients" type="checkbox" checked>
+          Poner todos los coeficientes en <b>0%</b> después de guardar el respaldo inicial
+        </label>
+
+        <div id="adminCycleStatus" class="backup-status warn"></div>
+
+        <div class="admin-actions backup-actions">
+          <button type="button" class="backup-primary" onclick="startNewProductionCycle()">📦 Iniciar ciclo + respaldo</button>
+          <button type="button" onclick="exportCycleChangesReport()">⬇ Reporte cambios del ciclo</button>
+          <button type="button" onclick="resetAllCoefficientsToZero()">0% Coeficientes</button>
+        </div>
+
+        <div class="admin-help">
+          El respaldo se toma <b>antes</b> de poner coeficientes en 0%. El reporte final compara el cronograma actual contra esa línea base, con resumen general y detalle por zona.
+        </div>
+      </section>
 
 
       <section class="admin-card master-admin-only" id="adminPasswordsCard">
@@ -6572,6 +6611,415 @@ function monthlyBackupReminder(){
 }
 
 
+/* ===================== CICLOS · RESPALDO Y COMPARATIVO ===================== */
+const MIGA_CYCLE_BASELINE_KIND='MIGA_CYCLE_BASELINE';
+const MIGA_CYCLE_BASELINE_VERSION=1;
+const MIGA_CYCLE_BASELINE_PREFIX='panaderia_cycle_baseline_v47_';
+const MIGA_LAST_CYCLE_KEY='panaderia_last_cycle_v47';
+
+function cycleBaselineKey(cycleId){
+ return MIGA_CYCLE_BASELINE_PREFIX+String(cycleId||'');
+}
+function cycleSafeFilePart(value){
+ return String(value||'')
+   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+   .replace(/[^A-Za-z0-9._-]+/g,'_')
+   .replace(/^_+|_+$/g,'')||'SIN_NOMBRE';
+}
+function cycleEndDateValue(startDate,days){
+ const d=new Date(String(startDate||'')+'T12:00:00');
+ const nDays=Math.max(1,Math.round(Number(days)||1));
+ if(Number.isNaN(d.getTime()))return '';
+ d.setDate(d.getDate()+nDays-1);
+ return presenceDateKeyFromDate(d);
+}
+function updateCycleEndDate(){
+ const start=document.getElementById('cycleStartDate')?.value||'';
+ const days=parseNumber(document.getElementById('cycleDays')?.value||'');
+ const end=cycleEndDateValue(start,days);
+ const el=document.getElementById('cycleEndDate');
+ if(el)el.value=end?presenceFormatDate(presenceParseDate(end)):'';
+}
+function loadCycleBaselineLocal(cycleId){
+ try{
+   const raw=localStorage.getItem(cycleBaselineKey(cycleId));
+   if(!raw)return null;
+   const data=JSON.parse(raw);
+   return data?.kind===MIGA_CYCLE_BASELINE_KIND?data:null;
+ }catch(e){return null}
+}
+function saveCycleBaselineLocal(baseline){
+ try{
+   localStorage.setItem(cycleBaselineKey(baseline.cycleId),JSON.stringify(baseline));
+   localStorage.setItem(MIGA_LAST_CYCLE_KEY,baseline.cycleId);
+   return true;
+ }catch(e){
+   console.warn('No se pudo guardar línea base local del ciclo:',e);
+   return false;
+ }
+}
+function currentCycleIdFromUI(){
+ return document.getElementById('cycleStartDate')?.value || state.startDate || '';
+}
+function cycleCompactProduct(p){
+ return {
+   article:safeArticle(p?.article),
+   description:String(p?.description||''),
+   schedule:Array.isArray(p?.schedule)?p.schedule.slice(0,7).map(v=>Number(v)>0?1:0):[0,0,0,0,0,0,0],
+   increment:n(p?.increment,0)
+ };
+}
+function buildCycleBackupPackage(startDate,days){
+ const createdAt=new Date().toISOString();
+ const endDate=cycleEndDateValue(startDate,days);
+ const reportBaseline={
+   kind:MIGA_CYCLE_BASELINE_KIND,
+   version:MIGA_CYCLE_BASELINE_VERSION,
+   cycleId:startDate,
+   startDate,
+   endDate,
+   days:Number(days),
+   createdAt,
+   zones:{}
+ };
+ const branchBackups={};
+ zoneOrder.forEach(zoneId=>{
+   const codes=branchesForZone(zoneId).map(x=>typeof x==='string'?x:x.code).filter(Boolean);
+   const zoneEntry={zoneId,zoneName:zoneName(zoneId),branches:{}};
+   codes.forEach(code=>{
+     const cfg=getEditableBranchState(code);
+     const products=(cfg.products||[]).map(cycleCompactProduct).filter(p=>p.article);
+     zoneEntry.branches[code]={
+       code,
+       name:branchCatalog[code]?.name||cfg.branchName||'',
+       products
+     };
+     branchBackups[code]={
+       kind:'MIGA_CYCLE_BRANCH_BACKUP',
+       version:1,
+       cycleId:startDate,
+       createdAt,
+       zoneId,
+       zoneName:zoneName(zoneId),
+       code,
+       name:branchCatalog[code]?.name||cfg.branchName||'',
+       config:configSnapshot(cfg)
+     };
+   });
+   reportBaseline.zones[zoneId]=zoneEntry;
+ });
+ return {
+   meta:{
+     kind:MIGA_CYCLE_BASELINE_KIND,
+     version:MIGA_CYCLE_BASELINE_VERSION,
+     cycleId:startDate,startDate,endDate,days:Number(days),createdAt,
+     zoneCount:zoneOrder.length,
+     branchCount:Object.keys(branchBackups).length
+   },
+   reportBaseline,
+   branchBackups
+ };
+}
+function buildCycleBackupZip(pkg){
+ const entries=[];
+ entries.push({name:'00_RESUMEN_CICLO.json',data:JSON.stringify(pkg.meta,null,2)});
+ Object.values(pkg.branchBackups).forEach(item=>{
+   const folder=cycleSafeFilePart(item.zoneName||item.zoneId);
+   const file=String(item.code).padStart(3,'0')+'_'+cycleSafeFilePart(item.name)+'.json';
+   entries.push({name:folder+'/'+file,data:JSON.stringify(item,null,2)});
+ });
+ return xlsxZipStore(entries);
+}
+function downloadCycleBackupZip(pkg){
+ const bytes=buildCycleBackupZip(pkg);
+ const file='MIGA_Backup_Ciclo_'+pkg.meta.startDate+'_a_'+pkg.meta.endDate+'.zip';
+ downloadBlob(new Blob([bytes],{type:'application/zip'}),file);
+ return file;
+}
+function updateCycleAdminStatus(){
+ const status=document.getElementById('adminCycleStatus');
+ if(!status)return;
+ const cycleId=currentCycleIdFromUI();
+ const days=parseNumber(document.getElementById('cycleDays')?.value||state.params?.days||35);
+ const end=cycleEndDateValue(cycleId,days);
+ const baseline=cycleId?loadCycleBaselineLocal(cycleId):null;
+ if(baseline){
+   const branches=Object.values(baseline.zones||{}).reduce((sum,z)=>sum+Object.keys(z.branches||{}).length,0);
+   status.className='backup-status ok';
+   status.innerHTML='<b>✓ Línea base disponible:</b> '+esc(cycleId)+' → '+esc(end||baseline.endDate||'')+
+     '<br><span>'+branches+' sucursales · '+Object.keys(baseline.zones||{}).length+' zonas · '+esc(new Date(baseline.createdAt).toLocaleString('es-AR'))+'</span>';
+ }else{
+   status.className='backup-status warn';
+   status.innerHTML='<b>Sin línea base para este ciclo.</b><br><span>Al iniciar el ciclo se guardará el cronograma inicial de cada zona y sucursal.</span>';
+ }
+}
+async function cycleRefreshCloudBeforeCriticalAction(){
+ if(!firebaseCloudInitialized)return true;
+ const ok=await firebasePullAll(true);
+ if(!ok){
+   alert('No se pudo actualizar la información desde Firebase. No se realizó la operación para evitar usar datos desactualizados.');
+   return false;
+ }
+ return true;
+}
+function cycleConfigsWithNewStart(startDate,days,{resetCoefficients=false}={}){
+ const out={};
+ allBranchCodes().forEach(code=>{
+   const cfg=getEditableBranchState(code);
+   cfg.startDate=startDate;
+   cfg.monthLabel=monthNameFromDateForValue(startDate);
+   cfg.params=cfg.params||{};
+   cfg.params.days=Number(days);
+   if(resetCoefficients){
+     (cfg.products||[]).forEach(p=>{p.increment=0;});
+   }
+   out[code]=normalizeStateArticles(cfg);
+ });
+ return out;
+}
+function cycleStoreBranchConfigsLocal(configs){
+ Object.entries(configs||{}).forEach(([code,cfg])=>{
+   try{localStorage.setItem(storageKey(code),JSON.stringify(configSnapshot(cfg)))}catch(e){console.warn('Guardar ciclo local',code,e)}
+ });
+ if(configs[state.branch]){
+   const sales=state.sales,rows=state.salesRows,source=state.salesSource,sheet=state.salesSheetName,loaded=state.salesLoadedAt;
+   state=clone(configs[state.branch]);
+   state.sales=sales||{};state.salesRows=rows||[];state.salesSource=source||'';state.salesSheetName=sheet||'';state.salesLoadedAt=loaded||'';
+ }
+}
+async function cycleSaveConfigsBulk(configs){
+ cycleStoreBranchConfigsLocal(configs);
+ if(firebaseCloudInitialized&&window.MigaFirebase?.isAdmin?.()){
+   await window.MigaFirebase.saveBranchesBulk(configs);
+ }
+}
+async function startNewProductionCycle(){
+ if(!isMasterAdmin()){alert('Solo el Administrador General puede iniciar un ciclo.');return;}
+ const startDate=document.getElementById('cycleStartDate')?.value||'';
+ const days=Math.round(parseNumber(document.getElementById('cycleDays')?.value||''));
+ const reset=!!document.getElementById('cycleResetCoefficients')?.checked;
+ if(!startDate){alert('Indicá la fecha de inicio del ciclo.');return;}
+ if(!Number.isFinite(days)||days<1){alert('Indicá una cantidad válida de días.');return;}
+ const endDate=cycleEndDateValue(startDate,days);
+ const existing=loadCycleBaselineLocal(startDate);
+ let msg='INICIAR CICLO DE PRODUCCIÓN\n\n'+
+   'Ciclo: '+presenceFormatDate(presenceParseDate(startDate))+' → '+presenceFormatDate(presenceParseDate(endDate))+'\n'+
+   'Sucursales: '+allBranchCodes().length+' · Zonas: '+zoneOrder.length+'\n\n'+
+   '1. Se guardará un respaldo por zona y sucursal.\n'+
+   '2. Se descargará un ZIP con la línea base.\n'+
+   (reset?'3. Después del respaldo, todos los coeficientes quedarán en 0%.\n':'3. Los coeficientes conservarán su valor actual.\n');
+ if(existing)msg+='\n⚠ Ya existe una línea base local para esta fecha. Si continuás, será reemplazada.\n';
+ msg+='\n¿Continuar?';
+ if(!confirm(msg))return;
+
+ if(!(await cycleRefreshCloudBeforeCriticalAction()))return;
+ const pkg=buildCycleBackupPackage(startDate,days);
+ saveCycleBaselineLocal(pkg.reportBaseline);
+
+ try{
+   if(firebaseCloudInitialized&&window.MigaFirebase?.isAdmin?.()){
+     await window.MigaFirebase.saveCycleBaseline(pkg.meta,pkg.branchBackups);
+   }
+ }catch(e){
+   alert('No se pudo guardar el respaldo del ciclo en Firebase. El ciclo NO fue iniciado.\n\n'+(e?.message||e));
+   return;
+ }
+
+ downloadCycleBackupZip(pkg);
+
+ try{
+   const configs=cycleConfigsWithNewStart(startDate,days,{resetCoefficients:reset});
+   await cycleSaveConfigsBulk(configs);
+   state=attachSalesToState(loadLocalFor(state.branch)||state,state.branch);
+   recalc();
+   document.getElementById('adminStartDate').value=startDate;
+   document.getElementById('adminDays').value=days;
+   updateCycleEndDate();
+   updateCycleAdminStatus();
+   document.getElementById('saveState').textContent='Ciclo '+startDate+' iniciado · respaldo generado';
+   alert('Ciclo iniciado correctamente.\n\nRespaldo: '+Object.keys(pkg.branchBackups).length+' sucursales / '+zoneOrder.length+' zonas.'+(reset?'\nCoeficientes: 0% en todas las sucursales.':''));
+ }catch(e){
+   console.error('Inicio de ciclo:',e);
+   alert('El respaldo fue generado, pero hubo un problema al aplicar el nuevo ciclo: '+(e?.message||e));
+ }
+}
+async function resetAllCoefficientsToZero(){
+ if(!isMasterAdmin()){alert('Solo el Administrador General puede realizar esta acción.');return;}
+ if(!confirm('¿Poner en 0% TODOS los coeficientes de TODAS las sucursales?\n\nEsta acción no modifica los cronogramas. Si querés conservar una copia previa, usá primero “Iniciar ciclo + respaldo”.'))return;
+ if(!(await cycleRefreshCloudBeforeCriticalAction()))return;
+ const configs={};
+ allBranchCodes().forEach(code=>{
+   const cfg=getEditableBranchState(code);
+   (cfg.products||[]).forEach(p=>{p.increment=0;});
+   configs[code]=normalizeStateArticles(cfg);
+ });
+ try{
+   await cycleSaveConfigsBulk(configs);
+   state=attachSalesToState(loadLocalFor(state.branch)||state,state.branch);
+   recalc();
+   document.getElementById('saveState').textContent='Coeficientes en 0% · todas las sucursales';
+   alert('Todos los coeficientes quedaron en 0%. Los cronogramas no fueron modificados.');
+ }catch(e){alert('No se pudieron actualizar todos los coeficientes: '+(e?.message||e));}
+}
+function cycleScheduleLabel(schedule){
+ const labels=['L','M','X','J','V','S','D'];
+ const arr=Array.isArray(schedule)?schedule:[];
+ const active=labels.filter((_,i)=>Number(arr[i])>0);
+ return active.length?active.join(' · '):'—';
+}
+function cycleScheduleChangeLabel(before,after){
+ const labels=['L','M','X','J','V','S','D'];
+ const out=[];
+ for(let i=0;i<7;i++){
+   const a=Number(before?.[i])>0?1:0;
+   const b=Number(after?.[i])>0?1:0;
+   if(a!==b)out.push(labels[i]+' '+a+'→'+b);
+ }
+ return out.join(' | ');
+}
+function cycleBaselineFromCloud(cycleId,cloud){
+ if(!cloud?.meta||!cloud?.branches)return null;
+ const baseline={
+   kind:MIGA_CYCLE_BASELINE_KIND,version:MIGA_CYCLE_BASELINE_VERSION,
+   cycleId,startDate:cloud.meta.startDate||cycleId,endDate:cloud.meta.endDate||'',days:cloud.meta.days||35,
+   createdAt:cloud.meta.createdAt||'',zones:{}
+ };
+ Object.values(cloud.branches).forEach(item=>{
+   if(!item?.code||!item?.config)return;
+   const zoneId=item.zoneId||branchZoneId(item.code)||'sin_zona';
+   if(!baseline.zones[zoneId])baseline.zones[zoneId]={zoneId,zoneName:item.zoneName||zoneName(zoneId),branches:{}};
+   baseline.zones[zoneId].branches[item.code]={
+     code:item.code,name:item.name||branchCatalog[item.code]?.name||'',
+     products:(item.config.products||[]).map(cycleCompactProduct).filter(p=>p.article)
+   };
+ });
+ return baseline;
+}
+async function cycleLoadBaseline(cycleId){
+ let baseline=loadCycleBaselineLocal(cycleId);
+ if(baseline)return baseline;
+ if(firebaseCloudInitialized&&window.MigaFirebase?.isAdmin?.()){
+   const cloud=await window.MigaFirebase.loadCycleBaseline(cycleId,allBranchCodes());
+   baseline=cycleBaselineFromCloud(cycleId,cloud);
+   if(baseline)saveCycleBaselineLocal(baseline);
+ }
+ return baseline;
+}
+function buildCycleComparison(baseline){
+ const zones=[];
+ const summary=[];
+ const baselineCodes=new Set();
+ Object.values(baseline.zones||{}).forEach(z=>Object.keys(z.branches||{}).forEach(c=>baselineCodes.add(c)));
+ const allCodes=[...new Set([...baselineCodes,...allBranchCodes()])];
+ zoneOrder.forEach(zoneId=>{
+   const zoneRows=[];
+   const codes=allCodes.filter(c=>(branchZoneId(c)||'')===zoneId).sort((a,b)=>Number(a)-Number(b));
+   codes.forEach(code=>{
+     const initial=baseline.zones?.[zoneId]?.branches?.[code]||{products:[]};
+     const current=getEditableBranchState(code);
+     const beforeMap=new Map((initial.products||[]).map(p=>[safeArticle(p.article),p]));
+     const afterMap=new Map((current.products||[]).map(p=>[safeArticle(p.article),cycleCompactProduct(p)]));
+     const articles=[...new Set([...beforeMap.keys(),...afterMap.keys()])].filter(Boolean).sort();
+     let changed=0,adds=0,removes=0;
+     articles.forEach(article=>{
+       const before=beforeMap.get(article)||null;
+       const after=afterMap.get(article)||null;
+       const beforeSched=before?.schedule||[0,0,0,0,0,0,0];
+       const afterSched=after?.schedule||[0,0,0,0,0,0,0];
+       const scheduleChanges=cycleScheduleChangeLabel(beforeSched,afterSched);
+       const type=!before?'NUEVA':!after?'ELIMINADA':scheduleChanges?'MODIFICADA':'';
+       if(!type)return;
+       changed++;
+       for(let i=0;i<7;i++){
+         const a=Number(beforeSched[i])>0?1:0,b=Number(afterSched[i])>0?1:0;
+         if(a===0&&b===1)adds++;
+         if(a===1&&b===0)removes++;
+       }
+       zoneRows.push({
+         code,name:branchCatalog[code]?.name||initial.name||'',article,
+         description:after?.description||before?.description||'',type,
+         beforeSchedule:cycleScheduleLabel(beforeSched),afterSchedule:cycleScheduleLabel(afterSched),
+         changes:scheduleChanges||(!before?'Referencia incorporada':!after?'Referencia eliminada':'')
+       });
+     });
+     summary.push({zoneId,zoneName:zoneName(zoneId),code,name:branchCatalog[code]?.name||initial.name||'',changed,adds,removes});
+   });
+   zones.push({zoneId,zoneName:zoneName(zoneId),rows:zoneRows});
+ });
+ return {baseline,summary,zones,generatedAt:new Date().toISOString()};
+}
+function cycleSheetSafeName(name){
+ return String(name||'Zona').replace(/[\\\/?*\[\]:]/g,' ').trim().slice(0,31)||'Zona';
+}
+function buildCycleChangesXlsx(report){
+ const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <fonts count="3"><font><sz val="10"/><color rgb="FF17324A"/><name val="Calibri"/></font><font><b/><sz val="14"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>
+ <fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF204D69"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FF6F8999"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8F3ED"/><bgColor indexed="64"/></patternFill></fill></fills>
+ <borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD3DBDF"/></left><right style="thin"><color rgb="FFD3DBDF"/></right><top style="thin"><color rgb="FFD3DBDF"/></top><bottom style="thin"><color rgb="FFD3DBDF"/></bottom><diagonal/></border></borders>
+ <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+ <cellXfs count="6"><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+ const sheets=[];
+ const summaryRows=[];let r=1;
+ summaryRows.push(`<row r="${r}" ht="25" customHeight="1">${xlsxCellXml('CAMBIOS DE CRONOGRAMA · CICLO '+report.baseline.startDate+' → '+report.baseline.endDate,r,1,1,true)}</row>`);r++;
+ summaryRows.push(`<row r="${r}">${xlsxCellXml('Línea base: '+new Date(report.baseline.createdAt).toLocaleString('es-AR'),r,1,5,true)}</row>`);r+=2;
+ const hrow=r;
+ ['Zona','Sucursal','Nombre','Refs. modificadas','Días agregados','Días quitados','Estado'].forEach((h,i)=>{});
+ summaryRows.push(`<row r="${r}">${['Zona','Sucursal','Nombre','Refs. modificadas','Días agregados','Días quitados','Estado'].map((h,i)=>xlsxCellXml(h,r,i+1,2,true)).join('')}</row>`);r++;
+ report.summary.forEach(x=>{
+   const status=x.changed?'CAMBIOS':'SIN CAMBIOS';
+   summaryRows.push(`<row r="${r}">${xlsxCellXml(x.zoneName,r,1,0,true)}${xlsxCellXml(x.code,r,2,4,true)}${xlsxCellXml(x.name,r,3,0,true)}${xlsxCellXml(x.changed,r,4,4,false)}${xlsxCellXml(x.adds,r,5,4,false)}${xlsxCellXml(x.removes,r,6,4,false)}${xlsxCellXml(status,r,7,x.changed?3:0,true)}</row>`);r++;
+ });
+ sheets.push({name:'Resumen',xml:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols><col min="1" max="1" width="22" customWidth="1"/><col min="2" max="2" width="11" customWidth="1"/><col min="3" max="3" width="30" customWidth="1"/><col min="4" max="7" width="16" customWidth="1"/></cols><sheetData>${summaryRows.join('')}</sheetData><autoFilter ref="A${hrow}:G${Math.max(hrow,r-1)}"/><mergeCells count="2"><mergeCell ref="A1:G1"/><mergeCell ref="A2:G2"/></mergeCells><pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/><pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/></worksheet>`});
+ report.zones.forEach(zone=>{
+   const rows=[];let rr=1;
+   rows.push(`<row r="${rr}" ht="25" customHeight="1">${xlsxCellXml('CAMBIOS · '+zone.zoneName,rr,1,1,true)}</row>`);rr++;
+   rows.push(`<row r="${rr}">${xlsxCellXml('Ciclo '+report.baseline.startDate+' → '+report.baseline.endDate,rr,1,5,true)}</row>`);rr+=2;
+   const hr=rr;
+   const headers=['Suc.','Nombre','Artículo','Descripción','Tipo','Cronograma inicio','Cronograma final','Cambios'];
+   rows.push(`<row r="${rr}">${headers.map((h,i)=>xlsxCellXml(h,rr,i+1,2,true)).join('')}</row>`);rr++;
+   if(zone.rows.length){
+     zone.rows.forEach(x=>{
+       rows.push(`<row r="${rr}">${xlsxCellXml(x.code,rr,1,4,true)}${xlsxCellXml(x.name,rr,2,0,true)}${xlsxCellXml(x.article,rr,3,4,true)}${xlsxCellXml(x.description,rr,4,0,true)}${xlsxCellXml(x.type,rr,5,3,true)}${xlsxCellXml(x.beforeSchedule,rr,6,0,true)}${xlsxCellXml(x.afterSchedule,rr,7,0,true)}${xlsxCellXml(x.changes,rr,8,0,true)}</row>`);rr++;
+     });
+   }else{
+     rows.push(`<row r="${rr}">${xlsxCellXml('Sin modificaciones de cronograma o coeficiente en esta zona.',rr,1,3,true)}</row>`);rr++;
+   }
+   sheets.push({name:cycleSheetSafeName(zone.zoneName),xml:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="${hr}" topLeftCell="A${hr+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols><col min="1" max="1" width="9" customWidth="1"/><col min="2" max="2" width="26" customWidth="1"/><col min="3" max="3" width="12" customWidth="1"/><col min="4" max="4" width="38" customWidth="1"/><col min="5" max="5" width="14" customWidth="1"/><col min="6" max="7" width="22" customWidth="1"/><col min="8" max="8" width="34" customWidth="1"/></cols><sheetData>${rows.join('')}</sheetData><autoFilter ref="A${hr}:H${Math.max(hr,rr-1)}"/><mergeCells count="2"><mergeCell ref="A1:H1"/><mergeCell ref="A2:H2"/></mergeCells><pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/><pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/></worksheet>`});
+ });
+ const sheetOverrides=sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('');
+ const workbookSheets=sheets.map((sh,i)=>`<sheet name="${xlsxXmlEscape(sh.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('');
+ const rels=sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')+`<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>`;
+ const entries=[
+   {name:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${sheetOverrides}<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`},
+   {name:'_rels/.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+   {name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${workbookSheets}</sheets></workbook>`},
+   {name:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels}</Relationships>`},
+   {name:'xl/styles.xml',data:styles},
+   ...sheets.map((sh,i)=>({name:`xl/worksheets/sheet${i+1}.xml`,data:sh.xml}))
+ ];
+ return xlsxZipStore(entries);
+}
+async function exportCycleChangesReport(){
+ if(!isMasterAdmin()){alert('Solo el Administrador General puede generar este reporte.');return;}
+ const cycleId=currentCycleIdFromUI();
+ if(!cycleId){alert('Indicá la fecha de inicio del ciclo que querés comparar.');return;}
+ try{
+   if(!(await cycleRefreshCloudBeforeCriticalAction()))return;
+   const baseline=await cycleLoadBaseline(cycleId);
+   if(!baseline){alert('No se encontró la línea base del ciclo '+cycleId+'. Iniciá el ciclo desde MIGA para generar el respaldo inicial.');return;}
+   const report=buildCycleComparison(baseline);
+   const bytes=buildCycleChangesXlsx(report);
+   const file='MIGA_Cambios_Cronograma_'+baseline.startDate+'_a_'+baseline.endDate+'.xlsx';
+   downloadBlob(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),file);
+ }catch(e){
+   console.error('Reporte de ciclo:',e);
+   alert('No se pudo generar el reporte de cambios del ciclo: '+(e?.message||e));
+ }
+}
+
+
 /* ===================== FIREBASE · FASE 1 ===================== */
 let firebaseCloudInitialized=false;
 let firebaseRealtimeActive=false;
@@ -7025,6 +7473,11 @@ function openAdminMenu(){
  if(branchCard)branchCard.style.display=isBranchAdmin()?'block':'none';
  document.getElementById('adminStartDate').value=state.startDate||'';
  document.getElementById('adminDays').value=n(state.params?.days,35);
+ const cycleStart=document.getElementById('cycleStartDate');
+ const cycleDays=document.getElementById('cycleDays');
+ if(cycleStart)cycleStart.value=state.startDate||'';
+ if(cycleDays)cycleDays.value=n(state.params?.days,35);
+ updateCycleEndDate();
  document.getElementById('adminDefaultMissing').value=n(state.params?.defaultMissing,14);
  document.getElementById('adminMinimumConsumption').value=n(state.params?.minimumConsumption,10);
  document.getElementById('adminConfigAllBranches').checked=false;
@@ -7035,6 +7488,7 @@ function openAdminMenu(){
    renderAdminWhatsapp();
    renderAdminBranchPasswords();
    updateBackupAdminStatus();
+   updateCycleAdminStatus();
    clearAdminMasterPasswordFields();
    setAdminMasterPasswordStatus('');
 
@@ -8836,8 +9290,8 @@ function buildPresenceXlsx(data){
  const detailLastRow=Math.max(detailHeaderRow,dr-1);
 
  const summarySheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
- <sheetViews><sheetView workbookViewId="0"><pane ySplit="${headerRow}" topLeftCell="A${headerRow+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <sheetViews><sheetView workbookViewId="0"/></sheetViews>
  <sheetFormatPr defaultRowHeight="15"/>
  <cols><col min="1" max="1" width="13" customWidth="1"/><col min="2" max="2" width="12" customWidth="1"/><col min="3" max="5" width="14" customWidth="1"/><col min="6" max="6" width="12" customWidth="1"/></cols>
  <sheetData>${summaryRows.join('')}</sheetData>
@@ -8845,7 +9299,6 @@ function buildPresenceXlsx(data){
  <mergeCells count="3"><mergeCell ref="A1:F1"/><mergeCell ref="A2:F2"/><mergeCell ref="A3:F3"/></mergeCells>
  <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
  <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
- <drawing r:id="rId1"/>
 </worksheet>`;
 
  const detailSheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -8858,6 +9311,18 @@ function buildPresenceXlsx(data){
  <mergeCells count="3"><mergeCell ref="A1:I1"/><mergeCell ref="A2:I2"/><mergeCell ref="A3:I3"/></mergeCells>
  <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
  <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
+</worksheet>`;
+
+ const chartsSheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+ <sheetViews><sheetView workbookViewId="0"/></sheetViews>
+ <sheetFormatPr defaultRowHeight="15"/>
+ <cols><col min="1" max="16" width="12" customWidth="1"/></cols>
+ <sheetData><row r="1" ht="25" customHeight="1">${xlsxCellXml('CONTROL DE PRESENCIA · GRÁFICOS',1,1,1,true)}</row><row r="2">${xlsxCellXml(`Sucursal: ${data.code} - ${data.branchName}`,2,1,2,true)}</row></sheetData>
+ <mergeCells count="2"><mergeCell ref="A1:P1"/><mergeCell ref="A2:P2"/></mergeCells>
+ <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
+ <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
+ <drawing r:id="rId1"/>
 </worksheet>`;
 
  const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -8924,19 +9389,20 @@ function buildPresenceXlsx(data){
 
  const drawing=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
- <xdr:twoCellAnchor><xdr:from><xdr:col>7</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>1</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>18</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Cumplimiento por turno"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId1"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>
- <xdr:twoCellAnchor><xdr:from><xdr:col>7</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>19</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>36</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="3" name="Nivel de servicio diario"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId2"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>
+ <xdr:twoCellAnchor><xdr:from><xdr:col>0</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>3</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>8</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>20</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Cumplimiento por turno"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId1"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>
+ <xdr:twoCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>3</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>16</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>20</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="3" name="Nivel de servicio diario"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId2"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>
 </xdr:wsDr>`;
 
  const entries=[
-  {name:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/><Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/><Override PartName="/xl/charts/chart2.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/></Types>`},
+  {name:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/><Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/><Override PartName="/xl/charts/chart2.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/></Types>`},
   {name:'_rels/.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
-  {name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Resumen" sheetId="1" r:id="rId1"/><sheet name="Detalle" sheetId="2" r:id="rId2"/></sheets></workbook>`},
-  {name:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+  {name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Resumen" sheetId="1" r:id="rId1"/><sheet name="Detalle" sheetId="2" r:id="rId2"/><sheet name="Gráficos" sheetId="3" r:id="rId3"/></sheets></workbook>`},
+  {name:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
   {name:'xl/styles.xml',data:styles},
   {name:'xl/worksheets/sheet1.xml',data:summarySheet},
-  {name:'xl/worksheets/_rels/sheet1.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`},
   {name:'xl/worksheets/sheet2.xml',data:detailSheet},
+  {name:'xl/worksheets/sheet3.xml',data:chartsSheet},
+  {name:'xl/worksheets/_rels/sheet3.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`},
   {name:'xl/drawings/drawing1.xml',data:drawing},
   {name:'xl/drawings/_rels/drawing1.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart2.xml"/></Relationships>`},
   {name:'xl/charts/chart1.xml',data:chart1},
@@ -9757,7 +10223,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='80.0';
+ x.sales={};x.salesRows=[];x.version='81.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -11006,7 +11472,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'92.0',
+      appVersion:'93.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -11097,6 +11563,66 @@ monthlyBackupReminder();
 
     branchWriteChains.set(code,next);
     return next;
+  }
+
+  async function saveBranchesBulk(configs){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    const entries=Object.entries(configs||{});
+    if(!entries.length)return true;
+    const batch=writeBatch(db);
+    const now=new Date().toISOString();
+    entries.forEach(([code,state])=>{
+      batch.set(doc(db,'miga_branches',String(code)),{
+        code:String(code),
+        payload:JSON.stringify(clean(state)),
+        updatedAt:now,
+        updatedBy:ADMIN_UID
+      },{merge:true});
+    });
+    await batch.commit();
+    return true;
+  }
+
+  async function saveCycleBaseline(meta,branchBackups){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    const cycleId=String(meta?.cycleId||'').trim();
+    if(!cycleId)throw new Error('Ciclo inválido.');
+    const batch=writeBatch(db);
+    const now=new Date().toISOString();
+    batch.set(doc(db,'miga_system',`cycle_${cycleId}_meta`),{
+      kind:'MIGA_CYCLE_BASELINE',
+      cycleId,
+      payload:JSON.stringify(clean(meta||{})),
+      updatedAt:now,
+      updatedBy:ADMIN_UID
+    },{merge:true});
+    Object.entries(branchBackups||{}).forEach(([code,data])=>{
+      batch.set(doc(db,'miga_system',`cycle_${cycleId}_${String(code)}`),{
+        kind:'MIGA_CYCLE_BRANCH_BACKUP',
+        cycleId,
+        code:String(code),
+        payload:JSON.stringify(clean(data||{})),
+        updatedAt:now,
+        updatedBy:ADMIN_UID
+      },{merge:true});
+    });
+    await batch.commit();
+    return true;
+  }
+
+  async function loadCycleBaseline(cycleId,codes){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    cycleId=String(cycleId||'').trim();
+    const metaSnap=await getDoc(doc(db,'miga_system',`cycle_${cycleId}_meta`));
+    if(!metaSnap.exists())return null;
+    const meta=parsePayload(metaSnap.data())||{};
+    const pairs=await Promise.all((codes||[]).map(async code=>{
+      const snap=await getDoc(doc(db,'miga_system',`cycle_${cycleId}_${String(code)}`));
+      return [String(code),snap.exists()?parsePayload(snap.data()):null];
+    }));
+    const branches={};
+    pairs.forEach(([code,data])=>{if(data)branches[code]=data;});
+    return {meta,branches};
   }
 
   async function savePresence(code,data){
@@ -11374,6 +11900,9 @@ monthlyBackupReminder();
     uploadAll,
     pullAll,
     saveBranch,
+    saveBranchesBulk,
+    saveCycleBaseline,
+    loadCycleBaseline,
     savePresence,
     saveZoneRefs,
     saveSystem,

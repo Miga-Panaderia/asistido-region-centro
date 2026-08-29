@@ -631,3 +631,39 @@ La barra superior con MIGA, archivo de ventas, Zona, Sucursal, Inicio, Administr
 - El elemento `drawing` de los gráficos ahora se escribe después de `pageMargins` y `pageSetup`, como requiere la estructura de una worksheet de Excel.
 - Esto evita el mensaje **“Excel pudo abrir el archivo reparando o quitando contenido”** que indicaba error en `xl/worksheets/sheet1.xml`.
 - Se mantienen las hojas **Resumen** y **Detalle** y los dos gráficos del cumplimiento.
+
+## v47 · Gestión de ciclos, respaldo inicial y comparativo final
+
+### Excel de Control Presencia
+
+- La hoja **Resumen** ya no queda inmovilizada al abrir el archivo.
+- Los gráficos se trasladan a una tercera hoja llamada **Gráficos**.
+- **Detalle** conserva el encabezado congelado porque es una tabla extensa.
+
+### Inicio de ciclo
+
+El Administrador General incorpora una tarjeta **Ciclo de Producción**. Al usar **Iniciar ciclo + respaldo**:
+
+1. MIGA actualiza primero los datos desde Firebase.
+2. Guarda la línea base del cronograma antes de realizar modificaciones.
+3. Genera un ZIP con un archivo JSON por **zona y sucursal**.
+4. Conserva una copia de la línea base en el navegador y otra en Firebase.
+5. Aplica la nueva Fecha de inicio y cantidad de días a todas las sucursales.
+6. Si la opción está marcada, recién después del respaldo pone todos los **Coef. en 0%**.
+
+También existe una acción independiente **0% Coeficientes**, que no modifica cronogramas.
+
+### Reporte de cierre
+
+**Reporte cambios del ciclo** genera un Excel que compara el cronograma actual contra la línea base tomada al iniciar el ciclo. Incluye:
+
+- hoja **Resumen** por zona y sucursal;
+- cantidad de referencias cuyo cronograma cambió;
+- días agregados y días quitados;
+- una hoja por zona con Artículo, Descripción, Cronograma inicial, Cronograma final y el detalle exacto de los días modificados.
+
+Los cambios de coeficiente no se cuentan como cambios de cronograma, evitando que la puesta en 0% del inicio del ciclo ensucie el comparativo.
+
+### Firebase
+
+Los respaldos de ciclo se almacenan como documentos adicionales dentro de `miga_system`, por lo que **no se requieren reglas nuevas de Firestore**.
