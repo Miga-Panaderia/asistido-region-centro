@@ -68,6 +68,13 @@ service cloud.firestore {
       allow write: if isMigaAdmin();
     }
 
+    // Control de presencia de elaboradoras.
+    // El Administrador General registra; la sucursal sólo puede consultar su propio control.
+    match /miga_presence/{branchId} {
+      allow read: if isMigaAdmin() || isOwnBranch(branchId);
+      allow write: if isMigaAdmin();
+    }
+
     match /miga_elaborators/{branchId} {
       allow read: if isMigaAdmin()
         || (hasActiveBranchProfile() && branchCode() == branchId);

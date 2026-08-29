@@ -560,3 +560,29 @@ El Excel incluye identificación de la elaboradora, zona y fecha de producción,
 - En **Plan Elaboradora**, las solapas de **Sucursales elaboradoras** muestran únicamente el código (`050`, `068`, `172`, etc.).
 - Se evita que algunos nombres largos queden desfasados o sobresalidos.
 - El nombre completo sigue disponible como ayuda emergente (`title`) al pasar el mouse en PC.
+
+## v37 · Plan activo + Control Presencia
+
+### Panadería Suc
+
+- La hoja **Panadería Suc** muestra solamente referencias que tengan al menos un día marcado en el **Cronograma de Parámetros Suc**.
+- Las referencias con cronograma completamente vacío siguen existiendo en el padrón, pero dejan de ocupar filas en el plan de producción.
+
+### Control Presencia
+
+Se agrega una hoja nueva **Control Presencia** enfocada en sucursales elaboradoras:
+
+- selección de elaboradora;
+- calendario mensual;
+- dos turnos por día: **Mañana** y **Tarde**;
+- cada turno puede quedar **Pendiente / Presente / Ausente**;
+- días futuros bloqueados;
+- dashboard con **Cumplimiento**, **Presentes**, **Ausentes**, **Pendientes** y **Control cargado**;
+- cumplimiento = Presencias / Turnos evaluados;
+- control cargado = Turnos evaluados / Turnos posibles hasta la fecha.
+
+La edición es exclusiva del **Administrador General**. Una sucursal elaboradora autenticada puede consultar su propio control en modo solo lectura.
+
+### Firebase
+
+Se incorpora la colección `miga_presence/{branchId}`. Esta versión **sí requiere publicar las nuevas reglas de Firestore** incluidas en `firebase/firestore.rules`.
