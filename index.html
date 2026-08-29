@@ -3319,6 +3319,59 @@ body.mother-sheet-active .mini-assistant{
 }
 
 /* =========================================================
+   V50 - ACCESOS FIREBASE / PIN · ANCHO COMPLETO EN PC
+   ========================================================= */
+#adminPasswordsCard{
+  grid-column:1 / -1;
+  width:100%;
+  box-sizing:border-box;
+}
+#adminPasswordsCard .admin-branch-passwords{
+  width:100%;
+  max-height:420px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  box-sizing:border-box;
+}
+#adminPasswordsCard .admin-zone-password-block{
+  width:100%;
+  box-sizing:border-box;
+}
+#adminPasswordsCard .admin-branch-password-row{
+  grid-template-columns:58px minmax(240px,1fr) 105px minmax(250px,330px) !important;
+  gap:10px;
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  padding:2px 6px;
+}
+#adminPasswordsCard .branch-name{
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+#adminPasswordsCard .admin-branch-cloud-state{
+  min-width:88px;
+}
+#adminPasswordsCard input[data-branch-password]{
+  min-width:190px !important;
+}
+@media(max-width:900px){
+  #adminPasswordsCard{grid-column:auto}
+  #adminPasswordsCard .admin-branch-passwords{overflow-x:auto}
+  #adminPasswordsCard .admin-branch-password-row{
+    grid-template-columns:48px minmax(155px,1fr) 86px minmax(155px,220px) !important;
+    min-width:520px;
+    gap:6px;
+    padding:1px 2px;
+  }
+  #adminPasswordsCard .branch-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+}
+
+/* =========================================================
    V56 - FIREBASE POR SUCURSAL + MÓVIL
    ========================================================= */
 .admin-branch-cloud-state{

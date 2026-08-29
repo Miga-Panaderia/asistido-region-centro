@@ -689,3 +689,9 @@ El Excel es informativo; la restauración automática de MIGA continúa utilizan
 - Se amplió el bloque **WhatsApp Elaboradoras** en el menú Administrador.
 - Ahora el listado de números se muestra más ancho y alineado en PC.
 - En celular, cada fila acomoda el input debajo del nombre para que no se corte.
+
+
+## Ajuste v50 · Accesos Firebase / PIN
+- La tarjeta **Accesos Firebase por sucursal** ocupa todo el ancho disponible del Administrador General en PC.
+- Se ampliaron las columnas de sucursal y PIN y se eliminó el scroll horizontal innecesario en escritorio.
+- En pantallas pequeñas conserva un ancho mínimo con desplazamiento horizontal controlado para no deformar los campos.
