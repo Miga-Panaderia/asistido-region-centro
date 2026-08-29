@@ -683,3 +683,9 @@ Dentro de la carpeta `EXCEL` del ZIP se incluye:
 Cada hoja de sucursal conserva el estado inicial de Artículo, Descripción, Marca, Aptitud, U/M, Bto, Coeficiente y cronograma de Lunes a Domingo.
 
 El Excel es informativo; la restauración automática de MIGA continúa utilizando el respaldo JSON.
+
+
+## Ajuste v49
+- Se amplió el bloque **WhatsApp Elaboradoras** en el menú Administrador.
+- Ahora el listado de números se muestra más ancho y alineado en PC.
+- En celular, cada fila acomoda el input debajo del nombre para que no se corte.
