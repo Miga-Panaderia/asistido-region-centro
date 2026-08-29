@@ -3948,37 +3948,94 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 }
 
 /* =========================================================
-   V80 - PRESENCIA · CICLO DE PRODUCCIÓN · SOLO ADMIN GENERAL
+   V90 - CONTROL PRESENCIA · SUCURSAL · CHECKLIST POR REFERENCIA
    ========================================================= */
-.presence-sheet-block{padding:7px 10px 54px;min-width:700px}
-.presence-title{height:26px;display:flex;align-items:center;padding:0 8px;background:#204d69;color:#fff;border:1px solid #173c54;font-size:11px;font-weight:800;letter-spacing:.2px}
-.presence-toolbar{display:flex;align-items:flex-end;gap:7px;flex-wrap:wrap;padding:6px 7px;border:1px solid #c4ccd1;border-top:0;background:#f7f8f8;margin-bottom:6px}
-.presence-field{display:flex;flex-direction:column;gap:2px;font-size:10px;font-weight:700;color:#17394f}
-.presence-field select{height:28px;min-width:245px;border:1px solid #9da8ae;background:#fff;padding:2px 6px;font:inherit;color:#111}
-.presence-cycle-range{height:28px;display:flex;align-items:center;padding:0 8px;border:1px solid #c1c8cc;background:#fff;color:#435b69;font-size:10px;font-weight:700;white-space:nowrap}
-.presence-edit-badge{height:28px;display:flex;align-items:center;padding:0 8px;border:1px solid #8eb29e;background:#eff7f2;color:#246546;font-size:10px;font-weight:800}
-.presence-legend-inline{display:flex;align-items:center;gap:8px;margin-left:auto;height:28px;font-size:9px;font-weight:700;white-space:nowrap;color:#5a6870}
-.presence-legend-inline span{display:flex;align-items:center;gap:3px}
-.presence-dot{width:7px;height:7px;border-radius:50%;display:inline-block;border:1px solid #777}
-.presence-dot.present{background:#cdebd8;border-color:#4b9967}.presence-dot.absent{background:#f4c9c9;border-color:#b45757}.presence-dot.pending{background:#eee;border-color:#999}
-.presence-warning{padding:7px 8px;border:1px solid #c59a56;background:#fff9ed;color:#76501f;font-size:10px;margin-bottom:6px}
-.presence-dashboard{display:flex;align-items:stretch;gap:0;margin:6px 0;border:1px solid #b6c0c6;background:#fff;overflow:hidden}
-.presence-kpi{min-width:105px;flex:1 1 0;padding:5px 8px;border-right:1px solid #d2d8dc;display:grid;grid-template-columns:auto auto;grid-template-areas:'label value' 'small small';align-items:center;gap:0 6px;background:#fff}
-.presence-kpi:last-child{border-right:0}.presence-kpi.primary{background:#f3f8f5}
-.presence-kpi span{grid-area:label;font-size:8px;font-weight:800;text-transform:uppercase;color:#61717b;white-space:nowrap}.presence-kpi b{grid-area:value;font-size:16px;line-height:1;color:#17394f;text-align:right}.presence-kpi.primary b{color:#217346}.presence-kpi small{grid-area:small;font-size:7px;color:#8a959b;margin-top:2px;white-space:nowrap}
-.presence-calendar-head{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#edf1f3;color:#17394f;padding:5px 7px;border:1px solid #aab5bb}
-.presence-calendar-head>div:first-child{display:flex;flex-direction:column;gap:1px}.presence-calendar-head b{font-size:11px}.presence-calendar-head span{font-size:9px;color:#667983}.presence-help{font-size:8px;text-align:right;max-width:420px;color:#6a787f}
-.presence-weekdays{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid #aab5bb;border-right:1px solid #aab5bb;background:#6f8999;color:#fff}
-.presence-weekdays span{text-align:center;padding:4px 2px;font-size:8px;font-weight:800;border-right:1px solid rgba(255,255,255,.2)}
-.presence-calendar{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid #aab5bb;border-top:1px solid #aab5bb;background:#fff}
-.presence-day{min-height:78px;border-right:1px solid #b6c0c6;border-bottom:1px solid #b6c0c6;padding:3px;background:#fff;display:flex;flex-direction:column;gap:3px}
-.presence-day.empty{background:#f5f6f6}.presence-day.future{background:#f7f7f7;color:#999}.presence-day.all-present{background:#f4faf6}.presence-day.has-absence{background:#fff5f5}.presence-day.partial{background:#fffbf0}
-.presence-day-head{display:flex;align-items:center;justify-content:space-between;gap:3px}.presence-day-date{display:flex;align-items:baseline;gap:3px}.presence-day-number{font-size:13px;font-weight:800;color:#17394f}.presence-day-month{font-size:7px;font-weight:800;color:#7a8991}.presence-day.future .presence-day-number{color:#999}.presence-day-dow{font-size:7px;font-weight:700;color:#89969d;text-transform:uppercase}
-.presence-shift{width:100%;min-height:22px;border:1px solid #c0c6ca;background:#f1f1f1;color:#666;font-size:8px;font-weight:800;display:flex;justify-content:space-between;align-items:center;padding:2px 4px;cursor:pointer}
-.presence-shift.present{background:#e4f3e9;border-color:#8bbc9b;color:#216444}.presence-shift.absent{background:#fae8e8;border-color:#d39a9a;color:#8a3333}.presence-shift.pending{background:#f4f4f4;color:#777}.presence-shift:disabled{cursor:default;opacity:.65}.presence-shift .shift-state{font-size:7px;font-weight:700}
+.presence-page{padding:8px 10px 58px;min-width:840px}
+.presence-titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#204d69;color:#fff;border:1px solid #173c54;font-size:12px;font-weight:800;letter-spacing:.2px}
+.presence-toolbar{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid #c4ccd1;border-top:0;background:#f7f8f8}
+.presence-field{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;color:#17394f}
+.presence-field select,.presence-field input{height:31px;min-width:205px;border:1px solid #9da8ae;background:#fff;padding:4px 8px;font:inherit;color:#111;border-radius:8px}
+.presence-pill{height:31px;display:flex;align-items:center;padding:0 10px;border:1px solid #c1c8cc;background:#fff;color:#435b69;font-size:10px;font-weight:700;white-space:nowrap;border-radius:999px}
+.presence-mode{border-color:#8eb29e;background:#eff7f2;color:#246546}
+.presence-warning{padding:9px 10px;border:1px solid #c59a56;background:#fff9ed;color:#76501f;font-size:11px;margin-top:8px;border-radius:10px}
+.presence-shell{display:grid;grid-template-columns:330px minmax(0,1fr);gap:12px;margin-top:10px}
+.presence-stack{display:flex;flex-direction:column;gap:12px}
+.presence-card{background:#fff;border:1px solid #d3d9de;border-radius:16px;padding:14px;box-shadow:0 3px 10px rgba(23,50,74,.06)}
+.presence-card-title{font-size:12px;font-weight:800;color:#17394f;margin-bottom:4px}
+.presence-card-sub{font-size:10px;color:#6d7c85;margin-bottom:10px}
+.presence-turns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.presence-turn-btn{height:38px;border:1px solid #cfd6db;border-radius:11px;background:#f6f6f7;color:#17394f;font-size:11px;font-weight:800;cursor:pointer}
+.presence-turn-btn.active{background:#e7880a;color:#fff;border-color:#c46f08;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.presence-summary-card{background:linear-gradient(180deg,#9c4b06 0%,#7f3903 100%);color:#fff;border-color:#7d3a06}
+.presence-summary-card .presence-card-title,.presence-summary-card .presence-card-sub,.presence-summary-card .presence-summary-foot,.presence-summary-card .presence-summary-label{color:#fff}
+.presence-summary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.presence-summary-main{display:flex;align-items:flex-end;gap:4px;line-height:1;margin:10px 0 12px}
+.presence-summary-main b{font-size:54px;font-weight:900}
+.presence-summary-main span{font-size:28px;font-weight:800;margin-bottom:5px}
+.presence-summary-label{font-size:13px;font-weight:700;opacity:.94}
+.presence-mini-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.14);font-size:10px;font-weight:800;border:1px solid rgba(255,255,255,.18)}
+.presence-progress{height:10px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden;margin-bottom:14px}
+.presence-progress>span{display:block;height:100%;background:#f2c14e;border-radius:999px}
+.presence-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.presence-summary-foot{font-size:11px;font-weight:700;display:flex;justify-content:space-between;gap:8px;opacity:.95}
+.presence-calendar-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.presence-calendar-title span{display:block;font-size:10px;color:#6a7a83;margin-top:2px}
+.presence-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.presence-day{border:1px solid #d8dfe4;border-radius:14px;padding:8px;min-height:108px;background:#fff;display:flex;flex-direction:column;gap:6px}
+.presence-day.empty{visibility:hidden}
+.presence-day.selected{border-color:#2f7657;box-shadow:0 0 0 2px rgba(47,118,87,.12)}
+.presence-day.future{background:#fafafa}
+.presence-day-top{display:flex;justify-content:space-between;align-items:flex-start;gap:4px}
+.presence-day-number{font-size:24px;font-weight:900;color:#172f44;line-height:1}
+.presence-day-dow{font-size:10px;font-weight:800;color:#9aa4ab;text-transform:uppercase}
+.presence-day-shifts{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.presence-shift-chip{width:100%;border:1px solid #d8dfe4;background:#f7f7f8;color:#485860;min-height:29px;border-radius:999px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;font-size:10px;font-weight:800;cursor:pointer}
+.presence-shift-chip.active{box-shadow:0 0 0 2px rgba(47,118,87,.12)}
+.presence-shift-chip.done{background:#daf5e5;border-color:#80d5a8;color:#11633e}
+.presence-shift-chip.partial{background:#fff3d6;border-color:#f1c44b;color:#8a5d00}
+.presence-shift-chip.zero{background:#f3f4f5;color:#85939b}
+.presence-shift-chip.future{opacity:.6;cursor:default}
+.presence-shift-chip span:last-child{font-size:9px}
+.presence-checklist-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.presence-checklist-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.presence-sync-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid #8fd0ae;background:#eaf8f1;color:#1c8a57;font-size:10px;font-weight:800}
+.presence-sync-badge.local{border-color:#d7b36a;background:#fff7e1;color:#92640a}
+.presence-action-btn{height:31px;padding:0 10px;border:1px solid #cfd6db;border-radius:10px;background:#fff;font-size:10px;font-weight:800;color:#17394f;cursor:pointer}
+.presence-search{width:100%;height:38px;border:1px solid #cfd6db;border-radius:10px;padding:0 12px;font-size:12px;background:#fff}
+.presence-inline-stats{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11px;color:#5f7079;margin:10px 0}
+.presence-inline-stats strong{color:#17394f}
+.presence-empty{padding:22px 14px;border:1px dashed #cfd6db;border-radius:14px;background:#fafbfb;font-size:12px;color:#6d7c85;text-align:center}
+.presence-checklist{display:flex;flex-direction:column;gap:10px;max-height:940px;overflow:auto;padding-right:2px}
+.presence-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 12px;border:1px solid #e2e7ea;border-radius:14px;background:#fff}
+.presence-item.present{border-color:#c0e8cf;background:#fbfffc}
+.presence-item-main{min-width:0}
+.presence-item-code{font-size:11px;font-weight:800;color:#8f9aa1;margin-bottom:4px}
+.presence-item-name{font-size:13px;font-weight:800;color:#17394f;line-height:1.25}
+.presence-item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+.presence-item-meta span{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#f1eee0;color:#6a5a2a;font-size:9px;font-weight:800}
+.presence-item-check{display:flex;align-items:center;gap:10px}
+.presence-item-label{font-size:11px;font-weight:800;color:#19a66b}
+.presence-item:not(.present) .presence-item-label{color:#b24d4d}
+.presence-switch{position:relative;display:inline-flex;width:48px;height:28px}
+.presence-switch input{position:absolute;opacity:0;pointer-events:none}
+.presence-slider{position:absolute;inset:0;border-radius:999px;background:#e3e6e8;border:1px solid #c3cacf;transition:all .15s ease}
+.presence-slider:before{content:'';position:absolute;width:22px;height:22px;left:3px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:transform .15s ease}
+.presence-switch input:checked + .presence-slider{background:#1ab26b;border-color:#169b5e}
+.presence-switch input:checked + .presence-slider:before{transform:translateX(20px)}
+.presence-readonly-note{font-size:10px;color:#7a6b40;background:#fff7e0;border:1px solid #e1c888;padding:7px 9px;border-radius:10px}
 .presence-admin-hidden{display:none!important}
-@media(max-width:700px){
- #sheet-presence{overflow:visible}.presence-sheet-block{min-width:0;padding:6px 6px 62px}.presence-toolbar{align-items:stretch;gap:5px}.presence-field{width:100%}.presence-field select{width:100%;min-width:0}.presence-cycle-range,.presence-edit-badge{width:100%;box-sizing:border-box;justify-content:center}.presence-legend-inline{margin-left:0;width:100%;justify-content:center;flex-wrap:wrap;height:auto;padding:2px 0}.presence-dashboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:0;gap:4px;background:transparent}.presence-kpi{min-width:0;border:1px solid #d2d8dc!important}.presence-kpi.primary{grid-column:1/-1}.presence-calendar-head{align-items:flex-start;flex-direction:column}.presence-help{text-align:left;max-width:none}.presence-weekdays{display:none}.presence-calendar{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;border:0;background:transparent}.presence-day{min-height:76px;border:1px solid #b6c0c6}.presence-day.empty{display:none}
+@media(max-width:900px){
+ #sheet-presence{overflow:visible}
+ .presence-page{min-width:0;padding:6px 6px 64px}
+ .presence-toolbar{align-items:stretch}
+ .presence-field{width:100%}
+ .presence-field select,.presence-field input{width:100%;min-width:0}
+ .presence-pill{width:100%;justify-content:center;box-sizing:border-box}
+ .presence-shell{grid-template-columns:1fr}
+ .presence-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .presence-checklist-head{flex-direction:column;align-items:stretch}
+ .presence-checklist-actions{justify-content:flex-start}
+ .presence-summary-main b{font-size:42px}
 }
 </style>
 </head>
@@ -4159,45 +4216,86 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
   </section>
 
   <section id="sheet-presence" class="sheet-view">
-    <div class="presence-sheet-block">
-      <div class="presence-title">PRESENCIA · ELABORADORA</div>
+    <div class="presence-page">
+      <div class="presence-titlebar">CONTROL DE PRESENCIA · POR REFERENCIA</div>
 
       <div class="presence-toolbar">
         <label class="presence-field">
-          <span>Elaboradora</span>
-          <select id="presenceElaboratorSelect" onchange="changePresenceElaborator(this.value)"></select>
+          <span>Sucursal</span>
+          <select id="presenceBranchSelect" onchange="changePresenceBranch(this.value)"></select>
         </label>
-        <div id="presenceCycleRange" class="presence-cycle-range">Ciclo de producción</div>
-        <div id="presenceEditBadge" class="presence-edit-badge">🔐 Admin General</div>
-        <div class="presence-legend-inline">
-          <span><i class="presence-dot present"></i>Presente</span>
-          <span><i class="presence-dot absent"></i>Ausente</span>
-          <span><i class="presence-dot pending"></i>Pendiente</span>
-        </div>
+        <label class="presence-field">
+          <span>Fecha del control</span>
+          <input id="presenceDateInput" type="date" onchange="changePresenceDate(this.value)">
+        </label>
+        <div id="presenceCycleRange" class="presence-pill">Ciclo de producción</div>
+        <div id="presenceEditBadge" class="presence-pill presence-mode">Modo sucursal</div>
       </div>
 
       <div id="presenceNoAccess" class="presence-warning" style="display:none"></div>
 
-      <div id="presenceDashboard" class="presence-dashboard">
-        <div class="presence-kpi primary"><span>Cumplimiento</span><b id="presenceKpiCompliance">—</b><small>Presencias / evaluados</small></div>
-        <div class="presence-kpi"><span>Presentes</span><b id="presenceKpiPresent">0</b><small>Turnos</small></div>
-        <div class="presence-kpi"><span>Ausentes</span><b id="presenceKpiAbsent">0</b><small>Turnos</small></div>
-        <div class="presence-kpi"><span>Pendientes</span><b id="presenceKpiPending">0</b><small>Hasta hoy</small></div>
-        <div class="presence-kpi"><span>Carga</span><b id="presenceKpiCoverage">—</b><small>Evaluados / posibles</small></div>
-      </div>
+      <div class="presence-shell">
+        <div class="presence-stack">
+          <div class="presence-card">
+            <div class="presence-card-title">Fecha y turno</div>
+            <div class="presence-card-sub">Seleccioná el día dentro del ciclo de producción y el turno a controlar.</div>
+            <div class="presence-turns">
+              <button type="button" id="presenceShiftAmBtn" class="presence-turn-btn" onclick="changePresenceShift('am')">🌅 Turno Mañana</button>
+              <button type="button" id="presenceShiftPmBtn" class="presence-turn-btn" onclick="changePresenceShift('pm')">🌆 Turno Tarde</button>
+            </div>
+          </div>
 
-      <div class="presence-calendar-head">
-        <div>
-          <b id="presenceCalendarTitle">CICLO DE PRODUCCIÓN</b>
-          <span id="presenceCalendarSubtitle"></span>
+          <div class="presence-card presence-summary-card">
+            <div class="presence-summary-top">
+              <div>
+                <div class="presence-card-title">Resultado del control</div>
+                <div class="presence-card-sub">Cumplimiento de referencias programadas para la fecha y turno seleccionados.</div>
+              </div>
+              <div id="presenceSummaryShift" class="presence-mini-chip">MAÑANA</div>
+            </div>
+            <div class="presence-summary-main"><b id="presenceKpiCompliance">0</b><span>%</span></div>
+            <div class="presence-summary-label">de cumplimiento</div>
+            <div class="presence-progress"><span id="presenceProgressBar" style="width:0%"></span></div>
+            <div class="presence-summary-grid">
+              <div class="presence-summary-foot"><span>Presentes</span><strong id="presenceKpiPresent">0</strong></div>
+              <div class="presence-summary-foot"><span>Programadas</span><strong id="presenceKpiTotal">0</strong></div>
+              <div class="presence-summary-foot"><span>Ausentes</span><strong id="presenceKpiMissing">0</strong></div>
+              <div class="presence-summary-foot"><span>Ciclo acumulado</span><strong id="presenceKpiCycle">0%</strong></div>
+            </div>
+          </div>
+
+          <div class="presence-card">
+            <div class="presence-calendar-title">
+              <div>
+                <div class="presence-card-title">Calendario del ciclo</div>
+                <span id="presenceCalendarTitle">Resumen por día · Mañana / Tarde</span>
+              </div>
+              <div class="presence-card-sub" id="presenceCalendarSubtitle"></div>
+            </div>
+            <div id="presenceCalendar" class="presence-calendar"></div>
+          </div>
         </div>
-        <div class="presence-help">Mañana / Tarde · clic: <b>Pendiente → Presente → Ausente</b>. Fechas futuras bloqueadas.</div>
-      </div>
 
-      <div class="presence-weekdays" aria-hidden="true">
-        <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span>
+        <div class="presence-card">
+          <div class="presence-checklist-head">
+            <div>
+              <div class="presence-card-title">Checklist por referencia</div>
+              <div class="presence-card-sub" id="presenceChecklistSubtitle">Control diario de referencias programadas.</div>
+            </div>
+            <div class="presence-checklist-actions">
+              <div id="presenceSyncBadge" class="presence-sync-badge">● Sincronizado</div>
+              <button type="button" class="presence-action-btn" onclick="presenceSetAll(true)">Marcar todo</button>
+              <button type="button" class="presence-action-btn" onclick="presenceSetAll(false)">Limpiar</button>
+            </div>
+          </div>
+
+          <input id="presenceSearchInput" class="presence-search" type="search" placeholder="Buscar por artículo, descripción o marca" oninput="presenceSetSearch(this.value)">
+          <div id="presenceChecklistStats" class="presence-inline-stats"></div>
+          <div id="presenceReadonlyNote" class="presence-readonly-note" style="display:none"></div>
+          <div id="presenceChecklistEmpty" class="presence-empty" style="display:none"></div>
+          <div id="presenceChecklist" class="presence-checklist"></div>
+        </div>
       </div>
-      <div id="presenceCalendar" class="presence-calendar"></div>
     </div>
   </section>
 
@@ -4209,7 +4307,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
   <button class="sheet-tab" data-sheet="sales">Ventas Prisma Suc</button>
   <button class="sheet-tab" data-sheet="baker">Hoja del Panadero Suc</button>
   <button class="sheet-tab" data-sheet="mother">Plan Elaboradora</button>
-  <button id="presenceTabBtn" class="sheet-tab presence-admin-hidden" data-sheet="presence">Presencia</button>
+  <button id="presenceTabBtn" class="sheet-tab" data-sheet="presence">Presencia</button>
   <span class="tab-status" id="tabStatus">Sucursal 068</span>
 </div>
 
@@ -4961,9 +5059,9 @@ function assistantDescribeCurrentSheet(){
 
    presence:
      '📍 Estás en <b>Control Presencia</b>.<br>'+
-     'Esta hoja registra por elaboradora la presencia de los turnos <b>Mañana</b> y <b>Tarde</b> en un calendario mensual.<br><br>'+
-     '<b>¿Cómo funciona?</b> Cada turno puede quedar Pendiente, Presente o Ausente. El porcentaje de cumplimiento se calcula sobre los turnos efectivamente evaluados.'+
-     '<span class="assistant-note">La edición es exclusiva del Administrador General. Una elaboradora puede consultar su propio control en modo solo lectura.</span>'
+     'Esta hoja permite registrar por <b>referencia</b> si la sucursal tiene presente cada artículo programado para un día y turno determinados.<br><br>'+
+     '<b>¿Cómo funciona?</b> Seleccionás la fecha, elegís <b>Mañana</b> o <b>Tarde</b> y marcás las referencias presentes. El porcentaje de cumplimiento se calcula como referencias marcadas sobre referencias programadas.'+
+     '<span class="assistant-note">Cada sucursal puede completar su propio control y el Administrador General también puede revisarlo desde cualquier sucursal.</span>'
  };
 
  return descriptions[key] || '📍 Esta es la sección activa de MIGA. Su contenido depende de la configuración y los datos de la sucursal.';
@@ -4985,7 +5083,7 @@ function assistantLocateFeature(question){
    return '📍 La impresión operativa está en <b>Hoja del Panadero Suc</b>.';
  }
  if(/control presencia|presencia|cumplimiento/.test(q)){
-   return '📍 El seguimiento de turnos Mañana/Tarde y el porcentaje de cumplimiento están en <b>Control Presencia</b>.';
+   return '📍 El control por referencia, con fecha, turno y porcentaje de cumplimiento, está en <b>Control Presencia</b>.';
  }
  if(/plan elaboradora|elaboradora|sucursales a producir/.test(q)){
    return '📍 La consolidación por elaboradora está en <b>Plan Elaboradora</b>.';
@@ -6681,7 +6779,7 @@ function firebaseApplyRealtimeChange(change){
 
  if(change.type==='presenceSyncError'){
    presenceCloudAvailable=false;
-   presenceCloudMessage='Control Presencia no tiene acceso a Firebase. Publicá las reglas incluidas en esta versión.';
+   presenceCloudMessage='Control Presencia no tiene acceso a Firebase. Revisá las reglas de esta versión.';
    console.warn('Firebase Control Presencia:',change.message||'sin acceso');
    if(document.querySelector('.sheet-tab.active')?.dataset.sheet==='presence')renderPresenceSheet();
    return;
@@ -7437,8 +7535,11 @@ let motherDateISO='';
 let motherSelectedBranches=[];
 
 /* ===================== PRESENCIA ELABORADORAS · CICLO PRODUCCIÓN ===================== */
-const PRESENCE_STORAGE_PREFIX='panaderia_presence_elaboradora_v80_';
-let presenceElaboratorCode='';
+const PRESENCE_STORAGE_PREFIX='panaderia_presence_checklist_v90_';
+let presenceBranchCode='';
+let presenceDateISO='';
+let presenceShift='am';
+let presenceSearchText='';
 const presenceSaveTimers={};
 let presenceCloudAvailable=true;
 let presenceCloudMessage='';
@@ -7446,14 +7547,26 @@ let presenceCloudMessage='';
 function presenceStorageKey(code){
  return PRESENCE_STORAGE_PREFIX+String(code||'').padStart(3,'0');
 }
+function normalizePresenceBoolMap(data){
+ const out={};
+ if(!data||typeof data!=='object')return out;
+ Object.entries(data).forEach(([article,value])=>{
+   const art=safeArticle(article);
+   if(!art)return;
+   if(value===true||value===1||value==='1'||value==='true')out[art]=true;
+ });
+ return out;
+}
 function normalizePresenceData(data){
  const out={};
  if(!data||typeof data!=='object')return out;
  Object.entries(data).forEach(([date,raw])=>{
-   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
-   const am=raw?.am==='P'||raw?.am==='A'?raw.am:'';
-   const pm=raw?.pm==='P'||raw?.pm==='A'?raw.pm:'';
-   if(am||pm)out[date]={am,pm};
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !raw || typeof raw!=='object')return;
+   const row={
+     am:normalizePresenceBoolMap(raw.am),
+     pm:normalizePresenceBoolMap(raw.pm)
+   };
+   if(Object.keys(row.am).length||Object.keys(row.pm).length)out[date]=row;
  });
  return out;
 }
@@ -7476,23 +7589,11 @@ function allPresenceLocal(){
  });
  return out;
 }
-function presenceAllowedElaborators(){
- // Control Presencia es EXCLUSIVO del Administrador General.
- if(!isMasterAdmin())return [];
- return (enabledElaborators&&enabledElaborators.length?enabledElaborators:loadEnabledElaborators())
-   .filter(code=>branchCatalog[code])
-   .sort((a,b)=>Number(a)-Number(b));
+function presenceAllowedBranches(){
+ if(isMasterAdmin())return allBranchCodes();
+ const code=normalizeBranch(state.branch);
+ return code&&branchCatalog[code]?[code]:[];
 }
-function ensurePresenceSelection(){
- const allowed=presenceAllowedElaborators();
- if(!presenceElaboratorCode||!allowed.includes(presenceElaboratorCode)){
-   if(motherBranchCode&&allowed.includes(motherBranchCode))presenceElaboratorCode=motherBranchCode;
-   else presenceElaboratorCode=allowed[0]||'';
- }
- return allowed;
-}
-function presenceStatusLabel(value){return value==='P'?'Presente':value==='A'?'Ausente':'Pendiente'}
-function presenceStatusClass(value){return value==='P'?'present':value==='A'?'absent':'pending'}
 function presenceDateKeyFromDate(d){
  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
@@ -7503,9 +7604,13 @@ function presenceParseDate(value){
 function presenceFormatDate(d){
  return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
+function presenceBranchState(code){
+ code=normalizeBranch(code);
+ if(code===normalizeBranch(state.branch))return state;
+ return loadLocalFor(code) || null;
+}
 function presenceProductionRange(code){
- const local=loadLocalFor(code);
- const cfg=local || (normalizeBranch(state.branch)===normalizeBranch(code)?state:null) || {};
+ const cfg=presenceBranchState(code) || {};
  const startRaw=cfg.startDate || state.startDate || ORIGINAL.startDate || '2026-08-10';
  const start=presenceParseDate(startRaw) || new Date('2026-08-10T12:00:00');
  let days=Math.round(Number(cfg.params?.days ?? state.params?.days ?? 35));
@@ -7522,124 +7627,353 @@ function presenceDateIsFuture(date){
  const today=new Date();today.setHours(23,59,59,999);
  return d>today;
 }
+function presenceDefaultDateForRange(range){
+ const todayKey=presenceDateKeyFromDate(new Date());
+ if(presenceDateInRange(todayKey,range))return todayKey;
+ const today=presenceParseDate(todayKey);
+ return today && today>range.end ? range.endRaw : range.startRaw;
+}
+function presenceCanEditBranch(code){
+ code=normalizeBranch(code);
+ if(isMasterAdmin())return true;
+ if(window.MigaFirebase?.canWriteBranch?.(code))return true;
+ return false;
+}
+function ensurePresenceSelection(){
+ const allowed=presenceAllowedBranches();
+ const current=normalizeBranch(state.branch);
+ if(!presenceBranchCode||!allowed.includes(presenceBranchCode)){
+   presenceBranchCode=allowed.includes(current)?current:(allowed[0]||'');
+ }
+ if(presenceShift!=='pm')presenceShift='am';
+ if(presenceBranchCode){
+   const range=presenceProductionRange(presenceBranchCode);
+   if(!presenceDateISO||!presenceDateInRange(presenceDateISO,range))presenceDateISO=presenceDefaultDateForRange(range);
+ }
+ return allowed;
+}
+function presenceDayIndex(date){
+ const d=presenceParseDate(date);
+ return d?((d.getDay()+6)%7):0;
+}
+function presenceRowsForDate(code,date){
+ const cfg=presenceBranchState(code);
+ if(!cfg||!Array.isArray(cfg.products))return [];
+ const dayIndex=presenceDayIndex(date);
+ return cfg.products
+   .filter(p=>safeArticle(p.article) && Array.isArray(p.schedule) && Number(p.schedule[dayIndex])>0)
+   .slice()
+   .sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
+}
+function presenceShiftMap(code,date,shift){
+ const data=loadPresenceLocal(code);
+ return normalizePresenceBoolMap(data?.[date]?.[shift]||{});
+}
+function presenceSetItemValue(code,date,shift,article,checked){
+ code=normalizeBranch(code);
+ article=safeArticle(article);
+ if(!code||!article)return;
+ const range=presenceProductionRange(code);
+ if(!presenceDateInRange(date,range)||presenceDateIsFuture(date))return;
+ const data=loadPresenceLocal(code);
+ const row=data[date]||{am:{},pm:{}};
+ row.am=normalizePresenceBoolMap(row.am||{});
+ row.pm=normalizePresenceBoolMap(row.pm||{});
+ if(checked)row[shift][article]=true;
+ else delete row[shift][article];
+ if(Object.keys(row.am).length||Object.keys(row.pm).length)data[date]=row;
+ else delete data[date];
+ storePresenceLocal(code,data);
+ queuePresenceCloudSync(code);
+}
 function queuePresenceCloudSync(code){
- if(!isMasterAdmin()||firebaseCloudApplying||!firebaseCloudInitialized)return;
+ if(firebaseCloudApplying||!firebaseCloudInitialized)return;
+ if(!(window.MigaFirebase?.isAdmin?.()||window.MigaFirebase?.isBranchFor?.(code)))return;
  clearTimeout(presenceSaveTimers[code]);
  presenceSaveTimers[code]=setTimeout(()=>{
    window.MigaFirebase?.savePresence?.(code,loadPresenceLocal(code))
    .then(()=>{
      presenceCloudAvailable=true;presenceCloudMessage='';
-     if(document.querySelector('.sheet-tab.active')?.dataset.sheet==='presence')renderPresenceSheet();
+     renderPresenceSyncBadge();
    })
    .catch(err=>{
      console.warn('Firebase presence sync:',err);
      presenceCloudAvailable=false;
-     presenceCloudMessage='Presencia no pudo sincronizar con Firebase. Revisá las reglas de esta versión.';
-     if(document.querySelector('.sheet-tab.active')?.dataset.sheet==='presence')renderPresenceSheet();
+     presenceCloudMessage='Control Presencia no pudo sincronizar con Firebase.';
+     renderPresenceSyncBadge();
+     const warning=document.getElementById('presenceNoAccess');
+     if(warning && document.querySelector('.sheet-tab.active')?.dataset.sheet==='presence'){
+       warning.style.display='block';
+       warning.textContent=presenceCloudMessage;
+     }
    });
- },350);
+ },250);
 }
-function changePresenceElaborator(code){
- const allowed=presenceAllowedElaborators();
- code=normalizeBranch(code);
- if(!allowed.includes(code))return;
- presenceElaboratorCode=code;
- renderPresenceSheet();
+function presenceShiftTotals(code,date,shift,rows){
+ const list=Array.isArray(rows)?rows:presenceRowsForDate(code,date);
+ const map=presenceShiftMap(code,date,shift);
+ let present=0;
+ list.forEach(item=>{if(map[safeArticle(item.article)])present++;});
+ const total=list.length;
+ return {present,total,missing:Math.max(0,total-present),pct:total?present/total*100:0};
 }
-function cyclePresenceShift(date,shift){
- if(!isMasterAdmin())return;
- if(!presenceElaboratorCode||!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
- if(shift!=='am'&&shift!=='pm')return;
- const range=presenceProductionRange(presenceElaboratorCode);
- if(!presenceDateInRange(date,range)||presenceDateIsFuture(date))return;
-
- const data=loadPresenceLocal(presenceElaboratorCode);
- const row=data[date]||{am:'',pm:''};
- const values=['','P','A'];
- const current=values.includes(row[shift])?row[shift]:'';
- row[shift]=values[(values.indexOf(current)+1)%values.length];
- if(row.am||row.pm)data[date]=row;else delete data[date];
- storePresenceLocal(presenceElaboratorCode,data);
- queuePresenceCloudSync(presenceElaboratorCode);
- renderPresenceSheet();
-}
-function presenceCycleStats(code,range){
- const data=loadPresenceLocal(code);
- let present=0,absent=0,possible=0;
- for(let i=0;i<range.days;i++){
-   const d=new Date(range.start);d.setDate(d.getDate()+i);
-   const key=presenceDateKeyFromDate(d);
-   if(presenceDateIsFuture(key))continue;
-   possible+=2;
-   const row=data[key]||{};
-   ['am','pm'].forEach(k=>{if(row[k]==='P')present++;else if(row[k]==='A')absent++;});
- }
- const evaluated=present+absent;
- const pending=Math.max(0,possible-evaluated);
- return {present,absent,pending,evaluated,possible,compliance:evaluated?present/evaluated*100:null,coverage:possible?evaluated/possible*100:null};
-}
-function renderPresenceSheet(){
- const calendarBox=document.getElementById('presenceCalendar');
- if(!calendarBox)return;
- const allowed=ensurePresenceSelection();
- const select=document.getElementById('presenceElaboratorSelect');
- const warning=document.getElementById('presenceNoAccess');
- const dashboard=document.getElementById('presenceDashboard');
- const badge=document.getElementById('presenceEditBadge');
- const rangeChip=document.getElementById('presenceCycleRange');
-
- if(!isMasterAdmin()){
-   if(warning){warning.style.display='block';warning.textContent='Control Presencia es exclusivo del Administrador General.'}
-   if(dashboard)dashboard.style.display='none';
-   calendarBox.innerHTML='';
-   return;
- }
-
- if(select){
-   select.innerHTML=allowed.map(code=>`<option value="${code}">${code} - ${esc(branchCatalog[code]?.name||'')}</option>`).join('');
-   if(presenceElaboratorCode)select.value=presenceElaboratorCode;
-   select.disabled=!allowed.length;
- }
- if(badge)badge.textContent='🔐 Admin General';
-
- if(!allowed.length||!presenceElaboratorCode){
-   if(warning){warning.style.display='block';warning.textContent='No hay sucursales elaboradoras habilitadas.'}
-   if(dashboard)dashboard.style.display='none';calendarBox.innerHTML='';return;
- }
- if(warning){
-   if(!presenceCloudAvailable){warning.style.display='block';warning.textContent=presenceCloudMessage||'Presencia funciona localmente, pero todavía no está sincronizado con Firebase.'}
-   else warning.style.display='none';
- }
- if(dashboard)dashboard.style.display='flex';
-
- const range=presenceProductionRange(presenceElaboratorCode);
- if(rangeChip)rangeChip.textContent=presenceFormatDate(range.start)+' → '+presenceFormatDate(range.end)+' · '+range.days+' días';
-
- const stats=presenceCycleStats(presenceElaboratorCode,range);
- const pct=v=>v===null?'—':v.toLocaleString('es-AR',{maximumFractionDigits:1})+'%';
- const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
- set('presenceKpiCompliance',pct(stats.compliance));set('presenceKpiPresent',String(stats.present));set('presenceKpiAbsent',String(stats.absent));set('presenceKpiPending',String(stats.pending));set('presenceKpiCoverage',pct(stats.coverage));
- set('presenceCalendarTitle','CICLO DE PRODUCCIÓN · '+presenceFormatDate(range.start)+' AL '+presenceFormatDate(range.end));
- set('presenceCalendarSubtitle','Suc. '+presenceElaboratorCode+' · '+(branchCatalog[presenceElaboratorCode]?.name||'')+' · '+range.days+' días');
-
- const data=loadPresenceLocal(presenceElaboratorCode);
- const firstDow=(range.start.getDay()+6)%7;
- let h='';for(let i=0;i<firstDow;i++)h+='<div class="presence-day empty"></div>';
- const dayNames=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
- const monthNames=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+function presenceCycleTotals(code,range){
+ let present=0,total=0;
  for(let i=0;i<range.days;i++){
    const d=new Date(range.start);d.setDate(d.getDate()+i);
    const date=presenceDateKeyFromDate(d);
-   const row=data[date]||{am:'',pm:''};
-   const future=presenceDateIsFuture(date);
-   const values=[row.am||'',row.pm||''];
-   let dayClass=future?' future':(values[0]==='P'&&values[1]==='P')?' all-present':values.includes('A')?' has-absence':values.includes('P')?' partial':'';
-   const disabled=future?' disabled':'';
-   const shift=(key,label,value)=>`<button type="button" class="presence-shift ${presenceStatusClass(value)}" onclick="cyclePresenceShift('${date}','${key}')"${disabled}><span>${label}</span><span class="shift-state">${presenceStatusLabel(value)}</span></button>`;
-   h+=`<div class="presence-day${dayClass}"><div class="presence-day-head"><span class="presence-day-date"><span class="presence-day-number">${String(d.getDate()).padStart(2,'0')}</span><span class="presence-day-month">${monthNames[d.getMonth()]}</span></span><span class="presence-day-dow">${dayNames[d.getDay()]}</span></div>${shift('am','MAÑANA',row.am)}${shift('pm','TARDE',row.pm)}</div>`;
+   if(presenceDateIsFuture(date))continue;
+   const rows=presenceRowsForDate(code,date);
+   const am=presenceShiftTotals(code,date,'am',rows);
+   const pm=presenceShiftTotals(code,date,'pm',rows);
+   present+=am.present+pm.present;
+   total+=am.total+pm.total;
  }
- const trailing=(7-((firstDow+range.days)%7))%7;for(let i=0;i<trailing;i++)h+='<div class="presence-day empty"></div>';
- calendarBox.innerHTML=h;
+ return {present,total,pct:total?present/total*100:0};
+}
+function renderPresenceSyncBadge(){
+ const badge=document.getElementById('presenceSyncBadge');
+ if(!badge)return;
+ if(presenceCloudAvailable){
+   badge.className='presence-sync-badge';
+   badge.textContent='● Sincronizado';
+ }else{
+   badge.className='presence-sync-badge local';
+   badge.textContent='● Solo local';
+ }
+}
+function changePresenceBranch(code){
+ const allowed=presenceAllowedBranches();
+ code=normalizeBranch(code);
+ if(!allowed.includes(code))return;
+ presenceBranchCode=code;
+ presenceSearchText='';
+ const range=presenceProductionRange(code);
+ presenceDateISO=presenceDefaultDateForRange(range);
+ renderPresenceSheet();
+}
+function changePresenceDate(value){
+ if(!presenceBranchCode)return;
+ const range=presenceProductionRange(presenceBranchCode);
+ if(!presenceDateInRange(value,range))return;
+ presenceDateISO=value;
+ renderPresenceSheet();
+}
+function changePresenceShift(shift){
+ if(shift!=='am'&&shift!=='pm')return;
+ presenceShift=shift;
+ renderPresenceSheet();
+}
+function presenceSelectDateShift(date,shift){
+ if(shift==='am'||shift==='pm')presenceShift=shift;
+ if(/^\d{4}-\d{2}-\d{2}$/.test(date))presenceDateISO=date;
+ renderPresenceSheet();
+}
+function presenceSetSearch(value){
+ presenceSearchText=String(value||'');
+ renderPresenceChecklist();
+}
+function presenceFilteredRows(code,date){
+ const rows=presenceRowsForDate(code,date);
+ const q=String(presenceSearchText||'').trim().toLowerCase();
+ if(!q)return rows;
+ return rows.filter(item=>{
+   const hay=[safeArticle(item.article),item.description||'',item.brand||'',item.aptitude||'',item.um||''].join(' ').toLowerCase();
+   return hay.includes(q);
+ });
+}
+function presenceToggleItem(article,checked){
+ if(!presenceCanEditBranch(presenceBranchCode))return;
+ presenceSetItemValue(presenceBranchCode,presenceDateISO,presenceShift,article,!!checked);
+ renderPresenceSummary();
+ renderPresenceCalendar();
+ renderPresenceChecklistStats();
+}
+function presenceSetAll(checked){
+ if(!presenceCanEditBranch(presenceBranchCode))return;
+ if(presenceDateIsFuture(presenceDateISO))return;
+ const rows=presenceFilteredRows(presenceBranchCode,presenceDateISO);
+ const data=loadPresenceLocal(presenceBranchCode);
+ const row=data[presenceDateISO]||{am:{},pm:{}};
+ row.am=normalizePresenceBoolMap(row.am||{});
+ row.pm=normalizePresenceBoolMap(row.pm||{});
+ rows.forEach(item=>{
+   const art=safeArticle(item.article);
+   if(!art)return;
+   if(checked)row[presenceShift][art]=true;
+   else delete row[presenceShift][art];
+ });
+ if(Object.keys(row.am).length||Object.keys(row.pm).length)data[presenceDateISO]=row;
+ else delete data[presenceDateISO];
+ storePresenceLocal(presenceBranchCode,data);
+ queuePresenceCloudSync(presenceBranchCode);
+ renderPresenceSummary();
+ renderPresenceCalendar();
+ renderPresenceChecklist();
+}
+function renderPresenceSummary(){
+ if(!presenceBranchCode||!presenceDateISO)return;
+ const rows=presenceRowsForDate(presenceBranchCode,presenceDateISO);
+ const shiftData=presenceShiftTotals(presenceBranchCode,presenceDateISO,presenceShift,rows);
+ const cycle=presenceCycleTotals(presenceBranchCode,presenceProductionRange(presenceBranchCode));
+ const pct=Math.round(shiftData.pct*10)/10;
+ const pctText=pct.toLocaleString('es-AR',{maximumFractionDigits:pct%1?1:0});
+ const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
+ set('presenceKpiCompliance',pctText);
+ set('presenceKpiPresent',String(shiftData.present));
+ set('presenceKpiTotal',String(shiftData.total));
+ set('presenceKpiMissing',String(shiftData.missing));
+ set('presenceKpiCycle',cycle.pct.toLocaleString('es-AR',{maximumFractionDigits:1})+'%');
+ const bar=document.getElementById('presenceProgressBar');
+ if(bar)bar.style.width=Math.max(0,Math.min(100,shiftData.pct))+'%';
+ const shiftChip=document.getElementById('presenceSummaryShift');
+ if(shiftChip)shiftChip.textContent=presenceShift==='am'?'TURNO MAÑANA':'TURNO TARDE';
+ const amBtn=document.getElementById('presenceShiftAmBtn');
+ const pmBtn=document.getElementById('presenceShiftPmBtn');
+ if(amBtn)amBtn.classList.toggle('active',presenceShift==='am');
+ if(pmBtn)pmBtn.classList.toggle('active',presenceShift==='pm');
+}
+function renderPresenceCalendar(){
+ const box=document.getElementById('presenceCalendar');
+ if(!box||!presenceBranchCode)return;
+ const range=presenceProductionRange(presenceBranchCode);
+ const title=document.getElementById('presenceCalendarTitle');
+ const subtitle=document.getElementById('presenceCalendarSubtitle');
+ if(title)title.textContent='Ciclo '+presenceFormatDate(range.start)+' → '+presenceFormatDate(range.end);
+ if(subtitle)subtitle.textContent='Suc. '+presenceBranchCode+' · '+(branchCatalog[presenceBranchCode]?.name||'');
+ const firstDow=(range.start.getDay()+6)%7;
+ const dayNames=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+ let h='';
+ for(let i=0;i<firstDow;i++)h+='<div class="presence-day empty"></div>';
+ for(let i=0;i<range.days;i++){
+   const d=new Date(range.start);d.setDate(d.getDate()+i);
+   const date=presenceDateKeyFromDate(d);
+   const rows=presenceRowsForDate(presenceBranchCode,date);
+   const am=presenceShiftTotals(presenceBranchCode,date,'am',rows);
+   const pm=presenceShiftTotals(presenceBranchCode,date,'pm',rows);
+   const future=presenceDateIsFuture(date);
+   const selected=presenceDateISO===date;
+   const chipClass=(shift,data)=>{
+     let cls='presence-shift-chip';
+     if(future)cls+=' future';
+     else if(data.pct===100 && data.total>0)cls+=' done';
+     else if(data.pct>0)cls+=' partial';
+     else cls+=' zero';
+     if(selected && presenceShift===shift)cls+=' active';
+     return cls;
+   };
+   const pctText=data=>data.total?Math.round(data.pct).toLocaleString('es-AR')+'%':'—';
+   const disabled=future?' disabled':'';
+   h+=`<div class="presence-day${selected?' selected':''}${future?' future':''}">
+     <div class="presence-day-top"><span class="presence-day-number">${d.getDate()}</span><span class="presence-day-dow">${dayNames[d.getDay()]}</span></div>
+     <div class="presence-day-shifts">
+       <button type="button" class="${chipClass('am',am)}" onclick="presenceSelectDateShift('${date}','am')"${disabled}><span>Mañana</span><span>${pctText(am)}</span></button>
+       <button type="button" class="${chipClass('pm',pm)}" onclick="presenceSelectDateShift('${date}','pm')"${disabled}><span>Tarde</span><span>${pctText(pm)}</span></button>
+     </div>
+   </div>`;
+ }
+ const trailing=(7-((firstDow+range.days)%7))%7;
+ for(let i=0;i<trailing;i++)h+='<div class="presence-day empty"></div>';
+ box.innerHTML=h;
+}
+function renderPresenceChecklistStats(){
+ const statsBox=document.getElementById('presenceChecklistStats');
+ if(!statsBox||!presenceBranchCode||!presenceDateISO)return;
+ const allRows=presenceRowsForDate(presenceBranchCode,presenceDateISO);
+ const visibleRows=presenceFilteredRows(presenceBranchCode,presenceDateISO);
+ const total=presenceShiftTotals(presenceBranchCode,presenceDateISO,presenceShift,allRows);
+ statsBox.innerHTML=`<span><strong>${visibleRows.length}</strong> referencias visibles</span><span><strong>${total.present}</strong> marcadas como presentes</span><span><strong>${total.total}</strong> programadas para ${presenceShift==='am'?'Mañana':'Tarde'}</span>`;
+}
+function renderPresenceChecklist(){
+ const box=document.getElementById('presenceChecklist');
+ const empty=document.getElementById('presenceChecklistEmpty');
+ const note=document.getElementById('presenceReadonlyNote');
+ const subtitle=document.getElementById('presenceChecklistSubtitle');
+ if(!box||!empty||!subtitle)return;
+ const code=presenceBranchCode;
+ const date=presenceDateISO;
+ if(!code||!date){box.innerHTML='';empty.style.display='block';empty.textContent='Seleccioná una sucursal y una fecha.';return;}
+ const canEdit=presenceCanEditBranch(code) && !presenceDateIsFuture(date);
+ const future=presenceDateIsFuture(date);
+ const rows=presenceFilteredRows(code,date);
+ const map=presenceShiftMap(code,date,presenceShift);
+ subtitle.textContent='Suc. '+code+' · '+(branchCatalog[code]?.name||'')+' · '+presenceFormatDate(presenceParseDate(date))+' · '+(presenceShift==='am'?'Turno Mañana':'Turno Tarde');
+ if(note){
+   if(future){note.style.display='block';note.textContent='La fecha seleccionada es futura. Podés consultar las referencias programadas, pero la carga queda bloqueada hasta ese día.'}
+   else if(!canEdit){note.style.display='block';note.textContent='Esta vista está en solo lectura. Para cargar presencia tenés que ingresar a la sucursal correspondiente o usar Administrador General.'}
+   else note.style.display='none';
+ }
+ renderPresenceChecklistStats();
+ if(!rows.length){
+   box.innerHTML='';
+   empty.style.display='block';
+   empty.textContent='No hay referencias programadas para esta fecha o no coinciden con la búsqueda.';
+   return;
+ }
+ empty.style.display='none';
+ box.innerHTML=rows.map(item=>{
+   const art=safeArticle(item.article);
+   const checked=!!map[art];
+   return `<div class="presence-item ${checked?'present':''}">
+     <div class="presence-item-main">
+       <div class="presence-item-code">${art}</div>
+       <div class="presence-item-name">${esc(item.description||'')}</div>
+       <div class="presence-item-meta">
+         <span>${esc(item.brand||'Sin marca')}</span>
+         <span>${esc(item.aptitude||'')}</span>
+         <span>${esc(item.um||'')}</span>
+       </div>
+     </div>
+     <div class="presence-item-check">
+       <span class="presence-item-label">${checked?'PRESENTE':'AUSENTE'}</span>
+       <label class="presence-switch">
+         <input type="checkbox" ${checked?'checked':''} ${canEdit?'':'disabled'} onchange="presenceToggleItem('${art}',this.checked)">
+         <span class="presence-slider"></span>
+       </label>
+     </div>
+   </div>`;
+ }).join('');
+}
+function renderPresenceSheet(){
+ const allowed=ensurePresenceSelection();
+ const warning=document.getElementById('presenceNoAccess');
+ const branchSelect=document.getElementById('presenceBranchSelect');
+ const dateInput=document.getElementById('presenceDateInput');
+ const rangeChip=document.getElementById('presenceCycleRange');
+ const badge=document.getElementById('presenceEditBadge');
+ const search=document.getElementById('presenceSearchInput');
+ if(!branchSelect)return;
+ if(branchSelect){
+   branchSelect.innerHTML=allowed.map(code=>`<option value="${code}">${code} - ${esc(branchCatalog[code]?.name||'')}</option>`).join('');
+   branchSelect.value=presenceBranchCode||'';
+   branchSelect.disabled=!allowed.length || !isMasterAdmin();
+ }
+ if(search && search.value!==presenceSearchText)search.value=presenceSearchText;
+ if(!allowed.length||!presenceBranchCode){
+   if(warning){warning.style.display='block';warning.textContent='No hay sucursal seleccionada para Control Presencia.'}
+   const calendar=document.getElementById('presenceCalendar');if(calendar)calendar.innerHTML='';
+   const checklist=document.getElementById('presenceChecklist');if(checklist)checklist.innerHTML='';
+   return;
+ }
+ const range=presenceProductionRange(presenceBranchCode);
+ if(dateInput){
+   dateInput.min=range.startRaw;
+   dateInput.max=range.endRaw;
+   dateInput.value=presenceDateISO;
+ }
+ if(rangeChip)rangeChip.textContent=presenceFormatDate(range.start)+' → '+presenceFormatDate(range.end)+' · '+range.days+' días';
+ if(badge){
+   if(isMasterAdmin())badge.textContent='🔐 Administrador General';
+   else badge.textContent='🏪 Sucursal '+presenceBranchCode;
+ }
+ if(warning){
+   if(!presenceCloudAvailable){warning.style.display='block';warning.textContent=presenceCloudMessage||'Control Presencia funciona localmente, pero no está sincronizado con Firebase.'}
+   else warning.style.display='none';
+ }
+ renderPresenceSyncBadge();
+ renderPresenceSummary();
+ renderPresenceCalendar();
+ renderPresenceChecklist();
 }
 
 
@@ -7873,18 +8207,8 @@ function updateMotherAdminUI(){
    closeAdminMenu();
  }
  const presenceTab=document.getElementById('presenceTabBtn');
- if(presenceTab)presenceTab.classList.toggle('presence-admin-hidden',!isMasterAdmin());
-
- // Si se sale del Admin General mientras Presencia está abierta, volvemos a Parámetros.
- if(!isMasterAdmin() && document.querySelector('.sheet-tab.active')?.dataset.sheet==='presence'){
-   const paramsTab=document.querySelector('.sheet-tab[data-sheet="params"]');
-   const paramsSheet=document.getElementById('sheet-params');
-   document.querySelectorAll('.sheet-tab').forEach(x=>x.classList.toggle('active',x===paramsTab));
-   document.querySelectorAll('.sheet-view').forEach(x=>x.classList.remove('active'));
-   if(paramsSheet)paramsSheet.classList.add('active');
-   syncSheetChrome('params');
- }
- if(document.getElementById('presenceCalendar') && isMasterAdmin())renderPresenceSheet();
+ if(presenceTab)presenceTab.classList.remove('presence-admin-hidden');
+ if(document.getElementById('presenceCalendar'))renderPresenceSheet();
 }
 async function toggleMotherAdmin(){
  if(motherAdminMode){
@@ -9834,11 +10158,6 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
    setTimeout(syncMotherNavigator,150);
  }
  if(targetSheet==='presence'){
-   if(!isMasterAdmin()){
-     const p=document.querySelector('.sheet-tab[data-sheet="params"]');
-     if(p)setTimeout(()=>p.click(),0);
-     return;
-   }
    requestAnimationFrame(renderPresenceSheet);
  }
  setTimeout(initMobileTouchScrolling,0);
@@ -10310,6 +10629,13 @@ monthlyBackupReminder();
 
     const systemSnap=await getDoc(doc(db,'miga_system','config'));
     const sys=systemSnap.exists()?systemSnap.data():{};
+    let presenceData={};
+    try{
+      const presenceSnap=await getDoc(doc(db,'miga_presence',code));
+      if(presenceSnap.exists())presenceData[code]=parsePayload(presenceSnap.data())||{};
+    }catch(e){
+      console.warn('Firebase presence branch context unavailable:',e?.code||e?.message||e);
+    }
 
     const branches={};
     branchPairs.forEach(([c,p])=>{if(p)branches[c]=p});
@@ -10318,6 +10644,7 @@ monthlyBackupReminder();
 
     return {
       initialized:true,branches,sales,zoneRefs,
+      presence:presenceData,
       system:parsePayload(sys)||{},
       salesSourceFile:String(sys?.salesSourceFile||'Firebase'),
       elaborator:elab?clean(elab):null
@@ -10431,7 +10758,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'80.0',
+      appVersion:'90.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -10525,13 +10852,13 @@ monthlyBackupReminder();
   }
 
   async function savePresence(code,data){
-    if(!isAdmin())throw new Error('Administrador General no autenticado.');
     code=String(code||'').padStart(3,'0');
+    if(!isAdmin() && !isBranchFor(code))throw new Error('Sin permisos para Control Presencia.');
     await setDoc(doc(db,'miga_presence',code),{
       code,
       payload:JSON.stringify(clean(data||{})),
       updatedAt:new Date().toISOString(),
-      updatedBy:ADMIN_UID
+      updatedBy:auth.currentUser?.uid||ADMIN_UID
     },{merge:true});
     return true;
   }
@@ -10711,6 +11038,15 @@ monthlyBackupReminder();
         safeCallback({type:'sales',code,data:snap.exists()?parsePayload(snap.data()):null});
       },
       err=>safeCallback({type:'syncError',code,message:err?.message||String(err)})
+    ));
+
+    unsubscribers.push(onSnapshot(
+      doc(db,'miga_presence',code),
+      snap=>{
+        if(myEpoch!==subscriptionEpoch)return;
+        safeCallback({type:'presence',code,data:snap.exists()?parsePayload(snap.data()):{}});
+      },
+      err=>safeCallback({type:'presenceSyncError',message:err?.message||String(err)})
     ));
 
     // Padrones zonales visibles para las sucursales.
