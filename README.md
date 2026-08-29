@@ -667,3 +667,19 @@ Los cambios de coeficiente no se cuentan como cambios de cronograma, evitando qu
 ### Firebase
 
 Los respaldos de ciclo se almacenan como documentos adicionales dentro de `miga_system`, por lo que **no se requieren reglas nuevas de Firestore**.
+
+## v48 · Respaldo de ciclo en JSON + Excel
+
+El respaldo inicial del ciclo ahora genera un ZIP con dos formatos complementarios:
+
+- **JSON**: copia técnica exacta utilizada para restauración. Debe conservarse aunque no sea cómoda de leer manualmente.
+- **Excel**: copia legible para consulta, control y auditoría.
+
+Dentro de la carpeta `EXCEL` del ZIP se incluye:
+
+- `00_RESUMEN_GENERAL.xlsx`: todas las zonas y sucursales con cantidad de referencias, referencias con cronograma y coeficientes distintos de 0%.
+- un libro `.xlsx` por zona; cada libro contiene una hoja **Resumen Zona** y una hoja por cada sucursal.
+
+Cada hoja de sucursal conserva el estado inicial de Artículo, Descripción, Marca, Aptitud, U/M, Bto, Coeficiente y cronograma de Lunes a Domingo.
+
+El Excel es informativo; la restauración automática de MIGA continúa utilizando el respaldo JSON.
