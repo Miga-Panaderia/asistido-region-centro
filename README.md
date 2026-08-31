@@ -706,3 +706,12 @@ El Excel es informativo; la restauración automática de MIGA continúa utilizan
 - Si el dispositivo conserva una sesión Firebase válida de sucursal, MIGA abre directamente esa sucursal.
 - Si conserva una sesión válida de Administrador General, restaura el modo Admin General.
 - Cancelar un ingreso iniciado desde la pantalla neutral vuelve a la selección neutral, no a la Suc. 068.
+
+
+## v52 · Checklist y calendario mejorado
+- La solapa **Presencia** pasa a llamarse **Checklist**.
+- Se rediseña el calendario del ciclo con encabezados LUN–DOM, fecha/mes e indicadores compactos M/T.
+- Se amplía el panel del calendario en PC para mejorar legibilidad.
+- Se mantiene adaptación móvil sin superposición.
+- El avatar de MIGA se mueve hacia arriba cuando Checklist está activo para no tapar las acciones.
+- No hay cambios en reglas ni estructura de Firebase.

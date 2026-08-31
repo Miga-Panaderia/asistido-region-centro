@@ -4159,6 +4159,159 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 @media(max-width:520px){
  .presence-field{width:100%}.presence-stack{grid-template-columns:1fr 1fr}.presence-calendar{grid-template-columns:repeat(7,minmax(0,1fr));overflow:hidden;width:100%}.presence-day{min-height:46px}.presence-day-dow{display:none}.presence-summary-grid{grid-template-columns:1fr 1fr}.presence-turn-btn{font-size:8px}.presence-checklist-actions{justify-content:flex-start}.presence-checklist-head{flex-direction:column}.presence-service-day{flex-basis:15px}
 }
+
+
+/* =========================================================
+   V104 - CHECKLIST · CALENDARIO LIMPIO + MIGA REUBICADA
+   ========================================================= */
+body.checklist-sheet-active .assistant-launcher{
+  top:12px !important;
+  right:14px !important;
+  bottom:auto !important;
+}
+body.checklist-sheet-active .mini-assistant{
+  top:76px !important;
+  right:14px !important;
+  bottom:auto !important;
+}
+.presence-shell{
+  grid-template-columns:350px minmax(0,1fr);
+  gap:10px;
+}
+.presence-calendar-card{
+  padding:9px 10px 10px;
+  overflow:hidden;
+}
+.presence-calendar-title{
+  margin-bottom:6px;
+}
+.presence-calendar-weekdays{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:4px;
+  margin:0 0 4px;
+  padding:0 1px;
+}
+.presence-calendar-weekdays span{
+  text-align:center;
+  font-size:7px;
+  line-height:1;
+  font-weight:900;
+  color:#83919a;
+  letter-spacing:.15px;
+}
+.presence-calendar{
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:4px;
+  width:100%;
+  overflow:visible;
+}
+.presence-day{
+  min-height:62px;
+  padding:4px;
+  border-radius:9px;
+  background:#fff;
+  border-color:#dce2e5;
+}
+.presence-day.selected{
+  border-color:#2f7657;
+  box-shadow:0 0 0 1px rgba(47,118,87,.16);
+  background:#fbfffc;
+}
+.presence-day.future{
+  background:#fafbfb;
+  opacity:.72;
+}
+.presence-day-date{
+  width:100%;
+  height:22px;
+  padding:0 2px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:2px;
+  color:#17394f;
+  cursor:pointer;
+}
+.presence-day-date:disabled{cursor:default}
+.presence-day-number{
+  font-size:14px;
+  line-height:1;
+  font-weight:900;
+}
+.presence-day-month{
+  font-size:6px;
+  line-height:1;
+  font-weight:900;
+  color:#91a0a7;
+}
+.presence-day-shifts{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin-top:2px;
+}
+.presence-shift-chip{
+  min-height:16px;
+  padding:0 4px;
+  border-radius:6px;
+  justify-content:space-between;
+  font-size:6px;
+  line-height:1;
+}
+.presence-shift-letter{
+  display:inline-flex;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  align-items:center;
+  justify-content:center;
+  background:rgba(23,57,79,.08);
+  font-size:6px;
+  font-weight:900;
+}
+.presence-shift-chip.done .presence-shift-letter{background:rgba(23,97,62,.12)}
+.presence-shift-chip.partial .presence-shift-letter{background:rgba(138,98,7,.12)}
+.presence-shift-chip.zero .presence-shift-letter{background:rgba(137,150,157,.12)}
+@media(max-width:900px){
+  .presence-shell{grid-template-columns:1fr}
+  .presence-stack{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .presence-calendar-card{grid-column:1/-1 !important}
+  .presence-calendar{grid-template-columns:repeat(7,minmax(40px,1fr));overflow-x:auto}
+  .presence-calendar-weekdays{grid-template-columns:repeat(7,minmax(40px,1fr));overflow:hidden}
+  .presence-day{min-height:58px;padding:3px}
+  body.checklist-sheet-active .assistant-launcher{
+    top:8px !important;
+    right:8px !important;
+    bottom:auto !important;
+  }
+  body.checklist-sheet-active .mini-assistant{
+    top:58px !important;
+    right:8px !important;
+    bottom:auto !important;
+    height:min(540px,calc(100vh - 68px)) !important;
+  }
+}
+@media(max-width:520px){
+  .presence-calendar-card{padding:7px 6px 8px}
+  .presence-calendar-weekdays,
+  .presence-calendar{
+    grid-template-columns:repeat(7,minmax(38px,1fr));
+    gap:3px;
+  }
+  .presence-calendar{
+    overflow-x:auto;
+    padding-bottom:2px;
+  }
+  .presence-day{min-height:56px}
+  .presence-day-number{font-size:13px}
+  .presence-day-month{font-size:5px}
+  .presence-shift-chip{min-height:15px;font-size:5.5px;padding:0 3px}
+  .presence-calendar-weekdays span{font-size:6px}
+}
+
 </style>
 </head>
 <body>
@@ -4377,7 +4530,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 
   <section id="sheet-presence" class="sheet-view">
     <div class="presence-page">
-      <div class="presence-titlebar">CONTROL DE PRESENCIA · POR REFERENCIA</div>
+      <div class="presence-titlebar">CHECKLIST · CONTROL POR REFERENCIA</div>
 
       <div class="presence-toolbar">
         <label class="presence-field">
@@ -4408,7 +4561,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
           <div class="presence-card presence-summary-card">
             <div class="presence-summary-top">
               <div>
-                <div class="presence-card-title">Resultado del control</div>
+                <div class="presence-card-title">Resultado del checklist</div>
                 <div class="presence-card-sub">Cumplimiento de referencias activas para la fecha y turno seleccionados.</div>
               </div>
               <div id="presenceSummaryShift" class="presence-mini-chip">MAÑANA</div>
@@ -4443,6 +4596,9 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
               </div>
               <div class="presence-card-sub" id="presenceCalendarSubtitle"></div>
             </div>
+            <div class="presence-calendar-weekdays" aria-hidden="true">
+              <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span>
+            </div>
             <div id="presenceCalendar" class="presence-calendar"></div>
           </div>
         </div>
@@ -4450,7 +4606,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
         <div class="presence-card presence-checklist-card">
           <div class="presence-checklist-head">
             <div>
-              <div class="presence-card-title">Checklist por referencia</div>
+              <div class="presence-card-title">Referencias del checklist</div>
               <div class="presence-card-sub" id="presenceChecklistSubtitle">Control diario de referencias activas.</div>
             </div>
             <div class="presence-checklist-actions">
@@ -4479,7 +4635,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
   <button class="sheet-tab" data-sheet="sales">Ventas Prisma Suc</button>
   <button class="sheet-tab" data-sheet="baker">Hoja del Panadero Suc</button>
   <button class="sheet-tab" data-sheet="mother">Plan Elaboradora</button>
-  <button id="presenceTabBtn" class="sheet-tab" data-sheet="presence">Presencia</button>
+  <button id="presenceTabBtn" class="sheet-tab" data-sheet="presence">Checklist</button>
   <span class="tab-status" id="tabStatus">Sucursal 068</span>
 </div>
 
@@ -4920,9 +5076,9 @@ const MIGA_GUIDED_QUESTIONS = {
     {label:'☁ ¿Se actualiza automáticamente?', q:'¿Cómo funciona Firebase?'}
   ],
   presence: [
-    {label:'✅ ¿Qué es Control Presencia?', q:'¿Qué hace esta hoja?', context:true},
-    {label:'📊 ¿Cómo se calcula cumplimiento?', q:'¿Cómo funciona Control Presencia?'},
-    {label:'🔒 ¿Quién puede modificarlo?', q:'¿Cómo funciona Control Presencia?'}
+    {label:'✅ ¿Qué es Checklist?', q:'¿Qué hace esta hoja?', context:true},
+    {label:'📊 ¿Cómo se calcula cumplimiento?', q:'¿Cómo funciona Checklist?'},
+    {label:'🔒 ¿Quién puede modificarlo?', q:'¿Cómo funciona Checklist?'}
   ],
   security: [
     {label:'🔐 ¿Cómo cambio mi PIN?', q:'¿Cómo cambio mi contraseña?'},
@@ -5269,7 +5425,7 @@ function assistantDescribeCurrentSheet(){
      '<span class="assistant-note">Si todavía no hay sucursales asignadas o cantidades calculadas, la hoja puede verse vacía; las asignaciones se administran desde Administrador General.</span>',
 
    presence:
-     '📍 Estás en <b>Control Presencia</b>.<br>'+
+     '📍 Estás en <b>Checklist</b>.<br>'+
      'Esta hoja permite registrar por <b>referencia</b> si la sucursal tiene presente cada artículo programado para un día y turno determinados.<br><br>'+
      '<b>¿Cómo funciona?</b> Seleccionás la fecha, elegís <b>Mañana</b> o <b>Tarde</b> y marcás las referencias presentes. El porcentaje de cumplimiento se calcula como referencias marcadas sobre referencias programadas.'+
      '<span class="assistant-note">Cada sucursal puede completar su propio control y el Administrador General también puede revisarlo desde cualquier sucursal.</span>'
@@ -5294,7 +5450,7 @@ function assistantLocateFeature(question){
    return '📍 La impresión operativa está en <b>Hoja del Panadero Suc</b>.';
  }
  if(/control presencia|presencia|cumplimiento/.test(q)){
-   return '📍 El control por referencia, con fecha, turno y porcentaje de cumplimiento, está en <b>Control Presencia</b>.';
+   return '📍 El control por referencia, con fecha, turno y porcentaje de cumplimiento, está en <b>Checklist</b>.';
  }
  if(/plan elaboradora|elaboradora|sucursales a producir/.test(q)){
    return '📍 La consolidación por elaboradora está en <b>Plan Elaboradora</b>.';
@@ -8748,7 +8904,7 @@ function renderPresenceCalendar(){
  if(title)title.textContent='Ciclo '+presenceFormatDate(range.start)+' → '+presenceFormatDate(range.end);
  if(subtitle)subtitle.textContent='Suc. '+presenceBranchCode+' · '+(branchCatalog[presenceBranchCode]?.name||'');
  const firstDow=(range.start.getDay()+6)%7;
- const dayNames=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+ const monthNames=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
  let h='';
  for(let i=0;i<firstDow;i++)h+='<div class="presence-day empty"></div>';
  for(let i=0;i<range.days;i++){
@@ -8762,7 +8918,7 @@ function renderPresenceCalendar(){
    const chipClass=(shift,data)=>{
      let cls='presence-shift-chip';
      if(future)cls+=' future';
-     else if(data.pct===100 && data.total>0)cls+=' done';
+     else if(data.pct>=90 && data.total>0)cls+=' done';
      else if(data.pct>0)cls+=' partial';
      else cls+=' zero';
      if(selected && presenceShift===shift)cls+=' active';
@@ -8771,10 +8927,12 @@ function renderPresenceCalendar(){
    const pctText=data=>data.total?Math.round(data.pct).toLocaleString('es-AR')+'%':'—';
    const disabled=future?' disabled':'';
    h+=`<div class="presence-day${selected?' selected':''}${future?' future':''}">
-     <div class="presence-day-top"><span class="presence-day-number">${d.getDate()}</span><span class="presence-day-dow">${dayNames[d.getDay()]}</span></div>
+     <button type="button" class="presence-day-date" onclick="presenceSelectDateShift('${date}','${presenceShift}')" title="${presenceFormatDate(d)}"${disabled}>
+       <span class="presence-day-number">${d.getDate()}</span><span class="presence-day-month">${monthNames[d.getMonth()]}</span>
+     </button>
      <div class="presence-day-shifts">
-       <button type="button" class="${chipClass('am',am)}" onclick="presenceSelectDateShift('${date}','am')" title="${presenceFormatDate(d)} · Turno Mañana"${disabled}><span>M</span><span>${pctText(am)}</span></button>
-       <button type="button" class="${chipClass('pm',pm)}" onclick="presenceSelectDateShift('${date}','pm')" title="${presenceFormatDate(d)} · Turno Tarde"${disabled}><span>T</span><span>${pctText(pm)}</span></button>
+       <button type="button" class="${chipClass('am',am)}" onclick="presenceSelectDateShift('${date}','am')" title="${presenceFormatDate(d)} · Turno Mañana"${disabled}><span class="presence-shift-letter">M</span><span>${pctText(am)}</span></button>
+       <button type="button" class="${chipClass('pm',pm)}" onclick="presenceSelectDateShift('${date}','pm')" title="${presenceFormatDate(d)} · Turno Tarde"${disabled}><span class="presence-shift-letter">T</span><span>${pctText(pm)}</span></button>
      </div>
    </div>`;
  }
@@ -11257,8 +11415,10 @@ function initMobileTouchScrolling(){
 function syncSheetChrome(sheetName){
  const isParams=sheetName==='params';
  const isMother=sheetName==='mother';
+ const isChecklist=sheetName==='presence';
  document.body.classList.toggle('non-params-sheet-active',!isParams);
  document.body.classList.toggle('mother-sheet-active',isMother);
+ document.body.classList.toggle('checklist-sheet-active',isChecklist);
 }
 
 document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click',()=>{
