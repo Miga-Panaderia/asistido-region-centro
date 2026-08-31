@@ -2696,6 +2696,44 @@ html,body{
   background:#fff !important;
   border-color:#b88787 !important;
 }
+.emergency-restore-grid{
+  display:grid;
+  grid-template-columns:minmax(180px,.8fr) minmax(260px,1.4fr);
+  gap:7px;
+  margin:8px 0 5px;
+}
+.emergency-restore-grid label{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+  font-size:10px;
+  font-weight:700;
+  color:#263e4e;
+}
+.emergency-restore-grid select{
+  width:100%;
+  min-width:0;
+  height:30px;
+  border:1px solid #8b979f;
+  background:#fff;
+  padding:3px 6px;
+  box-sizing:border-box;
+}
+.emergency-divider{
+  height:1px;
+  background:#d6dde2;
+  margin:9px 0;
+}
+.emergency-restore-note{
+  font-size:9px;
+  line-height:1.35;
+  color:#687881;
+  margin-top:5px;
+}
+@media(max-width:700px){
+  .emergency-restore-grid{grid-template-columns:1fr}
+}
 .backup-monthly-row{
   display:flex;
   align-items:center;
@@ -4825,35 +4863,45 @@ body.checklist-sheet-active .mini-assistant{
       </section>
 
       <section class="admin-card master-admin-only" id="adminBackupCard">
-        <div class="admin-card-title">RESPALDO Y RESTAURACIÓN</div>
+        <div class="admin-card-title">🛟 RECUPERACIÓN DE EMERGENCIA</div>
 
         <div class="admin-help" style="margin-top:0">
-          Generá una copia completa de la configuración de MIGA. Incluye todas las sucursales guardadas en este navegador,
-          coeficientes, cronogramas, elaboradoras, destinos, teléfonos, contraseñas, preferencias y las ventas que estén cargadas.
+          Herramientas para recuperar MIGA ante una carga incorrecta o una modificación accidental.
+          El <b>respaldo oficial del ciclo</b> se genera desde <b>Ciclo de Producción</b>.
         </div>
 
-        <div id="adminBackupStatus" class="backup-status"></div>
-
         <div class="admin-actions backup-actions">
-          <button type="button" class="backup-primary" onclick="downloadFullBackup()">⬇ Descargar respaldo completo</button>
-
           <label class="file-label admin-file-btn backup-restore-btn">
-            ↥ Restaurar desde respaldo
+            ↥ Restaurar respaldo completo
             <input id="adminRestoreBackupFile" type="file" accept=".json,application/json"
                    onchange="restoreFullBackup(this.files[0]);this.value=''">
           </label>
-
-          <button type="button" class="backup-reset-branch" onclick="resetOriginal()">↺ Restaurar sucursal actual</button>
         </div>
 
-        <div class="backup-monthly-row">
-          <span id="backupMonthlyBadge" class="backup-monthly-badge">Respaldo mensual</span>
-          <span id="backupMonthlyText">Verificando estado…</span>
+        <div class="emergency-divider"></div>
+
+        <div class="admin-help" style="margin-top:0">
+          <b>Restaurar una sucursal:</b> elegí directamente la zona y la sucursal sin salir del Administrador General.
         </div>
 
-        <div class="admin-help">
-          <b>Restaurar desde respaldo</b> reemplaza la configuración MIGA de este navegador por la contenida en el archivo.
-          “Restaurar sucursal actual” solo vuelve esa sucursal a sus parámetros iniciales.
+        <div class="emergency-restore-grid">
+          <label>
+            <span>Zona</span>
+            <select id="emergencyRestoreZone" onchange="changeEmergencyRestoreZone(this.value)"></select>
+          </label>
+          <label>
+            <span>Sucursal</span>
+            <select id="emergencyRestoreBranch" onchange="changeEmergencyRestoreBranch(this.value)"></select>
+          </label>
+        </div>
+
+        <div class="admin-actions backup-actions">
+          <button type="button" class="backup-reset-branch" onclick="restoreSelectedBranchOriginal()">↺ Restaurar configuración inicial de la sucursal</button>
+        </div>
+
+        <div class="emergency-restore-note">
+          Esta acción restablece parámetros, coeficientes y cronograma de la sucursal elegida. <b>No modifica las ventas del archivo madre</b>.
+          Para volver exactamente al estado de inicio de un ciclo, conservá el respaldo generado al iniciar ese ciclo.
         </div>
       </section>
 
@@ -6825,6 +6873,93 @@ let adminSelectedReferences=new Set();
 
 
 /* ===================== RESPALDO Y RESTAURACIÓN ===================== */
+let emergencyRestoreZoneId='';
+let emergencyRestoreBranchCode='';
+
+function populateEmergencyRestoreSelectors(preferredBranch=''){
+ const zoneSel=document.getElementById('emergencyRestoreZone');
+ const branchSel=document.getElementById('emergencyRestoreBranch');
+ if(!zoneSel||!branchSel||!isMasterAdmin())return;
+
+ let preferred=normalizeBranch(preferredBranch||emergencyRestoreBranchCode||state.branch||'');
+ let zoneId=branchZoneId(preferred)||emergencyRestoreZoneId||currentZoneId||zoneOrder[0]||'';
+ if(!zoneCatalog[zoneId])zoneId=zoneOrder[0]||'';
+ emergencyRestoreZoneId=zoneId;
+
+ zoneSel.innerHTML=zoneOrder
+   .filter(id=>zoneCatalog[id])
+   .map(id=>`<option value="${escAttr(id)}">${esc(zoneName(id))}</option>`)
+   .join('');
+ zoneSel.value=zoneId;
+
+ const codes=branchesForZone(zoneId);
+ if(!codes.includes(preferred))preferred=codes[0]||'';
+ emergencyRestoreBranchCode=preferred;
+ branchSel.innerHTML=codes.map(code=>
+   `<option value="${code}">${code} - ${esc(branchCatalog[code]?.name||'')}</option>`
+ ).join('');
+ branchSel.value=preferred;
+ branchSel.disabled=!codes.length;
+}
+function changeEmergencyRestoreZone(zoneId){
+ if(!isMasterAdmin()||!zoneCatalog[zoneId])return;
+ emergencyRestoreZoneId=zoneId;
+ const codes=branchesForZone(zoneId);
+ emergencyRestoreBranchCode=codes[0]||'';
+ populateEmergencyRestoreSelectors(emergencyRestoreBranchCode);
+}
+function changeEmergencyRestoreBranch(code){
+ code=normalizeBranch(code);
+ if(!isMasterAdmin()||!branchCatalog[code])return;
+ emergencyRestoreBranchCode=code;
+ emergencyRestoreZoneId=branchZoneId(code)||emergencyRestoreZoneId;
+}
+function restoreSelectedBranchOriginal(){
+ if(!isMasterAdmin()){
+   alert('Solo el Administrador General puede restaurar otra sucursal.');
+   return;
+ }
+ const code=normalizeBranch(emergencyRestoreBranchCode||document.getElementById('emergencyRestoreBranch')?.value||'');
+ if(!code||!branchCatalog[code]){
+   alert('Seleccioná una sucursal válida.');
+   return;
+ }
+ const meta=branchCatalog[code];
+ const zone=branchZoneName(code);
+ const ok=confirm(
+   'RESTAURAR CONFIGURACIÓN INICIAL\n\n'+
+   'Zona: '+zone+'\n'+
+   'Sucursal: '+code+' - '+(meta.name||'')+'\n\n'+
+   'Se restablecerán parámetros, coeficientes y cronograma de esta sucursal.\n'+
+   'Las ventas del archivo madre no se modificarán.\n\n'+
+   '¿Deseás continuar?'
+ );
+ if(!ok)return;
+
+ const fresh=attachSalesToState(makeBranchState(code,meta.name||''),code);
+ try{
+   localStorage.setItem(storageKey(code),JSON.stringify(configSnapshot(fresh)));
+ }catch(e){
+   alert('No se pudo restaurar la sucursal en este navegador.');
+   return;
+ }
+
+ // Si Admin General está conectado, propaga también el reset a Firebase.
+ firebaseQueueBranchSync(fresh);
+
+ if(normalizeBranch(state.branch)===code){
+   state=fresh;
+   syncZoneToBranch(code,false);
+   populateZoneSelector();
+   populateBranchSelector();
+   recalc();
+   renderMotherSheet();
+ }
+
+ populateEmergencyRestoreSelectors(code);
+ alert('Sucursal '+code+' - '+(meta.name||'')+' restaurada correctamente.');
+}
+
 const MIGA_BACKUP_KIND='MIGA_FULL_BACKUP';
 const MIGA_BACKUP_VERSION=1;
 const MIGA_LAST_BACKUP_KEY='panaderia_last_full_backup_v44';
@@ -6983,6 +7118,7 @@ async function restoreFullBackup(file){
    renderMotherSheet();
    updateMotherAdminUI();
    updateBackupAdminStatus();
+   populateEmergencyRestoreSelectors();
 
    alert('Respaldo restaurado correctamente.');
  }catch(e){
@@ -8066,6 +8202,7 @@ function openAdminMenu(){
    renderAdminWhatsapp();
    renderAdminBranchPasswords();
    updateBackupAdminStatus();
+   populateEmergencyRestoreSelectors();
    updateCycleAdminStatus();
    clearAdminMasterPasswordFields();
    setAdminMasterPasswordStatus('');
@@ -9275,6 +9412,7 @@ function updateMotherAdminUI(){
  const presenceTab=document.getElementById('presenceTabBtn');
  if(presenceTab)presenceTab.classList.remove('presence-admin-hidden');
  if(document.getElementById('presenceCalendar'))renderPresenceSheet();
+ if(isMasterAdmin())populateEmergencyRestoreSelectors();
 }
 async function toggleMotherAdmin(){
  if(motherAdminMode){
@@ -10803,7 +10941,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='82.0';
+ x.sales={};x.salesRows=[];x.version='83.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -12067,7 +12205,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'94.0',
+      appVersion:'95.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID

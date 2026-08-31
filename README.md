@@ -715,3 +715,15 @@ El Excel es informativo; la restauración automática de MIGA continúa utilizan
 - Se mantiene adaptación móvil sin superposición.
 - El avatar de MIGA se mueve hacia arriba cuando Checklist está activo para no tapar las acciones.
 - No hay cambios en reglas ni estructura de Firebase.
+
+## v53 · Recuperación de emergencia
+
+La antigua tarjeta **Respaldo y Restauración** se simplifica para evitar confusión con el respaldo oficial del ciclo.
+
+- Se elimina de la interfaz el respaldo manual/mensual redundante.
+- La tarjeta pasa a llamarse **Recuperación de emergencia**.
+- Se conserva **Restaurar respaldo completo** para recuperar un JSON técnico anterior.
+- Admin General puede seleccionar **Zona + Sucursal** y restaurar directamente la configuración inicial de esa sucursal sin salir del menú Admin.
+- La restauración de una sucursal restablece parámetros, coeficientes y cronograma; no modifica las ventas del archivo madre.
+- Si Admin General tiene Firebase activo, el cambio también se sincroniza a la nube.
+
