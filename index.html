@@ -2698,9 +2698,15 @@ html,body{
 }
 .emergency-restore-grid{
   display:grid;
-  grid-template-columns:minmax(180px,.8fr) minmax(260px,1.4fr);
-  gap:7px;
+  grid-template-columns:minmax(220px,.8fr) minmax(420px,1.6fr);
+  gap:8px;
   margin:8px 0 5px;
+}
+#adminBackupCard{
+  grid-column:1 / -1;
+}
+#adminBackupCard .backup-actions{
+  justify-content:flex-start;
 }
 .emergency-restore-grid label{
   display:flex;
