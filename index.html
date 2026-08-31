@@ -4201,7 +4201,19 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
  #sheet-presence{overflow:visible}.presence-page{min-width:0;padding:5px 5px 62px}.presence-toolbar{align-items:stretch}.presence-field{width:calc(50% - 3px)}.presence-field select,.presence-field input{width:100%;min-width:0;box-sizing:border-box}.presence-pill{flex:1 1 auto;justify-content:center;box-sizing:border-box}.presence-shell{grid-template-columns:1fr}.presence-stack{display:grid;grid-template-columns:1fr 1fr;gap:6px}.presence-stack .presence-card:nth-child(n+3){grid-column:1/-1}.presence-calendar{grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;width:100%}.presence-card{padding:7px}.presence-checklist{max-height:380px}.presence-item-meta{display:none}.presence-item-name{font-size:9px}.presence-item{padding:5px 6px}.presence-item-label{font-size:7px}.presence-service-chart{height:74px}.presence-service-bar-wrap{height:44px}.presence-summary-main b{font-size:24px}
 }
 @media(max-width:520px){
- .presence-field{width:100%}.presence-stack{grid-template-columns:1fr 1fr}.presence-calendar{grid-template-columns:repeat(7,minmax(0,1fr));overflow:hidden;width:100%}.presence-day{min-height:46px}.presence-day-dow{display:none}.presence-summary-grid{grid-template-columns:1fr 1fr}.presence-turn-btn{font-size:8px}.presence-checklist-actions{justify-content:flex-start}.presence-checklist-head{flex-direction:column}.presence-service-day{flex-basis:15px}
+ .presence-field{width:100%}
+ .presence-toolbar{gap:5px}
+ .presence-pill{width:100%;min-width:0}
+ .presence-stack{grid-template-columns:1fr}
+ .presence-shell{gap:8px}
+ .presence-calendar{grid-template-columns:repeat(7,minmax(0,1fr));overflow:hidden;width:100%}
+ .presence-day{min-height:46px}
+ .presence-day-dow{display:none}
+ .presence-summary-grid{grid-template-columns:1fr 1fr}
+ .presence-turn-btn{font-size:8px}
+ .presence-checklist-actions{justify-content:flex-start}
+ .presence-checklist-head{flex-direction:column}
+ .presence-service-day{flex-basis:15px}
 }
 
 
@@ -4339,21 +4351,32 @@ body.checklist-sheet-active .mini-assistant{
   }
 }
 @media(max-width:520px){
-  .presence-calendar-card{padding:7px 6px 8px}
+  .presence-page{padding:4px 4px 62px}
+  .presence-card{padding:6px}
+  .presence-calendar-card{padding:6px 5px 7px}
+  .presence-calendar-title{margin-bottom:4px}
   .presence-calendar-weekdays,
   .presence-calendar{
-    grid-template-columns:repeat(7,minmax(38px,1fr));
-    gap:3px;
+    grid-template-columns:repeat(7,minmax(32px,1fr));
+    gap:2px;
   }
   .presence-calendar{
-    overflow-x:auto;
-    padding-bottom:2px;
+    overflow:hidden;
+    padding-bottom:1px;
   }
-  .presence-day{min-height:56px}
-  .presence-day-number{font-size:13px}
+  .presence-day{min-height:50px;padding:3px}
+  .presence-day-number{font-size:11px}
   .presence-day-month{font-size:5px}
-  .presence-shift-chip{min-height:15px;font-size:5.5px;padding:0 3px}
-  .presence-calendar-weekdays span{font-size:6px}
+  .presence-shift-chip{min-height:13px;font-size:5px;padding:0 2px}
+  .presence-shift-letter{width:8px;height:8px;font-size:5px}
+  .presence-calendar-weekdays span{font-size:5px}
+  .presence-card-title{font-size:9px}
+  .presence-card-sub{font-size:7px;margin-bottom:4px}
+  .presence-summary-main b{font-size:20px}
+  .presence-summary-main span{font-size:12px}
+  .presence-checklist{max-height:320px}
+  .presence-service-chart{height:66px}
+  .presence-service-bar-wrap{height:38px}
 }
 
 </style>
