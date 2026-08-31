@@ -727,3 +727,11 @@ La antigua tarjeta **Respaldo y Restauración** se simplifica para evitar confus
 - La restauración de una sucursal restablece parámetros, coeficientes y cronograma; no modifica las ventas del archivo madre.
 - Si Admin General tiene Firebase activo, el cambio también se sincroniza a la nube.
 
+
+
+## v56 · Checklist móvil real
+- Se elimina el ancho residual del Checklist en celular.
+- Fecha/turno, resultado, gráfico, calendario y referencias pasan a una sola columna.
+- El calendario conserva 7 días pero entra dentro del ancho del teléfono sin scroll horizontal.
+- El listado móvil oculta PRESENTE/AUSENTE y deja Descripción + switch compacto.
+- El gráfico puede desplazarse internamente sin mover la página completa.

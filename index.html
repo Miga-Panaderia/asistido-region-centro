@@ -4379,6 +4379,202 @@ body.checklist-sheet-active .mini-assistant{
   .presence-service-bar-wrap{height:38px}
 }
 
+
+
+/* =========================================================
+   V105 - CHECKLIST · MÓVIL REAL SIN SCROLL HORIZONTAL
+   ========================================================= */
+@media(max-width:700px){
+  html,body{max-width:100%;overflow-x:hidden!important}
+  #sheet-presence{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+  .presence-page{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    padding:4px 4px 64px!important;
+    overflow-x:hidden!important;
+  }
+  .presence-titlebar{font-size:10px!important;padding:6px 9px!important;padding-right:48px!important}
+  .presence-toolbar{
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:5px!important;
+    padding:6px!important;
+  }
+  .presence-field,.presence-pill{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  .presence-field select,.presence-field input{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  .presence-shell{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    gap:7px!important;
+    overflow-x:hidden!important;
+  }
+  .presence-stack{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    gap:7px!important;
+  }
+  .presence-stack>.presence-card,
+  .presence-checklist-card,
+  .presence-calendar-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    grid-column:auto!important;
+    overflow:hidden!important;
+  }
+  .presence-card{padding:7px!important;border-radius:9px!important}
+
+  /* Fecha y turno */
+  .presence-turns{grid-template-columns:1fr 1fr!important;gap:5px!important}
+  .presence-turn-btn{width:100%!important;min-width:0!important;height:31px!important;font-size:8px!important;padding:0 4px!important}
+
+  /* Resultado: compacto y horizontal */
+  .presence-summary-card{padding:7px 8px!important}
+  .presence-summary-top{align-items:center!important}
+  .presence-summary-card .presence-card-sub{display:none!important}
+  .presence-summary-main{margin:3px 0!important}
+  .presence-summary-main b{font-size:23px!important}
+  .presence-summary-main span{font-size:12px!important}
+  .presence-summary-label{font-size:8px!important}
+  .presence-progress{margin:5px 0!important;height:5px!important}
+  .presence-summary-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3px!important}
+  .presence-summary-foot{display:block!important;text-align:center!important;font-size:7px!important;white-space:normal!important}
+  .presence-summary-foot strong{display:block!important;font-size:9px!important;margin-top:1px!important}
+
+  /* Nivel de servicio: el scroll queda DENTRO del gráfico, nunca en la página */
+  .presence-service-chart{
+    width:100%!important;
+    max-width:100%!important;
+    height:68px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    box-sizing:border-box!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .presence-service-day{flex:0 0 14px!important}
+  .presence-service-bar-wrap{width:9px!important;height:38px!important}
+  .presence-service-label,.presence-service-value{font-size:6px!important}
+  .presence-service-legend{font-size:6px!important;gap:5px!important}
+
+  /* Calendario: 7 columnas dentro de la pantalla, sin desplazamiento lateral */
+  .presence-calendar-card{padding:6px 4px 7px!important}
+  .presence-calendar-weekdays,
+  .presence-calendar{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    gap:2px!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
+  .presence-calendar-weekdays{padding:0!important}
+  .presence-calendar-weekdays span{font-size:5px!important;min-width:0!important}
+  .presence-day{
+    width:auto!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:45px!important;
+    padding:2px!important;
+    border-radius:6px!important;
+    box-sizing:border-box!important;
+  }
+  .presence-day-date{height:17px!important;padding:0!important;gap:1px!important}
+  .presence-day-number{font-size:10px!important}
+  .presence-day-month{font-size:4px!important}
+  .presence-day-shifts{gap:2px!important;margin-top:1px!important}
+  .presence-shift-chip{
+    width:100%!important;
+    min-width:0!important;
+    min-height:12px!important;
+    padding:0 1px!important;
+    border-radius:4px!important;
+    font-size:4.8px!important;
+    gap:1px!important;
+    overflow:hidden!important;
+  }
+  .presence-shift-letter{width:7px!important;height:7px!important;font-size:4px!important;flex:0 0 7px!important}
+  .presence-shift-chip span:last-child{font-size:4.5px!important;white-space:nowrap!important}
+
+  /* Checklist de referencias */
+  .presence-checklist-card{padding:7px!important}
+  .presence-checklist-head{display:block!important;margin-bottom:5px!important}
+  .presence-checklist-actions{
+    display:flex!important;
+    width:100%!important;
+    max-width:100%!important;
+    gap:4px!important;
+    margin-top:5px!important;
+    flex-wrap:wrap!important;
+    justify-content:flex-start!important;
+  }
+  .presence-sync-badge{font-size:7px!important;padding:3px 6px!important}
+  .presence-action-btn{height:24px!important;font-size:7px!important;padding:0 6px!important}
+  .presence-search{height:28px!important;font-size:9px!important}
+  .presence-inline-stats{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:3px!important;
+    font-size:7px!important;
+    margin:5px 0!important;
+  }
+  .presence-inline-stats span:last-child{grid-column:1/-1!important}
+  .presence-checklist{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    padding:0!important;
+    gap:3px!important;
+  }
+  .presence-item{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    grid-template-columns:minmax(0,1fr) 38px!important;
+    gap:5px!important;
+    padding:6px!important;
+    border-radius:7px!important;
+    box-sizing:border-box!important;
+  }
+  .presence-item-code{font-size:7px!important}
+  .presence-item-name{font-size:9px!important;line-height:1.12!important;overflow-wrap:anywhere!important}
+  .presence-item-meta{display:none!important}
+  .presence-item-check{width:38px!important;justify-content:flex-end!important;gap:0!important}
+  .presence-item-label{display:none!important}
+  .presence-switch{width:34px!important;height:19px!important;flex:0 0 34px!important}
+  .presence-slider:before{width:13px!important;height:13px!important;top:2px!important;left:3px!important}
+  .presence-switch input:checked + .presence-slider:before{transform:translateX(14px)!important}
+
+  /* MIGA: fuera de botones */
+  body.checklist-sheet-active .assistant-launcher{top:6px!important;right:6px!important}
+  body.checklist-sheet-active .mini-assistant{top:54px!important;right:6px!important;left:6px!important;width:auto!important;max-width:none!important}
+}
+
 </style>
 </head>
 <body>
