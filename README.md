@@ -735,3 +735,16 @@ La antigua tarjeta **Respaldo y Restauración** se simplifica para evitar confus
 - El calendario conserva 7 días pero entra dentro del ancho del teléfono sin scroll horizontal.
 - El listado móvil oculta PRESENTE/AUSENTE y deja Descripción + switch compacto.
 - El gráfico puede desplazarse internamente sin mover la página completa.
+
+## v57 · Zonas visibles
+
+Administrador General incorpora **Zonas visibles en MIGA**.
+
+- Se puede mostrar u ocultar una zona completa sin eliminar información.
+- La pantalla neutral de acceso sólo ofrece las zonas activas.
+- Los selectores operativos también respetan la visibilidad configurada.
+- Las zonas ocultas continúan disponibles para tareas administrativas, respaldos y recuperación.
+- Debe quedar al menos una zona visible.
+- La configuración se sincroniza por Firebase y se publica en el directorio de acceso para que también la reciban dispositivos nuevos antes de iniciar sesión.
+- No requiere cambios en las reglas actuales de Firestore: utiliza `miga_login_directory`, que ya permite lectura pública de directorio y escritura exclusiva del Administrador General.
+

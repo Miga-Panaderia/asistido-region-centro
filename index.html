@@ -1470,6 +1470,18 @@ button,input,select,textarea{font:inherit}
 }
 
 /* =========================================================
+   V57 - ZONAS VISIBLES / ACTIVAS
+   ========================================================= */
+.admin-zone-visibility-list{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:7px;margin:8px 0 6px}
+.admin-zone-visibility-item{display:flex;align-items:center;gap:7px;min-height:34px;padding:5px 8px;border:1px solid #c7d0d5;background:#fff;font-size:10px;font-weight:700;color:#203c4d;box-sizing:border-box;cursor:pointer}
+.admin-zone-visibility-item input{width:16px;height:16px;margin:0}
+.admin-zone-visibility-item .zone-vis-name{flex:1;min-width:0}
+.admin-zone-visibility-item .zone-vis-count{font-size:8px;color:#75858e;font-weight:700;white-space:nowrap}
+#adminZonesCard{grid-column:1 / -1}
+@media(max-width:900px){.admin-zone-visibility-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.admin-zone-visibility-list{grid-template-columns:1fr}}
+
+/* =========================================================
    V25 - Guardar + aviso por WhatsApp
    ========================================================= */
 #adminWhatsappCard{
@@ -4961,6 +4973,20 @@ body.checklist-sheet-active .mini-assistant{
         <div class="admin-help">La carga del archivo madre de ventas y la Fecha de inicio quedan bloqueadas fuera de este menú.</div>
       </section>
 
+      <section class="admin-card master-admin-only" id="adminZonesCard">
+        <div class="admin-card-title">👁 ZONAS VISIBLES EN MIGA</div>
+        <div class="admin-help" style="margin-top:0">
+          Elegí qué zonas aparecen en la pantalla inicial y en los selectores operativos.
+          <b>Ocultar una zona no elimina sucursales, padrones, cronogramas, ventas ni accesos</b>; al volver a activarla reaparece con sus datos intactos.
+        </div>
+        <div id="adminZoneVisibilityList" class="admin-zone-visibility-list"></div>
+        <div class="admin-actions">
+          <button type="button" onclick="saveAdminVisibleZones()">Guardar zonas visibles</button>
+          <button type="button" onclick="selectAllAdminVisibleZones(true)">✓ Mostrar todas</button>
+        </div>
+        <div id="adminZoneVisibilityStatus" class="admin-help"></div>
+      </section>
+
       <section class="admin-card master-admin-only" id="adminCycleCard">
         <div class="admin-card-title">🔄 CICLO DE PRODUCCIÓN</div>
         <div class="admin-help" style="margin-top:0">
@@ -6034,11 +6060,14 @@ let branchCatalog=(window.MIGA_CONFIG&&window.MIGA_CONFIG.branches&&typeof windo
  : {'068':{code:'068',name:'HIPERMERCADO NEUQUEN',zoneId:'neuquen-ciudad',zone:'NEUQUEN CIUDAD'}};
 const ZONE_STORAGE_KEY='panaderia_selected_zone_multizona_v43';
 const ZONE_REFERENCE_PREFIX='panaderia_zone_references_v54_';
+const ACTIVE_ZONES_STORAGE='panaderia_active_zones_v57';
+let activeZoneIds=[];
 let currentZoneId='';
 function storageKey(branch){return STORAGE_PREFIX+String(branch||'').padStart(3,'0')+STORAGE_SUFFIX}
 let state = loadLocalFor(ORIGINAL.branch) || makeBranchState(ORIGINAL.branch,branchCatalog[ORIGINAL.branch]?.name||'HIPERMERCADO NEUQUEN');
 if(!state.branchName)state.branchName=branchCatalog[state.branch]?.name||'HIPERMERCADO NEUQUEN';
 currentZoneId=branchCatalog[state.branch]?.zoneId||zoneOrder[0]||'';
+activeZoneIds=loadActiveZones();
 state.sales={};state.salesRows=[];
 let computed=[];
 function clone(o){return JSON.parse(JSON.stringify(o))}
@@ -6081,6 +6110,81 @@ function normalizeStateArticles(obj){
 state=normalizeStateArticles(state);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function escAttr(s){return esc(s)}
+
+function normalizeActiveZones(list){
+ const input=Array.isArray(list)?list.map(String):[];
+ const valid=zoneOrder.filter(id=>input.includes(id));
+ return valid.length?valid:zoneOrder.slice();
+}
+function loadActiveZones(){
+ try{
+   const raw=localStorage.getItem(ACTIVE_ZONES_STORAGE);
+   if(raw)return normalizeActiveZones(JSON.parse(raw));
+ }catch(e){}
+ return zoneOrder.slice();
+}
+function storeActiveZonesLocal(list){
+ activeZoneIds=normalizeActiveZones(list);
+ try{localStorage.setItem(ACTIVE_ZONES_STORAGE,JSON.stringify(activeZoneIds))}catch(e){}
+ return activeZoneIds.slice();
+}
+function isZoneActive(zoneId){return activeZoneIds.includes(String(zoneId||''))}
+function activeZoneOrder(){
+ const active=zoneOrder.filter(id=>isZoneActive(id));
+ return active.length?active:zoneOrder.slice();
+}
+function operationalZoneOrder(){
+ const active=activeZoneOrder();
+ const current=branchZoneId(state?.branch);
+ if(current&&zoneCatalog[current]&&!active.includes(current))return [...active,current];
+ return active;
+}
+function applyPublicZoneVisibilityFromDirectory(){
+ const pub=firebaseBranchDirectoryCache?._zones;
+ const list=Array.isArray(pub?.activeZones)?pub.activeZones:null;
+ if(!list)return false;
+ storeActiveZonesLocal(list);
+ populateZoneSelector();
+ if(document.getElementById('neutralEntry')&&!document.getElementById('neutralEntry').classList.contains('hidden'))populateNeutralAccess();
+ renderAdminZoneVisibility();
+ return true;
+}
+function renderAdminZoneVisibility(){
+ const box=document.getElementById('adminZoneVisibilityList');
+ if(!box)return;
+ const selected=new Set(activeZoneIds);
+ box.innerHTML=zoneOrder.map(zoneId=>{
+   const z=zoneCatalog[zoneId];
+   const checked=selected.has(zoneId)?' checked':'';
+   return `<label class="admin-zone-visibility-item"><input type="checkbox" data-zone-visible="${escAttr(zoneId)}"${checked}><span class="zone-vis-name">${esc(z?.name||zoneId)}</span><span class="zone-vis-count">${branchesForZone(zoneId).length} suc.</span></label>`;
+ }).join('');
+}
+function selectAllAdminVisibleZones(value=true){
+ if(!isMasterAdmin())return;
+ document.querySelectorAll('#adminZoneVisibilityList input[data-zone-visible]').forEach(x=>x.checked=!!value);
+}
+async function saveAdminVisibleZones(){
+ if(!isMasterAdmin())return;
+ const selected=[...document.querySelectorAll('#adminZoneVisibilityList input[data-zone-visible]:checked')].map(x=>x.dataset.zoneVisible).filter(id=>zoneCatalog[id]);
+ if(!selected.length){alert('Debe quedar al menos una zona visible.');renderAdminZoneVisibility();return}
+ storeActiveZonesLocal(selected);
+ populateZoneSelector();
+ populateBranchSelector();
+ if(document.getElementById('neutralEntry')&&!document.getElementById('neutralEntry').classList.contains('hidden'))populateNeutralAccess();
+ if(typeof renderMotherElaboratorZoneTabs==='function')renderMotherElaboratorZoneTabs();
+ const status=document.getElementById('adminZoneVisibilityStatus');
+ if(status)status.textContent='Guardando '+selected.length+' de '+zoneOrder.length+' zonas visibles…';
+ try{
+   if(window.MigaFirebase?.isAdmin?.()){
+     await window.MigaFirebase.saveVisibleZones(selected);
+     firebaseQueueSystemSync();
+   }
+   if(status)status.textContent='✓ Zonas visibles actualizadas. Los datos de las zonas ocultas se conservaron.';
+ }catch(e){
+   console.error('Zonas visibles:',e);
+   if(status)status.textContent='⚠ Se guardó en este navegador, pero no se pudo sincronizar la visibilidad en Firebase.';
+ }
+}
 
 function zoneReferenceKey(zoneId){
  return ZONE_REFERENCE_PREFIX+String(zoneId||'');
@@ -6453,6 +6557,7 @@ async function firebaseRefreshBranchDirectory(){
  try{
    firebaseBranchDirectoryCache=await window.MigaFirebase.loadBranchDirectory();
    firebaseBranchDirectoryLoaded=true;
+   applyPublicZoneVisibilityFromDirectory();
    renderAdminBranchPasswords();
    populateBranchSelector();
  }catch(e){console.warn('Directorio Firebase:',e)}
@@ -6559,7 +6664,7 @@ function populateNeutralAccess(){
  if(!zoneSel||!branchSel)return;
 
  zoneSel.innerHTML='<option value="">Seleccioná una zona…</option>';
- zoneOrder.forEach(id=>{
+ activeZoneOrder().forEach(id=>{
    const z=zoneCatalog[id];if(!z)return;
    const op=document.createElement('option');
    op.value=id;
@@ -6588,7 +6693,7 @@ function neutralZoneChanged(zoneId){
  const loginBtn=document.getElementById('neutralBranchLoginBtn');
  if(!branchSel)return;
  branchSel.innerHTML='<option value="">Seleccioná una sucursal…</option>';
- if(!zoneCatalog[zoneId]){
+ if(!zoneCatalog[zoneId]||!isZoneActive(zoneId)){
    branchSel.disabled=true;
    if(loginBtn)loginBtn.disabled=true;
    neutralSetStatus('Seleccioná una zona.');
@@ -6615,7 +6720,7 @@ function neutralBranchChanged(code){
 function neutralOpenSelectedBranch(){
  const zoneId=document.getElementById('neutralZoneSelect')?.value||'';
  const code=normalizeBranch(document.getElementById('neutralBranchSelect')?.value||'');
- if(!zoneCatalog[zoneId]||!code||!branchCatalog[code])return;
+ if(!zoneCatalog[zoneId]||!isZoneActive(zoneId)||!code||!branchCatalog[code])return;
  neutralBranchLoginInProgress=true;
  currentZoneId=zoneId;
  hideNeutralEntry();
@@ -8000,7 +8105,8 @@ function firebaseSystemSnapshot(){
  const storage={};
  const keys=[
    MOTHER_ELABORATORS_STORAGE,
-   ELABORATOR_WHATSAPP_STORAGE
+   ELABORATOR_WHATSAPP_STORAGE,
+   ACTIVE_ZONES_STORAGE
  ];
  for(const code of allBranchCodes())keys.push(motherSelectionKey(code));
 
@@ -8020,6 +8126,7 @@ function firebaseApplySystemSnapshot(storage){
    const allowed=[
      MOTHER_ELABORATORS_STORAGE,
      ELABORATOR_WHATSAPP_STORAGE,
+     ACTIVE_ZONES_STORAGE,
      ...allBranchCodes().map(code=>motherSelectionKey(code))
    ];
    allowed.forEach(key=>{
@@ -8030,6 +8137,10 @@ function firebaseApplySystemSnapshot(storage){
      }
    });
 
+   activeZoneIds=loadActiveZones();
+   populateZoneSelector();
+   if(document.getElementById('neutralEntry')&&!document.getElementById('neutralEntry').classList.contains('hidden'))populateNeutralAccess();
+   renderAdminZoneVisibility();
    enabledElaborators=loadEnabledElaborators();
    ensureMotherBranchIsEnabled();
    if(motherBranchCode)motherSelectedBranches=loadMotherSelection(motherBranchCode);
@@ -8427,6 +8538,7 @@ function openAdminMenu(){
    renderAdminWhatsapp();
    renderAdminBranchPasswords();
    updateBackupAdminStatus();
+   renderAdminZoneVisibility();
    populateEmergencyRestoreSelectors();
    updateCycleAdminStatus();
    clearAdminMasterPasswordFields();
@@ -9448,7 +9560,7 @@ function saveEnabledElaborators(){
  }catch(e){}
 }
 function enabledElaboratorZones(){
- return zoneOrder.filter(zoneId=>branchesForZone(zoneId).some(code=>enabledElaborators.includes(code)));
+ return activeZoneOrder().filter(zoneId=>branchesForZone(zoneId).some(code=>enabledElaborators.includes(code)));
 }
 function elaboratorsForZone(zoneId){
  return branchesForZone(zoneId).filter(code=>enabledElaborators.includes(code));
@@ -11166,7 +11278,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='83.0';
+ x.sales={};x.salesRows=[];x.version='84.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -11210,9 +11322,10 @@ function syncZoneToBranch(code,persist=true){
 function populateZoneSelector(){
  const sel=document.getElementById('zoneSelect');
  if(!sel)return;
- if(!zoneCatalog[currentZoneId])currentZoneId=branchZoneId(state.branch)||zoneOrder[0]||'';
+ const visible=operationalZoneOrder();
+ if(!zoneCatalog[currentZoneId]||!visible.includes(currentZoneId))currentZoneId=(visible.includes(branchZoneId(state.branch))?branchZoneId(state.branch):(visible[0]||''));
  sel.innerHTML='';
- zoneOrder.forEach(id=>{
+ visible.forEach(id=>{
    const z=zoneCatalog[id];
    if(!z)return;
    const op=document.createElement('option');
@@ -11220,10 +11333,10 @@ function populateZoneSelector(){
    op.textContent=z.name+' ('+branchesForZone(id).length+')';
    sel.appendChild(op);
  });
- if(currentZoneId)sel.value=currentZoneId;
+ if(currentZoneId&&visible.includes(currentZoneId))sel.value=currentZoneId;
 }
 function switchZone(zoneId){
- if(!zoneCatalog[zoneId])return;
+ if(!zoneCatalog[zoneId]||(!isZoneActive(zoneId)&&zoneId!==branchZoneId(state.branch)))return;
  currentZoneId=zoneId;
  try{localStorage.setItem(ZONE_STORAGE_KEY,zoneId)}catch(e){}
  populateZoneSelector();
@@ -12163,6 +12276,13 @@ monthlyBackupReminder();
     return snap.exists()?clean(snap.data()):null;
   }
 
+  async function saveVisibleZones(zoneIds){
+    if(!isAdmin())throw new Error('Administrador General no autenticado.');
+    const activeZones=Array.isArray(zoneIds)?zoneIds.map(String):[];
+    await setDoc(doc(db,'miga_login_directory','_zones'),{type:'zone-visibility',activeZones,updatedAt:new Date().toISOString(),updatedBy:ADMIN_UID},{merge:true});
+    return true;
+  }
+
   async function provisionBranch(code,zoneId,name,password){
     if(!isAdmin())throw new Error('Administrador General no autenticado.');
     code=String(code||'').padStart(3,'0');
@@ -12430,7 +12550,7 @@ monthlyBackupReminder();
     batch.set(doc(db,'miga_system','meta'),{
       initialized:true,
       schemaVersion:1,
-      appVersion:'95.0',
+      appVersion:'96.0',
       initializedAt:now,
       updatedAt:now,
       updatedBy:ADMIN_UID
@@ -12852,6 +12972,7 @@ monthlyBackupReminder();
     restoreSession,
     isInitialized,
     loadBranchDirectory,
+    saveVisibleZones,
     provisionBranch,
     disableBranch,
     pullBranchContext,
