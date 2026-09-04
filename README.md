@@ -748,3 +748,13 @@ Administrador General incorpora **Zonas visibles en MIGA**.
 - La configuración se sincroniza por Firebase y se publica en el directorio de acceso para que también la reciban dispositivos nuevos antes de iniciar sesión.
 - No requiere cambios en las reglas actuales de Firestore: utiliza `miga_login_directory`, que ya permite lectura pública de directorio y escritura exclusiva del Administrador General.
 
+
+---
+
+## v58 · Identidad institucional
+
+- Se reemplazó el avatar ilustrado de MIGA por el logo institucional proporcionado.
+- El archivo continúa siendo `assets/miga-avatar.png`, por lo que no cambia ninguna ruta ni funcionalidad.
+- Se normalizó el logo sobre fondo transparente y se centró dentro de un lienzo cuadrado para evitar desplazamientos dentro del botón circular.
+- Se ajustó el render del logo en el botón flotante, pantalla inicial, encabezado del asistente y favicon.
+- Sin cambios en Firebase ni en las reglas de Firestore.
