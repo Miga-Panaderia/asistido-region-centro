@@ -758,3 +758,6 @@ Administrador General incorpora **Zonas visibles en MIGA**.
 - Se normalizó el logo sobre fondo transparente y se centró dentro de un lienzo cuadrado para evitar desplazamientos dentro del botón circular.
 - Se ajustó el render del logo en el botón flotante, pantalla inicial, encabezado del asistente y favicon.
 - Sin cambios en Firebase ni en las reglas de Firestore.
+
+## v60 · Analítica de Checklist
+Se agregó al final de la solapa Checklist una sección de análisis con Top 10 de faltas generales, ausencias específicas del Turno Tarde y evolución del cumplimiento del ciclo. No se modifica Firebase ni el modelo de datos.

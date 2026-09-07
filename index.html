@@ -4605,6 +4605,46 @@ body.checklist-sheet-active .mini-assistant{
 .startup-miga-mark{
   background:#fff !important;
 }
+
+/* =========================================================
+   V60 - ANALÍTICA AL FINAL DE CHECKLIST
+   ========================================================= */
+.presence-analytics-section{margin-top:12px;min-width:0}
+.presence-analytics-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px}
+.presence-analytics-heading h3{margin:0;font-size:12px;color:#17394f}
+.presence-analytics-heading span{font-size:8px;color:#73828a}
+.presence-analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0}
+.presence-analytics-card{min-width:0;overflow:hidden}
+.presence-analytics-card.full{grid-column:1/-1}
+.presence-insights-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.presence-insight-row{display:flex;flex-direction:column;gap:4px}
+.presence-insight-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:9px;line-height:1.2}
+.presence-insight-left{font-weight:800;color:#17394f;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.presence-insight-right{color:#e34d67;white-space:nowrap;font-size:8px;font-weight:800}
+.presence-insight-right.pm{color:#d87b08}
+.presence-insight-track{height:7px;border-radius:999px;background:#eceff1;overflow:hidden}
+.presence-insight-fill{display:block;height:100%;border-radius:999px}
+.presence-insight-fill.general{background:#f04c66}
+.presence-insight-fill.pm{background:#ee930a}
+.presence-analytics-empty{padding:12px 9px;border:1px dashed #cfd6db;border-radius:8px;background:#fafbfb;font-size:8px;color:#74838a;text-align:center}
+.presence-trend-wrap{margin-top:6px;border:1px solid #edf1f3;border-radius:10px;padding:7px;background:#fff}
+.presence-trend-svg{width:100%;height:auto;display:block}
+.presence-trend-foot{display:flex;justify-content:space-between;gap:8px;margin-top:5px;font-size:7px;color:#8a969d}
+.presence-trend-note{font-size:7px;color:#7a8991;margin-top:5px}
+@media(max-width:900px){
+  .presence-analytics-grid{grid-template-columns:1fr}
+  .presence-analytics-card.full{grid-column:auto}
+}
+@media(max-width:520px){
+  .presence-analytics-section{margin-top:8px}
+  .presence-analytics-heading{align-items:flex-start;flex-direction:column;gap:2px}
+  .presence-analytics-heading h3{font-size:10px}
+  .presence-insight-top{font-size:8px}
+  .presence-insight-left{white-space:normal;overflow:visible;text-overflow:clip}
+  .presence-insight-right{font-size:7px}
+  .presence-trend-wrap{padding:5px}
+}
+
 </style>
 </head>
 <body>
@@ -4915,6 +4955,37 @@ body.checklist-sheet-active .mini-assistant{
           <div id="presenceReadonlyNote" class="presence-readonly-note" style="display:none"></div>
           <div id="presenceChecklistEmpty" class="presence-empty" style="display:none"></div>
           <div id="presenceChecklist" class="presence-checklist"></div>
+        </div>
+      </div>
+
+      <div class="presence-analytics-section">
+        <div class="presence-analytics-heading">
+          <h3>ANÁLISIS DEL CHECKLIST</h3>
+          <span>Resumen acumulado de la sucursal dentro del ciclo activo</span>
+        </div>
+
+        <div class="presence-analytics-grid">
+          <div class="presence-card presence-analytics-card">
+            <div class="presence-card-title">Fallas de exhibición: Top 10 general</div>
+            <div class="presence-card-sub">Referencias con mayor tasa de ausencia considerando ambos turnos.</div>
+            <div id="presenceTopGeneral" class="presence-insights-list"></div>
+          </div>
+
+          <div class="presence-card presence-analytics-card">
+            <div class="presence-card-title">Productos específicos de la tarde</div>
+            <div class="presence-card-sub">Referencias con mayor ausencia registrada en el Turno Tarde.</div>
+            <div id="presenceTopPm" class="presence-insights-list"></div>
+          </div>
+
+          <div class="presence-card presence-analytics-card full">
+            <div class="presence-card-title">Evolución del cumplimiento del ciclo</div>
+            <div class="presence-card-sub">Tendencia diaria del nivel de cumplimiento general de la sucursal.</div>
+            <div class="presence-trend-wrap">
+              <div id="presenceTrendChart"></div>
+              <div class="presence-trend-foot"><span>Inicio del ciclo</span><span>Progreso de controles</span><span>Actual</span></div>
+            </div>
+            <div class="presence-trend-note">El cálculo considera las referencias activas programadas para cada fecha y ambos turnos.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -9311,6 +9382,7 @@ function presenceToggleItem(article,checked){
  renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklistStats();
+ renderPresenceAnalytics();
 }
 function presenceSetAll(checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
@@ -9334,6 +9406,7 @@ function presenceSetAll(checked){
  renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklist();
+ renderPresenceAnalytics();
 }
 function renderPresenceSummary(){
  if(!presenceBranchCode||!presenceDateISO)return;
@@ -9490,6 +9563,74 @@ function renderPresenceChecklist(){
    </div>`;
  }).join('');
 }
+
+function presenceAnalyticsData(code){
+ code=normalizeBranch(code);
+ const range=presenceProductionRange(code);
+ const byArticle={};
+ const daily=[];
+ for(let i=0;i<range.days;i++){
+   const d=new Date(range.start);d.setDate(d.getDate()+i);
+   const date=presenceDateKeyFromDate(d);
+   if(presenceDateIsFuture(date))break;
+   const rows=presenceRowsForDate(code,date);
+   const amMap=presenceShiftMap(code,date,'am');
+   const pmMap=presenceShiftMap(code,date,'pm');
+   let present=0,total=0;
+   rows.forEach(item=>{
+     const art=safeArticle(item.article);
+     if(!art)return;
+     if(!byArticle[art])byArticle[art]={article:art,description:String(item.description||'Sin descripción'),generalAbsent:0,generalTotal:0,pmAbsent:0,pmTotal:0};
+     const stat=byArticle[art];
+     stat.generalTotal+=2;
+     stat.pmTotal+=1;
+     total+=2;
+     if(amMap[art])present++; else stat.generalAbsent++;
+     if(pmMap[art])present++; else {stat.generalAbsent++;stat.pmAbsent++;}
+   });
+   daily.push({date,label:String(d.getDate()),pct:total?Math.round((present/total)*1000)/10:0,total,present});
+ }
+ const items=Object.values(byArticle);
+ const topGeneral=items.filter(x=>x.generalAbsent>0&&x.generalTotal>0).map(x=>({...x,pct:(x.generalAbsent/x.generalTotal)*100,count:x.generalAbsent})).sort((a,b)=>b.pct-a.pct||b.count-a.count||a.description.localeCompare(b.description,'es')).slice(0,10);
+ const topPm=items.filter(x=>x.pmAbsent>0&&x.pmTotal>0).map(x=>({...x,pct:(x.pmAbsent/x.pmTotal)*100,count:x.pmAbsent})).sort((a,b)=>b.pct-a.pct||b.count-a.count||a.description.localeCompare(b.description,'es')).slice(0,10);
+ return {range,daily,topGeneral,topPm};
+}
+function presenceRenderTopList(targetId,rows,mode){
+ const box=document.getElementById(targetId);if(!box)return;
+ if(!rows.length){box.innerHTML='<div class="presence-analytics-empty">Todavía no hay ausencias registradas para mostrar.</div>';return;}
+ box.innerHTML=rows.map((item,idx)=>{
+   const pct=Math.round(item.pct);
+   const isPm=mode==='pm';
+   const metric=isPm?`${pct}% ausente en tardes (${item.count} veces)`:`${pct}% de faltas (${item.count} turnos)`;
+   return `<div class="presence-insight-row"><div class="presence-insight-top"><span class="presence-insight-left">${idx+1}. ${esc(item.description||item.article)}</span><span class="presence-insight-right${isPm?' pm':''}">${metric}</span></div><div class="presence-insight-track"><span class="presence-insight-fill ${isPm?'pm':'general'}" style="width:${Math.max(4,Math.min(100,pct))}%"></span></div></div>`;
+ }).join('');
+}
+function presenceBuildTrendSvg(points){
+ if(!points.length)return '<div class="presence-analytics-empty">Todavía no hay días registrados dentro del ciclo.</div>';
+ const w=860,h=220,l=50,r=16,t=20,b=34;
+ const innerW=w-l-r,innerH=h-t-b;
+ const step=points.length>1?innerW/(points.length-1):0;
+ const y=p=>t+(100-Math.max(0,Math.min(100,p)))/100*innerH;
+ const pts=points.map((p,i)=>({x:l+(points.length>1?i*step:innerW/2),y:y(p.pct),...p}));
+ const line=pts.map((p,i)=>`${i?'L':'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+ const area=`M${pts[0].x.toFixed(1)} ${t+innerH} `+pts.map(p=>`L${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ')+` L${pts[pts.length-1].x.toFixed(1)} ${t+innerH} Z`;
+ const grid=[100,75,50].map(v=>{const yy=y(v);return `<line x1="${l}" y1="${yy}" x2="${w-r}" y2="${yy}" stroke="#e8edf0" stroke-dasharray="4 4"/><text x="${l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#87949d">${v}%</text>`}).join('');
+ const dots=pts.map(p=>`<g><circle cx="${p.x}" cy="${p.y}" r="4" fill="#fff" stroke="#c26608" stroke-width="2"/><text x="${p.x}" y="${Math.max(13,p.y-9)}" text-anchor="middle" font-size="9" font-weight="700" fill="#9d5207">${Math.round(p.pct)}%</text></g>`).join('');
+ const labels=pts.map((p,i)=>{const show=points.length<=12||i===0||i===points.length-1||i%2===0;return show?`<text x="${p.x}" y="${h-10}" text-anchor="middle" font-size="9" fill="#8b969d">${esc(p.label)}</text>`:''}).join('');
+ return `<svg class="presence-trend-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Evolución del cumplimiento"><rect x="0.5" y="0.5" width="${w-1}" height="${h-1}" rx="10" fill="#fffaf4" stroke="#f1ece6"/>${grid}<path d="${area}" fill="rgba(194,102,8,.10)"/><path d="${line}" fill="none" stroke="#c26608" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${dots}<line x1="${l}" y1="${t+innerH}" x2="${w-r}" y2="${t+innerH}" stroke="#d8e0e4"/>${labels}</svg>`;
+}
+function renderPresenceAnalytics(){
+ const gen=document.getElementById('presenceTopGeneral');
+ const pm=document.getElementById('presenceTopPm');
+ const trend=document.getElementById('presenceTrendChart');
+ if(!gen||!pm||!trend)return;
+ if(!presenceBranchCode){gen.innerHTML=pm.innerHTML=trend.innerHTML='<div class="presence-analytics-empty">Seleccioná una sucursal.</div>';return;}
+ const data=presenceAnalyticsData(presenceBranchCode);
+ presenceRenderTopList('presenceTopGeneral',data.topGeneral,'general');
+ presenceRenderTopList('presenceTopPm',data.topPm,'pm');
+ trend.innerHTML=presenceBuildTrendSvg(data.daily);
+}
+
 function renderPresenceSheet(){
  const allowed=ensurePresenceSelection();
  const warning=document.getElementById('presenceNoAccess');
@@ -9510,6 +9651,9 @@ function renderPresenceSheet(){
    const service=document.getElementById('presenceServiceChart');if(service)service.innerHTML='';
    const calendar=document.getElementById('presenceCalendar');if(calendar)calendar.innerHTML='';
    const checklist=document.getElementById('presenceChecklist');if(checklist)checklist.innerHTML='';
+   const gen=document.getElementById('presenceTopGeneral');if(gen)gen.innerHTML='';
+   const pm=document.getElementById('presenceTopPm');if(pm)pm.innerHTML='';
+   const trend=document.getElementById('presenceTrendChart');if(trend)trend.innerHTML='';
    return;
  }
  const range=presenceProductionRange(presenceBranchCode);
@@ -9532,6 +9676,7 @@ function renderPresenceSheet(){
  renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklist();
+ renderPresenceAnalytics();
 }
 
 
