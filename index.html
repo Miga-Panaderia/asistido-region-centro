@@ -4645,6 +4645,58 @@ body.checklist-sheet-active .mini-assistant{
   .presence-trend-wrap{padding:5px}
 }
 
+
+/* =========================================================
+   V61 - INTELIGENCIA DE DEMANDA · EVENTOS + QUIEBRES
+   ========================================================= */
+.demand-plan-alerts{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 8px;margin-top:2px}
+.demand-plan-alerts:empty{display:none}
+.demand-alert-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:5px 8px;border-radius:999px;border:1px solid #d8e1e7;background:#fff;font-size:9px;font-weight:800;color:#244357;white-space:normal}
+.demand-alert-chip.event{background:#eef5ff;border-color:#b9cdea;color:#174f86}
+.demand-alert-chip.warn{background:#fff7e3;border-color:#e6c875;color:#825b08}
+.demand-alert-chip.critical{background:#fff0ef;border-color:#e5aaa5;color:#a13d35}
+.demand-row-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.demand-row-badge{display:inline-flex;align-items:center;padding:2px 5px;border-radius:999px;font-size:6.5px;line-height:1;font-weight:900;border:1px solid #d5dee5;background:#f6f8f9;color:#526673}
+.demand-row-badge.event{background:#eaf3ff;border-color:#bdd4ef;color:#15528f}
+.demand-row-badge.stockout{background:#fff2de;border-color:#e4c178;color:#895d08}
+.demand-row-badge.stockout.critical{background:#ffeceb;border-color:#e4aaa5;color:#a13b34}
+.presence-reason-wrap{grid-column:1/-1;display:flex;align-items:center;gap:6px;min-width:0;padding-top:2px}
+.presence-reason-label{font-size:7px;font-weight:800;color:#71808a;white-space:nowrap}
+.presence-reason-select{height:25px;min-width:0;max-width:240px;border:1px solid #d0d7dc;border-radius:7px;background:#fff;padding:0 7px;font-size:8px;color:#324b5c;flex:1 1 180px}
+.presence-reason-select.stockout{border-color:#e3b650;background:#fff9e9;color:#805600;font-weight:800}
+.demand-intelligence-card{margin-top:10px;border-color:#bfd3e2;background:linear-gradient(180deg,#fbfdff,#f7fbfd)}
+.demand-intel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.demand-intel-actions{display:flex;gap:5px;flex-wrap:wrap}
+.demand-intel-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}
+.demand-intel-stat{padding:7px;border:1px solid #dce5ea;border-radius:8px;background:#fff;min-width:0}
+.demand-intel-stat b{display:block;font-size:16px;color:#17394f;line-height:1.05}
+.demand-intel-stat span{font-size:7px;color:#6e7e88;font-weight:800}
+.demand-intel-note{margin-top:7px;font-size:8px;line-height:1.35;color:#61727c}
+.demand-event-modal{width:min(760px,94vw)!important}
+.demand-event-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px;margin:8px 0}
+.demand-event-field{display:flex;flex-direction:column;gap:4px;font-size:9px;font-weight:800;color:#23485d}
+.demand-event-field.full{grid-column:1/-1}
+.demand-event-field input,.demand-event-field select{height:34px;border:1px solid #c9d2d8;border-radius:8px;background:#fff;padding:0 9px;font-size:10px;box-sizing:border-box;width:100%}
+.demand-event-baseline{padding:8px;border-radius:8px;background:#f3f7fa;border:1px solid #d8e2e8;font-size:9px;color:#536a78;margin:4px 0 8px}
+.demand-event-list{display:flex;flex-direction:column;gap:6px;max-height:210px;overflow:auto;margin-top:8px}
+.demand-event-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 8px;border:1px solid #e0e5e8;border-radius:8px;background:#fff}
+.demand-event-row-main{min-width:0;font-size:9px;color:#324b5a}
+.demand-event-row-main b{display:block;color:#17394f;font-size:9px}
+.demand-event-row-main span{display:block;color:#70808a;margin-top:2px}
+.demand-event-delete{height:28px;border:1px solid #e1aaa6;border-radius:7px;background:#fff5f4;color:#a13d35;font-size:8px;font-weight:800;padding:0 8px;cursor:pointer}
+.demand-event-empty{padding:10px;border:1px dashed #cfd8de;border-radius:8px;color:#71808a;background:#fafbfc;font-size:9px;text-align:center}
+@media(max-width:700px){
+ .demand-intel-stats{grid-template-columns:1fr 1fr 1fr;gap:4px}
+ .demand-intel-stat{padding:6px 5px}
+ .demand-intel-stat b{font-size:14px}
+ .demand-intel-stat span{font-size:6px}
+ .demand-event-grid{grid-template-columns:1fr 1fr}
+ .demand-event-field.full,.demand-event-field.article{grid-column:1/-1}
+ .presence-reason-wrap{flex-direction:column;align-items:stretch;gap:3px}
+ .presence-reason-select{max-width:none;width:100%;flex:0 0 25px}
+ .presence-reason-label{font-size:6.5px}
+}
+
 </style>
 </head>
 <body>
@@ -4755,6 +4807,7 @@ body.checklist-sheet-active .mini-assistant{
       <div class="sheet-tools">
         <span>Detalle de cálculo diario. Los valores cambian automáticamente con Parámetros, Cronograma y Ventas Prisma.</span>
       </div>
+      <div id="demandPlanAlerts" class="demand-plan-alerts"></div>
       <div class="sheet-scroll plan-horizontal-scroll" id="planTable"></div>
 <div id="planNav" class="plan-nav" aria-label="Desplazamiento horizontal Panadería Suc">
   <button type="button" id="planLeftBtn" class="plan-nav-btn" title="Ir hacia la izquierda">◀</button>
@@ -4945,6 +4998,7 @@ body.checklist-sheet-active .mini-assistant{
             <div class="presence-checklist-actions">
               <div id="presenceSyncBadge" class="presence-sync-badge">● Sincronizado</div>
               <button type="button" class="presence-action-btn" onclick="exportPresenceExcel()">⬇ Excel</button>
+              <button type="button" class="presence-action-btn" onclick="openDemandEventModal()">📅 Eventos</button>
               <button type="button" class="presence-action-btn" onclick="presenceSetAll(true)">Marcar todo</button>
               <button type="button" class="presence-action-btn" onclick="presenceSetAll(false)">Limpiar</button>
             </div>
@@ -4957,6 +5011,8 @@ body.checklist-sheet-active .mini-assistant{
           <div id="presenceChecklist" class="presence-checklist"></div>
         </div>
       </div>
+
+      <div id="demandIntelligenceSummary" class="presence-card demand-intelligence-card"></div>
 
       <div class="presence-analytics-section">
         <div class="presence-analytics-heading">
@@ -5385,6 +5441,28 @@ body.checklist-sheet-active .mini-assistant{
 <!-- =========================================================
      V35 - MINI ASISTENTE LOCAL
      ========================================================= -->
+
+<div class="modal" id="demandEventModal">
+  <div class="modal-box demand-event-modal">
+    <h3>📅 Evento / Venta excepcional</h3>
+    <div class="admin-help">Marcá una referencia y el período afectado. La venta real de Prisma se conserva; MIGA usará la base previa para evitar que el evento infle el sugerido del ciclo siguiente.</div>
+    <div class="demand-event-grid">
+      <label class="demand-event-field article"><span>Referencia</span><select id="demandEventArticle" onchange="refreshDemandEventBaseline()"></select></label>
+      <label class="demand-event-field"><span>Desde</span><input id="demandEventFrom" type="date"></label>
+      <label class="demand-event-field"><span>Hasta</span><input id="demandEventTo" type="date"></label>
+      <label class="demand-event-field full"><span>Evento / Motivo</span><input id="demandEventName" type="text" maxlength="60" placeholder="Ej.: Pascuas, Día de la Madre, Fiesta local..."></label>
+    </div>
+    <div id="demandEventBaseline" class="demand-event-baseline">Base normal: —</div>
+    <div class="modal-actions">
+      <button type="button" onclick="saveDemandEvent()">💾 Guardar evento</button>
+      <button type="button" onclick="closeDemandEventModal()">Cerrar</button>
+    </div>
+    <div class="admin-divider"></div>
+    <div class="admin-help"><b>Eventos registrados para esta sucursal</b></div>
+    <div id="demandEventList" class="demand-event-list"></div>
+  </div>
+</div>
+
 <button id="assistantLauncher" class="assistant-launcher assistant-launcher-miga" type="button" onclick="toggleMiniAssistant()" aria-label="Abrir asistente MIGA" title="Abrir MIGA">
   <img src="assets/miga-avatar.png" alt="MIGA">
 </button>
@@ -6194,6 +6272,34 @@ function normalizeStateArticles(obj){
  obj.sales=normalizedSales;
 
  obj.salesRows=(obj.salesRows||[]).map(r=>({...r,article:safeArticle(r.article)})).filter(r=>r.article);
+
+ obj.demandEvents=(Array.isArray(obj.demandEvents)?obj.demandEvents:[]).map(e=>{
+   const article=safeArticle(e?.article);
+   const startDate=/^\d{4}-\d{2}-\d{2}$/.test(String(e?.startDate||''))?String(e.startDate):'';
+   const endDate=/^\d{4}-\d{2}-\d{2}$/.test(String(e?.endDate||''))?String(e.endDate):startDate;
+   const baselineRaw=n(e?.baselineRaw,0);
+   if(!article||!startDate||!endDate)return null;
+   return {
+     id:String(e?.id||('evt_'+Date.now()+'_'+Math.random().toString(36).slice(2,8))),
+     article,
+     name:String(e?.name||'Evento').slice(0,60),
+     startDate,
+     endDate,
+     baselineRaw:baselineRaw>0?baselineRaw:0,
+     cycleStart:/^\d{4}-\d{2}-\d{2}$/.test(String(e?.cycleStart||''))?String(e.cycleStart):String(obj.startDate||''),
+     createdAt:String(e?.createdAt||new Date().toISOString())
+   };
+ }).filter(Boolean);
+
+ const validReasons=new Set(['stockout','not_made','not_displayed','other']);
+ obj.stockoutLog=(Array.isArray(obj.stockoutLog)?obj.stockoutLog:[]).map(r=>{
+   const article=safeArticle(r?.article);
+   const date=/^\d{4}-\d{2}-\d{2}$/.test(String(r?.date||''))?String(r.date):'';
+   const shift=r?.shift==='pm'?'pm':'am';
+   const reason=validReasons.has(String(r?.reason||''))?String(r.reason):'';
+   if(!article||!date||!reason)return null;
+   return {article,date,shift,reason,updatedAt:String(r?.updatedAt||new Date().toISOString())};
+ }).filter(Boolean);
  return obj;
 }
 state=normalizeStateArticles(state);
@@ -6564,9 +6670,199 @@ function setStartDate(value){
 function startDate(){const d=new Date(state.startDate+'T12:00:00');return Number.isNaN(d.getTime())?new Date('2026-08-10T12:00:00'):d}
 function calendar(){const start=startDate();const arr=[];for(let i=0;i<35;i++){const d=new Date(start);d.setDate(d.getDate()+i);arr.push({date:d,day:d.getDate(),weekday:DOW[i%7],week:Math.floor(i/7),dow:i%7});}return arr}
 function factorForDow(dow){const f=state.params.dayFactors;return dow===0?n(f.monday,1):dow===4?n(f.friday,1):dow===5?n(f.saturday,1):dow===6?n(f.sunday,1):1}
+
+function demandParseDate(value){
+ const d=new Date(String(value||'')+'T12:00:00');
+ return Number.isNaN(d.getTime())?null:d;
+}
+function demandEventForCurrentSales(article){
+ article=safeArticle(article);
+ const currentStart=startDate();
+ const windowStart=new Date(currentStart);windowStart.setDate(windowStart.getDate()-50);
+ const events=(state.demandEvents||[]).filter(e=>{
+   if(safeArticle(e.article)!==article)return false;
+   const end=demandParseDate(e.endDate);if(!end)return false;
+   return end<currentStart && end>=windowStart && n(e.baselineRaw,0)>0;
+ }).sort((a,b)=>String(b.endDate).localeCompare(String(a.endDate)));
+ return events[0]||null;
+}
+function demandNormalizeSaleForEvent(article,sale){
+ if(sale===null||sale===undefined)return {saleUsed:sale,adjusted:false,event:null};
+ const event=demandEventForCurrentSales(article);
+ if(!event)return {saleUsed:sale,adjusted:false,event:null};
+ const baseline=n(event.baselineRaw,0);
+ if(!(baseline>0) || !(sale>baseline))return {saleUsed:sale,adjusted:false,event};
+ return {
+   saleUsed:baseline,
+   adjusted:true,
+   event,
+   originalSale:sale,
+   baseline
+ };
+}
+
+function demandBranchConfig(code=state.branch){
+ code=normalizeBranch(code||state.branch);
+ if(code===normalizeBranch(state.branch))return state;
+ return loadLocalFor(code)||null;
+}
+function demandBaselineForBranch(code,article){
+ code=normalizeBranch(code||state.branch);article=safeArticle(article);
+ const cfg=demandBranchConfig(code)||{};
+ let sale=null;
+ if(code===normalizeBranch(state.branch) && Object.prototype.hasOwnProperty.call(state.sales||{},article))sale=n(state.sales[article]);
+ else if(salesWorkbook?.[code]?.sales && Object.prototype.hasOwnProperty.call(salesWorkbook[code].sales,article))sale=n(salesWorkbook[code].sales[article]);
+ const defaultMissing=n(cfg.params?.defaultMissing ?? state.params?.defaultMissing,14);
+ const minimum=n(cfg.params?.minimumConsumption ?? state.params?.minimumConsumption,10);
+ return sale===null?defaultMissing:(sale<minimum?minimum:sale);
+}
+
+function absenceReasonLabel(reason){
+ return reason==='stockout'?'Quiebre / falta de producto':reason==='not_made'?'No elaborado':reason==='not_displayed'?'No exhibido / operativo':reason==='other'?'Otro':'';
+}
+function stockoutReasonFor(date,shift,article,code=presenceBranchCode||state.branch){
+ article=safeArticle(article);
+ const cfg=demandBranchConfig(code)||state;
+ const row=(cfg.stockoutLog||[]).find(r=>r.date===date&&r.shift===shift&&safeArticle(r.article)===article);
+ return row?.reason||'';
+}
+function setStockoutReason(date,shift,article,reason,code=presenceBranchCode||state.branch){
+ article=safeArticle(article);code=normalizeBranch(code||state.branch);
+ if(!article||!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))return;
+ if(shift!=='pm')shift='am';
+ const cfg=demandBranchConfig(code);if(!cfg)return;
+ const valid=new Set(['stockout','not_made','not_displayed','other']);
+ cfg.stockoutLog=(cfg.stockoutLog||[]).filter(r=>!(r.date===date&&r.shift===shift&&safeArticle(r.article)===article));
+ if(valid.has(reason))cfg.stockoutLog.push({article,date,shift,reason,updatedAt:new Date().toISOString()});
+ persistState(cfg);
+}
+function demandStockoutStats(article,code=state.branch){
+ article=safeArticle(article);code=normalizeBranch(code||state.branch);
+ const cfg=demandBranchConfig(code)||state;
+ const currentStart=demandParseDate(cfg.startDate)||startDate();
+ const from=new Date(currentStart);from.setDate(from.getDate()-45);
+ const to=new Date(currentStart);to.setDate(to.getDate()+Math.max(1,n(cfg.params?.days,35))-1);
+ const rows=(cfg.stockoutLog||[]).filter(r=>{
+   if(safeArticle(r.article)!==article||r.reason!=='stockout')return false;
+   const d=demandParseDate(r.date);return d&&d>=from&&d<=to;
+ });
+ const dowCounts={};
+ rows.forEach(r=>{const d=demandParseDate(r.date);if(!d)return;const dow=(d.getDay()+6)%7;dowCounts[dow]=(dowCounts[dow]||0)+1;});
+ let pattern='';
+ const labels=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+ Object.entries(dowCounts).sort((a,b)=>b[1]-a[1]).some(([dow,count])=>{if(count>=2){pattern=labels[Number(dow)]||'';return true}return false});
+ const count=rows.length;
+ return {
+   count,
+   pattern,
+   level:count>=3?'critical':count>=2?'reinforce':count===1?'watch':'none'
+ };
+}
+function demandEventCurrentCycleCount(code=presenceBranchCode||state.branch){
+ code=normalizeBranch(code||state.branch);const cfg=demandBranchConfig(code)||state;
+ const range=presenceProductionRange(code);
+ return (cfg.demandEvents||[]).filter(e=>{
+   const a=demandParseDate(e.startDate),b=demandParseDate(e.endDate);return a&&b&&a<=range.end&&b>=range.start;
+ }).length;
+}
+function demandStockoutCurrentCycleCount(code=presenceBranchCode||state.branch){
+ code=normalizeBranch(code||state.branch);const cfg=demandBranchConfig(code)||state;
+ const range=presenceProductionRange(code);
+ return (cfg.stockoutLog||[]).filter(r=>{
+   if(r.reason!=='stockout')return false;const d=demandParseDate(r.date);return d&&d>=range.start&&d<=range.end;
+ }).length;
+}
+function renderDemandPlanAlerts(){
+ const box=document.getElementById('demandPlanAlerts');if(!box)return;
+ const alerts=[];
+ (computed||[]).forEach(p=>{
+   if(!state.products.find(x=>safeArticle(x.article)===safeArticle(p.article))?.schedule?.some(v=>n(v)))return;
+   if(p.eventAdjustment?.adjusted){
+     alerts.push({cls:'event',html:`📅 <b>${esc(p.description)}</b>: venta real ${fmt(p.eventAdjustment.originalSale,1)} → base ${fmt(p.eventAdjustment.baseline,1)} por ${esc(p.eventAdjustment.event?.name||'evento')}.`});
+   }
+   const st=demandStockoutStats(p.article);
+   if(st.level==='critical')alerts.push({cls:'critical',html:`🔴 <b>${esc(p.description)}</b>: ${st.count} quiebres recientes${st.pattern?' · patrón '+st.pattern:''}. Reforzar pedido.`});
+   else if(st.level==='reinforce')alerts.push({cls:'warn',html:`🟠 <b>${esc(p.description)}</b>: ${st.count} quiebres recientes${st.pattern?' · patrón '+st.pattern:''}. Reforzar próximo pedido.`});
+   else if(st.level==='watch')alerts.push({cls:'warn',html:`⚠️ <b>${esc(p.description)}</b>: 1 quiebre reciente. Controlar próxima reposición.`});
+ });
+ box.innerHTML=alerts.slice(0,10).map(a=>`<span class="demand-alert-chip ${a.cls}">${a.html}</span>`).join('');
+}
+function renderDemandIntelligenceSummary(){
+ const box=document.getElementById('demandIntelligenceSummary');if(!box)return;
+ const code=normalizeBranch(presenceBranchCode||state.branch);
+ const cfg=demandBranchConfig(code)||state;
+ const events=demandEventCurrentCycleCount(code);
+ const stockouts=demandStockoutCurrentCycleCount(code);
+ const recurrent=(cfg.products||[]).filter(p=>demandStockoutStats(p.article,code).count>=2).length;
+ box.innerHTML=`<div class="demand-intel-head"><div><div class="presence-card-title">🧠 Inteligencia de demanda</div><div class="presence-card-sub">Eventos y quiebres que MIGA utiliza para interpretar mejor la demanda.</div></div><div class="demand-intel-actions"><button type="button" class="presence-action-btn" onclick="openDemandEventModal()">📅 Gestionar eventos</button></div></div><div class="demand-intel-stats"><div class="demand-intel-stat"><b>${events}</b><span>EVENTOS DEL CICLO</span></div><div class="demand-intel-stat"><b>${stockouts}</b><span>QUIEBRES MARCADOS</span></div><div class="demand-intel-stat"><b>${recurrent}</b><span>REF. A REFORZAR</span></div></div><div class="demand-intel-note">📌 La venta real de Prisma nunca se modifica. Si una referencia fue afectada por un evento, MIGA conserva la base normal previa para evitar que el siguiente ciclo quede inflado. Los refuerzos por quiebre se muestran como recomendación y no cambian cantidades automáticamente.</div>`;
+}
+function openDemandEventModal(){
+ if(!presenceBranchCode)ensurePresenceSelection();
+ if(!presenceBranchCode)return;
+ const modal=document.getElementById('demandEventModal');if(!modal)return;
+ const select=document.getElementById('demandEventArticle');
+ const products=(presenceBranchState(presenceBranchCode)?.products||[]).filter(p=>p.schedule?.some(v=>n(v))).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}));
+ select.innerHTML=products.map(p=>`<option value="${safeArticle(p.article)}">${safeArticle(p.article)} · ${esc(p.description||'')}</option>`).join('');
+ const range=presenceProductionRange(presenceBranchCode);
+ const from=document.getElementById('demandEventFrom');const to=document.getElementById('demandEventTo');
+ [from,to].forEach(el=>{if(el){el.min=range.startRaw;el.max=range.endRaw;}});
+ if(from)from.value=presenceDateISO&&presenceDateInRange(presenceDateISO,range)?presenceDateISO:range.startRaw;
+ if(to)to.value=from?.value||range.startRaw;
+ const name=document.getElementById('demandEventName');if(name)name.value='';
+ refreshDemandEventBaseline();renderDemandEventList();
+ modal.classList.add('show');
+}
+function closeDemandEventModal(){document.getElementById('demandEventModal')?.classList.remove('show')}
+function refreshDemandEventBaseline(){
+ const art=safeArticle(document.getElementById('demandEventArticle')?.value||'');
+ const box=document.getElementById('demandEventBaseline');if(!box)return;
+ const code=normalizeBranch(presenceBranchCode||state.branch);
+ const baseline=demandBaselineForBranch(code,art);
+ let sale=null;
+ if(code===normalizeBranch(state.branch) && Object.prototype.hasOwnProperty.call(state.sales||{},art))sale=n(state.sales[art]);
+ else if(salesWorkbook?.[code]?.sales && Object.prototype.hasOwnProperty.call(salesWorkbook[code].sales,art))sale=n(salesWorkbook[code].sales[art]);
+ box.innerHTML=art?`Base normal que se guardará: <b>${fmt(baseline,1)}</b> · Venta Prisma actual: <b>${sale===null?'Sin dato':fmt(sale,1)}</b>.`:'Base normal: —';
+}
+function saveDemandEvent(){
+ const art=safeArticle(document.getElementById('demandEventArticle')?.value||'');
+ const from=String(document.getElementById('demandEventFrom')?.value||'');
+ const to=String(document.getElementById('demandEventTo')?.value||'');
+ const name=String(document.getElementById('demandEventName')?.value||'').trim();
+ if(!art||!from||!to||!name){alert('Completá referencia, período y nombre del evento.');return}
+ if(to<from){alert('La fecha Hasta no puede ser anterior a Desde.');return}
+ const range=presenceProductionRange(presenceBranchCode);
+ if(!presenceDateInRange(from,range)||!presenceDateInRange(to,range)){alert('El evento debe quedar dentro del ciclo de producción actual.');return}
+ const code=normalizeBranch(presenceBranchCode||state.branch);
+ const cfg=demandBranchConfig(code);if(!cfg){alert('No se pudo cargar la configuración de la sucursal seleccionada.');return}
+ const baseline=demandBaselineForBranch(code,art);
+ cfg.demandEvents=cfg.demandEvents||[];
+ cfg.demandEvents.push({id:'evt_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),article:art,name:name.slice(0,60),startDate:from,endDate:to,baselineRaw:baseline,cycleStart:String(cfg.startDate||''),createdAt:new Date().toISOString()});
+ persistState(cfg);
+ renderDemandEventList();renderDemandIntelligenceSummary();renderDemandPlanAlerts();
+ document.getElementById('demandEventName').value='';
+ alert('Evento guardado. La venta real no fue modificada. MIGA usará esta marca para proteger el sugerido del ciclo siguiente.');
+}
+function renderDemandEventList(){
+ const box=document.getElementById('demandEventList');if(!box)return;
+ const code=presenceBranchCode||state.branch;
+ const cfg=presenceBranchState(code)||state;
+ const events=(cfg.demandEvents||[]).slice().sort((a,b)=>String(b.startDate).localeCompare(String(a.startDate)));
+ if(!events.length){box.innerHTML='<div class="demand-event-empty">Todavía no hay eventos registrados.</div>';return}
+ const prodMap={};(cfg.products||[]).forEach(p=>prodMap[safeArticle(p.article)]=p.description||'');
+ box.innerHTML=events.map(e=>`<div class="demand-event-row"><div class="demand-event-row-main"><b>${esc(prodMap[safeArticle(e.article)]||e.article)} · ${esc(e.name)}</b><span>${esc(e.startDate)} → ${esc(e.endDate)} · Base guardada ${fmt(n(e.baselineRaw,0),1)}</span></div><button type="button" class="demand-event-delete" onclick="deleteDemandEvent('${escAttr(e.id)}')">Eliminar</button></div>`).join('');
+}
+function deleteDemandEvent(id){
+ if(!confirm('¿Eliminar este evento?'))return;
+ const code=normalizeBranch(presenceBranchCode||state.branch);const cfg=demandBranchConfig(code);if(!cfg)return;
+ cfg.demandEvents=(cfg.demandEvents||[]).filter(e=>String(e.id)!==String(id));
+ persistState(cfg);renderDemandEventList();renderDemandIntelligenceSummary();renderDemandPlanAlerts();
+}
+
 function computeProduct(p){
  const sale=Object.prototype.hasOwnProperty.call(state.sales,p.article)?n(state.sales[p.article]):null;
- const raw=sale===null?n(state.params.defaultMissing,14):(sale<n(state.params.minimumConsumption,10)?n(state.params.minimumConsumption,10):sale);
+ const eventAdjustment=demandNormalizeSaleForEvent(p.article,sale);
+ const saleUsed=eventAdjustment.saleUsed;
+ const raw=saleUsed===null?n(state.params.defaultMissing,14):(saleUsed<n(state.params.minimumConsumption,10)?n(state.params.minimumConsumption,10):saleUsed);
  const inc=n(p.increment,0),consumption=raw*(1+inc),daily=[];
  for(let d=0;d<35;d++){
    const week=Math.floor(d/7),dow=d%7,weights=state.params.weekWeights||[0,0,0,0,0];
@@ -6584,7 +6880,7 @@ function computeProduct(p){
  const weekly=[],planWeekly=[];
  for(let w=0;w<5;w++){weekly.push(daily.slice(w*7,w*7+7).reduce((a,b)=>a+b,0));planWeekly.push(plan.slice(w*7,w*7+7).reduce((a,b)=>a+(b||0),0))}
  const sum=weekly.reduce((a,b)=>a+b,0),difference=sum-(consumption/(1+inc)),incrementPct=consumption?difference/consumption:0;
- return {...p,sale,raw,consumption,daily,weekly,plan,planWeekly,active:sched.reduce((a,b)=>a+b,0),sum,difference,incrementPct};
+ return {...p,sale,saleUsed,eventAdjustment,raw,consumption,daily,weekly,plan,planWeekly,active:sched.reduce((a,b)=>a+b,0),sum,difference,incrementPct};
 }
 function recalc(){
  computed=state.products.map(computeProduct);
@@ -9378,12 +9674,31 @@ function presenceFilteredRows(code,date){
 function presenceToggleItem(article,checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
  presenceSetItemValue(presenceBranchCode,presenceDateISO,presenceShift,article,!!checked);
+ if(checked)setStockoutReason(presenceDateISO,presenceShift,article,'',presenceBranchCode);
  renderPresenceSummary();
  renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklistStats();
  renderPresenceAnalytics();
+ renderDemandIntelligenceSummary();
+ renderDemandPlanAlerts();
 }
+
+function presenceSetAbsenceReason(article,reason){
+ if(!presenceCanEditBranch(presenceBranchCode))return;
+ if(presenceDateIsFuture(presenceDateISO))return;
+ article=safeArticle(article);
+ if(!article)return;
+ presenceSetItemValue(presenceBranchCode,presenceDateISO,presenceShift,article,false);
+ setStockoutReason(presenceDateISO,presenceShift,article,reason,presenceBranchCode);
+ renderPresenceSummary();
+ renderPresenceServiceChart();
+ renderPresenceCalendar();
+ renderPresenceChecklist();
+ renderDemandIntelligenceSummary();
+ renderDemandPlanAlerts();
+}
+
 function presenceSetAll(checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
  if(presenceDateIsFuture(presenceDateISO))return;
@@ -9395,11 +9710,19 @@ function presenceSetAll(checked){
  rows.forEach(item=>{
    const art=safeArticle(item.article);
    if(!art)return;
-   if(checked)row[presenceShift][art]=true;
+   if(checked)row[presenceShift][art]=true
    else delete row[presenceShift][art];
  });
  if(Object.keys(row.am).length||Object.keys(row.pm).length)data[presenceDateISO]=row;
  else delete data[presenceDateISO];
+ if(checked){
+   const cfg=demandBranchConfig(presenceBranchCode);
+   if(cfg){
+     const arts=new Set(rows.map(item=>safeArticle(item.article)).filter(Boolean));
+     cfg.stockoutLog=(cfg.stockoutLog||[]).filter(r=>!(r.date===presenceDateISO&&r.shift===presenceShift&&arts.has(safeArticle(r.article))));
+     persistState(cfg);
+   }
+ }
  storePresenceLocal(presenceBranchCode,data);
  queuePresenceCloudSync(presenceBranchCode);
  renderPresenceSummary();
@@ -9407,6 +9730,7 @@ function presenceSetAll(checked){
  renderPresenceCalendar();
  renderPresenceChecklist();
  renderPresenceAnalytics();
+ renderDemandIntelligenceSummary();
 }
 function renderPresenceSummary(){
  if(!presenceBranchCode||!presenceDateISO)return;
@@ -9560,6 +9884,7 @@ function renderPresenceChecklist(){
          <span class="presence-slider"></span>
        </label>
      </div>
+     ${checked?'':(()=>{const reason=stockoutReasonFor(date,presenceShift,art,code);return `<div class="presence-reason-wrap"><span class="presence-reason-label">Motivo ausencia</span><select class="presence-reason-select ${reason==='stockout'?'stockout':''}" ${canEdit?'':'disabled'} onchange="presenceSetAbsenceReason('${art}',this.value)"><option value="" ${!reason?'selected':''}>Sin marcar</option><option value="stockout" ${reason==='stockout'?'selected':''}>🔴 Quiebre / falta de producto</option><option value="not_made" ${reason==='not_made'?'selected':''}>🟡 No elaborado</option><option value="not_displayed" ${reason==='not_displayed'?'selected':''}>🟠 No exhibido / operativo</option><option value="other" ${reason==='other'?'selected':''}>⚪ Otro</option></select></div>`})()}
    </div>`;
  }).join('');
 }
@@ -11247,11 +11572,16 @@ function renderPlan(){
  computed.forEach((p,i)=>{
    // Panadería Suc muestra sólo referencias con al menos un día activo en Cronograma.
    if(!state.products[i]?.schedule?.some(v=>n(v)))return;
-   rows+=`<tr><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}</td><td class="left">${esc(p.brand)}</td><td class="center">${esc(p.aptitude)}</td><td class="center">${esc(p.um)}</td><td>${esc(p.bto)}</td><td>${fmt(p.consumption,1)}</td>`;
+   const stockout=demandStockoutStats(p.article);
+   const badges=[];
+   if(p.eventAdjustment?.adjusted)badges.push(`<span class="demand-row-badge event" title="Venta real ${fmt(p.eventAdjustment.originalSale,1)} · Base usada ${fmt(p.eventAdjustment.baseline,1)}">📅 ${esc(p.eventAdjustment.event?.name||'Evento')}</span>`);
+   if(stockout.count)badges.push(`<span class="demand-row-badge stockout ${stockout.level==='critical'?'critical':''}" title="${stockout.count} quiebres recientes${stockout.pattern?' · patrón '+stockout.pattern:''}">⚠ ${stockout.count} quiebre${stockout.count===1?'':'s'}</span>`);
+   rows+=`<tr><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${badges.length?`<div class="demand-row-badges">${badges.join('')}</div>`:''}</td><td class="left">${esc(p.brand)}</td><td class="center">${esc(p.aptitude)}</td><td class="center">${esc(p.um)}</td><td>${esc(p.bto)}</td><td>${fmt(p.consumption,1)}</td>`;
    for(let w=0;w<5;w++){for(let d=0;d<7;d++)rows+=`<td>${fmt(p.daily[w*7+d],1)}</td>`;rows+=`<td class="week-total">${fmt(p.weekly[w],1)}</td>`}
    rows+=`<td class="coef-cell">${coefficientSelectHtml(i,p.increment)}</td><td>${fmt(p.sum,1)}</td><td>${fmt(p.difference,1)}</td><td>${fmtPct(p.incrementPct)}</td></tr>`;
  });
  document.getElementById('planTable').innerHTML=`<table class="big-grid">${h}<tbody>${rows}</tbody></table>`;
+ renderDemandPlanAlerts();
  initPlanNavigator();
  requestAnimationFrame(syncPlanNavigator);
  setTimeout(syncPlanNavigator,50);
@@ -11441,7 +11771,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='84.0';
+ x.sales={};x.salesRows=[];x.version='61.0';x.demandEvents=[];x.stockoutLog=[];
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -11624,11 +11954,12 @@ function loadDetectedBranches(branches,fileName){
 
  const loaded=Object.keys(branches).length;
  const currentCount=Object.keys(state.sales||{}).length;
+ const normalizedByEvent=(computed||[]).filter(p=>p.eventAdjustment?.adjusted).length;
  const status=document.getElementById('branchFileStatus');
  if(status)status.textContent=`Ventas cargadas · ${loaded} sucursales disponibles · ${fileName}`;
 
  if(branches[code]){
-   messageSales(`Ventas actualizadas para Suc. ${code}: ${currentCount} referencias leídas. Los parámetros de la sucursal no fueron modificados.`,true);
+   messageSales(`Ventas actualizadas para Suc. ${code}: ${currentCount} referencias leídas.${normalizedByEvent?` ${normalizedByEvent} referencia(s) normalizada(s) por evento previo.`:''} Los parámetros de la sucursal no fueron modificados.`,true);
  }else{
    messageSales(`El archivo se abrió, pero no contiene ventas para la Suc. ${code}. Los parámetros no fueron modificados.`,false);
  }
