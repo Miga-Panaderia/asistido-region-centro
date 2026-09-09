@@ -1,27 +1,19 @@
-# MIGA · Multizona v61 · Inteligencia de Demanda
+# MIGA · Multizona v62 · Alertas para el próximo ciclo
 
-Versión basada en la v60 con una nueva capa de interpretación de demanda.
+Versión basada en v60 con una lógica de alerta visual, sin modificar los sugeridos de producción.
 
 ## Novedades
 
-- Marcación de referencias afectadas por eventos mediante fecha Desde/Hasta y motivo.
-- La venta real de Prisma no se modifica.
-- MIGA guarda una base normal previa para evitar que un evento infle el sugerido del ciclo siguiente.
-- Checklist con motivo de ausencia: Quiebre, No elaborado, No exhibido/operativo u Otro.
-- Alertas en Panadería Suc por quiebres recientes y recurrentes.
-- Indicadores visuales de referencias normalizadas por evento.
-- Resumen de Inteligencia de demanda dentro de Checklist.
-- Los refuerzos por quiebre son recomendaciones; MIGA no cambia automáticamente las cantidades.
+- Admin General puede marcar referencias del padrón como **Evento próximo ciclo**.
+- Al iniciar el ciclo, esas referencias quedan guardadas para las sucursales de su zona y la cola de eventos se limpia.
+- Checklist diferencia explícitamente **Presente**, **Ausente** y **Sin marcar**.
+- Las referencias marcadas Ausente durante el ciclo se transfieren como antecedente al ciclo siguiente.
+- En **Hoja del Panadero Suc**:
+  - amarillo = posible venta extraordinaria / evento,
+  - rojo = ausencia explícita en el ciclo anterior,
+  - rojo tiene prioridad si una referencia cumple ambas condiciones.
+- Los colores también se conservan al imprimir la Hoja del Panadero.
 
-## Publicación
+La venta real de Prisma y el cálculo del sugerido no son modificados por estas alertas.
 
-Subir a GitHub Pages el contenido completo de este paquete conservando la estructura:
-
-- index.html
-- README.md
-- .nojekyll
-- assets/miga-avatar.png
-- config/sucursales.js
-- firebase/firestore.rules
-
-No requiere cambios en las reglas de Firebase respecto de la versión anterior.
+No requiere cambios en las reglas de Firestore: utiliza las colecciones y permisos existentes.

@@ -4647,55 +4647,43 @@ body.checklist-sheet-active .mini-assistant{
 
 
 /* =========================================================
-   V61 - INTELIGENCIA DE DEMANDA · EVENTOS + QUIEBRES
+   V62 - ALERTAS PARA EL PRÓXIMO CICLO
    ========================================================= */
-.demand-plan-alerts{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 8px;margin-top:2px}
-.demand-plan-alerts:empty{display:none}
-.demand-alert-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:5px 8px;border-radius:999px;border:1px solid #d8e1e7;background:#fff;font-size:9px;font-weight:800;color:#244357;white-space:normal}
-.demand-alert-chip.event{background:#eef5ff;border-color:#b9cdea;color:#174f86}
-.demand-alert-chip.warn{background:#fff7e3;border-color:#e6c875;color:#825b08}
-.demand-alert-chip.critical{background:#fff0ef;border-color:#e5aaa5;color:#a13d35}
-.demand-row-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
-.demand-row-badge{display:inline-flex;align-items:center;padding:2px 5px;border-radius:999px;font-size:6.5px;line-height:1;font-weight:900;border:1px solid #d5dee5;background:#f6f8f9;color:#526673}
-.demand-row-badge.event{background:#eaf3ff;border-color:#bdd4ef;color:#15528f}
-.demand-row-badge.stockout{background:#fff2de;border-color:#e4c178;color:#895d08}
-.demand-row-badge.stockout.critical{background:#ffeceb;border-color:#e4aaa5;color:#a13b34}
-.presence-reason-wrap{grid-column:1/-1;display:flex;align-items:center;gap:6px;min-width:0;padding-top:2px}
-.presence-reason-label{font-size:7px;font-weight:800;color:#71808a;white-space:nowrap}
-.presence-reason-select{height:25px;min-width:0;max-width:240px;border:1px solid #d0d7dc;border-radius:7px;background:#fff;padding:0 7px;font-size:8px;color:#324b5c;flex:1 1 180px}
-.presence-reason-select.stockout{border-color:#e3b650;background:#fff9e9;color:#805600;font-weight:800}
-.demand-intelligence-card{margin-top:10px;border-color:#bfd3e2;background:linear-gradient(180deg,#fbfdff,#f7fbfd)}
-.demand-intel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
-.demand-intel-actions{display:flex;gap:5px;flex-wrap:wrap}
-.demand-intel-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}
-.demand-intel-stat{padding:7px;border:1px solid #dce5ea;border-radius:8px;background:#fff;min-width:0}
-.demand-intel-stat b{display:block;font-size:16px;color:#17394f;line-height:1.05}
-.demand-intel-stat span{font-size:7px;color:#6e7e88;font-weight:800}
-.demand-intel-note{margin-top:7px;font-size:8px;line-height:1.35;color:#61727c}
-.demand-event-modal{width:min(760px,94vw)!important}
-.demand-event-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px;margin:8px 0}
-.demand-event-field{display:flex;flex-direction:column;gap:4px;font-size:9px;font-weight:800;color:#23485d}
-.demand-event-field.full{grid-column:1/-1}
-.demand-event-field input,.demand-event-field select{height:34px;border:1px solid #c9d2d8;border-radius:8px;background:#fff;padding:0 9px;font-size:10px;box-sizing:border-box;width:100%}
-.demand-event-baseline{padding:8px;border-radius:8px;background:#f3f7fa;border:1px solid #d8e2e8;font-size:9px;color:#536a78;margin:4px 0 8px}
-.demand-event-list{display:flex;flex-direction:column;gap:6px;max-height:210px;overflow:auto;margin-top:8px}
-.demand-event-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 8px;border:1px solid #e0e5e8;border-radius:8px;background:#fff}
-.demand-event-row-main{min-width:0;font-size:9px;color:#324b5a}
-.demand-event-row-main b{display:block;color:#17394f;font-size:9px}
-.demand-event-row-main span{display:block;color:#70808a;margin-top:2px}
-.demand-event-delete{height:28px;border:1px solid #e1aaa6;border-radius:7px;background:#fff5f4;color:#a13d35;font-size:8px;font-weight:800;padding:0 8px;cursor:pointer}
-.demand-event-empty{padding:10px;border:1px dashed #cfd8de;border-radius:8px;color:#71808a;background:#fafbfc;font-size:9px;text-align:center}
-@media(max-width:700px){
- .demand-intel-stats{grid-template-columns:1fr 1fr 1fr;gap:4px}
- .demand-intel-stat{padding:6px 5px}
- .demand-intel-stat b{font-size:14px}
- .demand-intel-stat span{font-size:6px}
- .demand-event-grid{grid-template-columns:1fr 1fr}
- .demand-event-field.full,.demand-event-field.article{grid-column:1/-1}
- .presence-reason-wrap{flex-direction:column;align-items:stretch;gap:3px}
- .presence-reason-select{max-width:none;width:100%;flex:0 0 25px}
- .presence-reason-label{font-size:6.5px}
+.admin-event-next-note{margin-top:7px;padding:8px 10px;border:1px solid #ead587;background:#fff9dc;border-radius:9px;color:#66571a;font-size:9px;line-height:1.35}
+.admin-event-next-note b{color:#473c0d}
+.admin-event-check{text-align:center;white-space:nowrap}
+.admin-event-check input{width:17px;height:17px;accent-color:#d1a400;cursor:pointer}
+.admin-event-bulk{background:#fff5bf!important;border-color:#d8bd44!important;color:#5f4e00!important}
+.admin-event-clear{background:#fff!important;border-color:#d7dde1!important;color:#5b6870!important}
+.baker-alert-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 5px;border-radius:999px;font-size:7px;font-weight:900;line-height:1;white-space:nowrap;vertical-align:middle}
+.baker-alert-badge.event{background:#ffe27a;color:#614d00;border:1px solid #e2bf36}
+.baker-alert-badge.absence{background:#e45d5d;color:#fff;border:1px solid #c54848}
+#bakerTable tr.baker-alert-event>td{background:#fff3b5!important}
+#bakerTable tr.baker-alert-event>td.sticky-art,#bakerTable tr.baker-alert-event>td.sticky-desc{background:#fff3b5!important}
+#bakerTable tr.baker-alert-absence>td{background:#ffd2d2!important}
+#bakerTable tr.baker-alert-absence>td.sticky-art,#bakerTable tr.baker-alert-absence>td.sticky-desc{background:#ffd2d2!important}
+#bakerTable tr.baker-alert-absence{box-shadow:inset 4px 0 0 #cf3d3d}
+#bakerTable tr.baker-alert-event{box-shadow:inset 4px 0 0 #d6a900}
+.presence-status-actions{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.presence-status-btn{height:25px;min-width:34px;padding:0 7px;border:1px solid #ccd4d9;border-radius:7px;background:#fff;color:#657680;font-size:8px;font-weight:900;cursor:pointer}
+.presence-status-btn.present.active{background:#dff5e8;border-color:#6fc393;color:#17613e}
+.presence-status-btn.absent.active{background:#ffe0e0;border-color:#df8585;color:#a52f2f}
+.presence-status-btn:disabled{opacity:.55;cursor:default}
+.presence-status-btn .short{display:none}
+@media(max-width:520px){
+ .presence-status-btn{min-width:30px;width:30px;padding:0;font-size:9px}
+ .presence-status-btn .long{display:none}.presence-status-btn .short{display:inline}
+ .baker-alert-badge{font-size:6px;padding:2px 4px;margin-left:3px}
 }
+@media print{
+ body.printing-baker #bakerTable tr.baker-alert-event>td{background:#fff3b5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body.printing-baker #bakerTable tr.baker-alert-absence>td{background:#ffd2d2!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+
+.baker-alert-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:5px 0 7px;padding:6px 8px;border:1px solid #dfe5e8;border-radius:8px;background:#fafbfb;font-size:8px;font-weight:800;color:#43545e}
+.baker-alert-legend span{display:inline-flex;align-items:center;gap:4px}
+@media(max-width:520px){.baker-alert-legend{font-size:7px;gap:5px;padding:5px 6px}}
 
 </style>
 </head>
@@ -4807,7 +4795,6 @@ body.checklist-sheet-active .mini-assistant{
       <div class="sheet-tools">
         <span>Detalle de cálculo diario. Los valores cambian automáticamente con Parámetros, Cronograma y Ventas Prisma.</span>
       </div>
-      <div id="demandPlanAlerts" class="demand-plan-alerts"></div>
       <div class="sheet-scroll plan-horizontal-scroll" id="planTable"></div>
 <div id="planNav" class="plan-nav" aria-label="Desplazamiento horizontal Panadería Suc">
   <button type="button" id="planLeftBtn" class="plan-nav-btn" title="Ir hacia la izquierda">◀</button>
@@ -4841,6 +4828,7 @@ body.checklist-sheet-active .mini-assistant{
         <select id="bakerActive" onchange="renderBaker()"><option value="active">Solo activos</option><option value="all">Todos</option></select>
         <button onclick="printBakerFull()">🖨 Imprimir hoja</button>
       </div>
+      <div id="bakerAlertLegend" class="baker-alert-legend" style="display:none"><span class="event">🟨 Posible venta extraordinaria</span><span class="absence">🟥 Ausencia registrada en ciclo anterior</span></div>
       <div class="sheet-scroll baker-horizontal-scroll" id="bakerTable"></div>
 <div id="bakerNav" class="plan-nav" aria-label="Desplazamiento horizontal Hoja del Panadero">
   <button type="button" id="bakerLeftBtn" class="plan-nav-btn" title="Ir hacia la izquierda">◀</button>
@@ -4957,8 +4945,9 @@ body.checklist-sheet-active .mini-assistant{
             <div class="presence-progress"><span id="presenceProgressBar" style="width:0%"></span></div>
             <div class="presence-summary-grid">
               <div class="presence-summary-foot"><span>Presentes</span><strong id="presenceKpiPresent">0</strong></div>
-              <div class="presence-summary-foot"><span>Referencias</span><strong id="presenceKpiTotal">0</strong></div>
+              <div class="presence-summary-foot"><span>Ausentes</span><strong id="presenceKpiAbsent">0</strong></div>
               <div class="presence-summary-foot"><span>Sin marcar</span><strong id="presenceKpiMissing">0</strong></div>
+              <div class="presence-summary-foot"><span>Referencias</span><strong id="presenceKpiTotal">0</strong></div>
               <div class="presence-summary-foot"><span>Ciclo acumulado</span><strong id="presenceKpiCycle">0%</strong></div>
             </div>
           </div>
@@ -4998,7 +4987,6 @@ body.checklist-sheet-active .mini-assistant{
             <div class="presence-checklist-actions">
               <div id="presenceSyncBadge" class="presence-sync-badge">● Sincronizado</div>
               <button type="button" class="presence-action-btn" onclick="exportPresenceExcel()">⬇ Excel</button>
-              <button type="button" class="presence-action-btn" onclick="openDemandEventModal()">📅 Eventos</button>
               <button type="button" class="presence-action-btn" onclick="presenceSetAll(true)">Marcar todo</button>
               <button type="button" class="presence-action-btn" onclick="presenceSetAll(false)">Limpiar</button>
             </div>
@@ -5011,8 +4999,6 @@ body.checklist-sheet-active .mini-assistant{
           <div id="presenceChecklist" class="presence-checklist"></div>
         </div>
       </div>
-
-      <div id="demandIntelligenceSummary" class="presence-card demand-intelligence-card"></div>
 
       <div class="presence-analytics-section">
         <div class="presence-analytics-heading">
@@ -5375,6 +5361,7 @@ body.checklist-sheet-active .mini-assistant{
           También podés seleccionar varias referencias para eliminarlas juntas o vaciar todo el padrón de la zona.
           El padrón se mantiene automáticamente <b>ordenado alfabéticamente por Descripción</b>.
           La carga del cronograma utiliza <b>guardado agrupado</b>: los clics se muestran al instante y se sincronizan juntos después de una breve pausa.
+          <div class="admin-event-next-note"><b>🟨 Alerta para próximo ciclo:</b> marcá como Evento aquellas referencias cuya venta pudo quedar influenciada por una fecha especial, promoción o evento extraordinario. Al iniciar el próximo ciclo quedarán sombreadas en amarillo en la Hoja del Panadero. La lista se limpia automáticamente después de iniciar ese ciclo.</div>
         </div>
 
         <div class="admin-ref-search-line">
@@ -5386,6 +5373,8 @@ body.checklist-sheet-active .mini-assistant{
           <div class="admin-ref-bulk-left">
             <button type="button" onclick="adminSelectVisibleReferences(true)">☑ Seleccionar visibles</button>
             <button type="button" onclick="adminSelectVisibleReferences(false)">☐ Quitar selección</button>
+            <button type="button" class="admin-event-bulk" onclick="adminMarkSelectedEventNextCycle(true)">🟨 Evento próximo ciclo</button>
+            <button type="button" class="admin-event-clear" onclick="adminMarkSelectedEventNextCycle(false)">Quitar evento</button>
             <span id="adminRefSelectedCount" class="admin-ref-selected-count">0 seleccionadas</span>
           </div>
           <div class="admin-ref-bulk-right">
@@ -5441,28 +5430,6 @@ body.checklist-sheet-active .mini-assistant{
 <!-- =========================================================
      V35 - MINI ASISTENTE LOCAL
      ========================================================= -->
-
-<div class="modal" id="demandEventModal">
-  <div class="modal-box demand-event-modal">
-    <h3>📅 Evento / Venta excepcional</h3>
-    <div class="admin-help">Marcá una referencia y el período afectado. La venta real de Prisma se conserva; MIGA usará la base previa para evitar que el evento infle el sugerido del ciclo siguiente.</div>
-    <div class="demand-event-grid">
-      <label class="demand-event-field article"><span>Referencia</span><select id="demandEventArticle" onchange="refreshDemandEventBaseline()"></select></label>
-      <label class="demand-event-field"><span>Desde</span><input id="demandEventFrom" type="date"></label>
-      <label class="demand-event-field"><span>Hasta</span><input id="demandEventTo" type="date"></label>
-      <label class="demand-event-field full"><span>Evento / Motivo</span><input id="demandEventName" type="text" maxlength="60" placeholder="Ej.: Pascuas, Día de la Madre, Fiesta local..."></label>
-    </div>
-    <div id="demandEventBaseline" class="demand-event-baseline">Base normal: —</div>
-    <div class="modal-actions">
-      <button type="button" onclick="saveDemandEvent()">💾 Guardar evento</button>
-      <button type="button" onclick="closeDemandEventModal()">Cerrar</button>
-    </div>
-    <div class="admin-divider"></div>
-    <div class="admin-help"><b>Eventos registrados para esta sucursal</b></div>
-    <div id="demandEventList" class="demand-event-list"></div>
-  </div>
-</div>
-
 <button id="assistantLauncher" class="assistant-launcher assistant-launcher-miga" type="button" onclick="toggleMiniAssistant()" aria-label="Abrir asistente MIGA" title="Abrir MIGA">
   <img src="assets/miga-avatar.png" alt="MIGA">
 </button>
@@ -6228,6 +6195,47 @@ let branchCatalog=(window.MIGA_CONFIG&&window.MIGA_CONFIG.branches&&typeof windo
 const ZONE_STORAGE_KEY='panaderia_selected_zone_multizona_v43';
 const ZONE_REFERENCE_PREFIX='panaderia_zone_references_v54_';
 const ACTIVE_ZONES_STORAGE='panaderia_active_zones_v57';
+const EVENT_NEXT_CYCLE_PREFIX='panaderia_event_next_cycle_v62_';
+function eventNextCycleKey(zoneId){return EVENT_NEXT_CYCLE_PREFIX+String(zoneId||'')}
+function normalizeEventNextCycleList(list){
+ const out=[];const seen=new Set();
+ (Array.isArray(list)?list:[]).forEach(v=>{const art=safeArticle(v);if(art&&!seen.has(art)){seen.add(art);out.push(art)}});
+ return out;
+}
+function loadEventNextCycle(zoneId){
+ if(!zoneId||!zoneCatalog[zoneId])return [];
+ try{return normalizeEventNextCycleList(JSON.parse(localStorage.getItem(eventNextCycleKey(zoneId))||'[]'))}catch(e){return []}
+}
+function saveEventNextCycle(zoneId,list,{syncCloud=true}={}){
+ if(!zoneId||!zoneCatalog[zoneId])return [];
+ const clean=normalizeEventNextCycleList(list).filter(art=>loadZoneReferences(zoneId).some(r=>r.article===art));
+ try{localStorage.setItem(eventNextCycleKey(zoneId),JSON.stringify(clean))}catch(e){}
+ if(syncCloud)firebaseQueueSystemSync();
+ return clean;
+}
+function adminToggleEventNextCycle(article,checked){
+ if(!isMasterAdmin())return;
+ const zoneId=adminSelectedReferenceZone();
+ const set=new Set(loadEventNextCycle(zoneId));
+ if(checked)set.add(safeArticle(article));else set.delete(safeArticle(article));
+ saveEventNextCycle(zoneId,[...set]);
+ renderAdminReferences();
+}
+function adminMarkSelectedEventNextCycle(mark=true){
+ if(!isMasterAdmin())return;
+ const zoneId=adminSelectedReferenceZone();
+ const set=new Set(loadEventNextCycle(zoneId));
+ const selected=[...adminSelectedReferences].filter(art=>loadZoneReferences(zoneId).some(r=>r.article===art));
+ if(!selected.length){alert('Seleccioná al menos una referencia.');return;}
+ selected.forEach(art=>mark?set.add(art):set.delete(art));
+ saveEventNextCycle(zoneId,[...set]);
+ renderAdminReferences();
+}
+function clearAllEventNextCycleQueues({syncCloud=true}={}){
+ zoneOrder.forEach(zoneId=>{try{localStorage.setItem(eventNextCycleKey(zoneId),'[]')}catch(e){}});
+ if(syncCloud)firebaseQueueSystemSync();
+}
+
 let activeZoneIds=[];
 let currentZoneId='';
 function storageKey(branch){return STORAGE_PREFIX+String(branch||'').padStart(3,'0')+STORAGE_SUFFIX}
@@ -6272,34 +6280,6 @@ function normalizeStateArticles(obj){
  obj.sales=normalizedSales;
 
  obj.salesRows=(obj.salesRows||[]).map(r=>({...r,article:safeArticle(r.article)})).filter(r=>r.article);
-
- obj.demandEvents=(Array.isArray(obj.demandEvents)?obj.demandEvents:[]).map(e=>{
-   const article=safeArticle(e?.article);
-   const startDate=/^\d{4}-\d{2}-\d{2}$/.test(String(e?.startDate||''))?String(e.startDate):'';
-   const endDate=/^\d{4}-\d{2}-\d{2}$/.test(String(e?.endDate||''))?String(e.endDate):startDate;
-   const baselineRaw=n(e?.baselineRaw,0);
-   if(!article||!startDate||!endDate)return null;
-   return {
-     id:String(e?.id||('evt_'+Date.now()+'_'+Math.random().toString(36).slice(2,8))),
-     article,
-     name:String(e?.name||'Evento').slice(0,60),
-     startDate,
-     endDate,
-     baselineRaw:baselineRaw>0?baselineRaw:0,
-     cycleStart:/^\d{4}-\d{2}-\d{2}$/.test(String(e?.cycleStart||''))?String(e.cycleStart):String(obj.startDate||''),
-     createdAt:String(e?.createdAt||new Date().toISOString())
-   };
- }).filter(Boolean);
-
- const validReasons=new Set(['stockout','not_made','not_displayed','other']);
- obj.stockoutLog=(Array.isArray(obj.stockoutLog)?obj.stockoutLog:[]).map(r=>{
-   const article=safeArticle(r?.article);
-   const date=/^\d{4}-\d{2}-\d{2}$/.test(String(r?.date||''))?String(r.date):'';
-   const shift=r?.shift==='pm'?'pm':'am';
-   const reason=validReasons.has(String(r?.reason||''))?String(r.reason):'';
-   if(!article||!date||!reason)return null;
-   return {article,date,shift,reason,updatedAt:String(r?.updatedAt||new Date().toISOString())};
- }).filter(Boolean);
  return obj;
 }
 state=normalizeStateArticles(state);
@@ -6540,8 +6520,10 @@ function applyZoneMasterToBranches(zoneId,refs,{syncCloud=true}={}){
 }
 function saveZoneReferences(zoneId,refs,{syncCloud=true,propagate=true}={}){
  const normalized=storeZoneReferencesLocal(zoneId,refs);
+ const valid=new Set(normalized.map(r=>r.article));
+ saveEventNextCycle(zoneId,loadEventNextCycle(zoneId).filter(art=>valid.has(art)),{syncCloud:false});
  if(propagate)applyZoneMasterToBranches(zoneId,normalized,{syncCloud});
- if(syncCloud)firebaseQueueZoneRefsSync(zoneId,normalized);
+ if(syncCloud){firebaseQueueZoneRefsSync(zoneId,normalized);firebaseQueueSystemSync();}
  return normalized;
 }
 function loadLocalFor(branch){
@@ -6670,199 +6652,9 @@ function setStartDate(value){
 function startDate(){const d=new Date(state.startDate+'T12:00:00');return Number.isNaN(d.getTime())?new Date('2026-08-10T12:00:00'):d}
 function calendar(){const start=startDate();const arr=[];for(let i=0;i<35;i++){const d=new Date(start);d.setDate(d.getDate()+i);arr.push({date:d,day:d.getDate(),weekday:DOW[i%7],week:Math.floor(i/7),dow:i%7});}return arr}
 function factorForDow(dow){const f=state.params.dayFactors;return dow===0?n(f.monday,1):dow===4?n(f.friday,1):dow===5?n(f.saturday,1):dow===6?n(f.sunday,1):1}
-
-function demandParseDate(value){
- const d=new Date(String(value||'')+'T12:00:00');
- return Number.isNaN(d.getTime())?null:d;
-}
-function demandEventForCurrentSales(article){
- article=safeArticle(article);
- const currentStart=startDate();
- const windowStart=new Date(currentStart);windowStart.setDate(windowStart.getDate()-50);
- const events=(state.demandEvents||[]).filter(e=>{
-   if(safeArticle(e.article)!==article)return false;
-   const end=demandParseDate(e.endDate);if(!end)return false;
-   return end<currentStart && end>=windowStart && n(e.baselineRaw,0)>0;
- }).sort((a,b)=>String(b.endDate).localeCompare(String(a.endDate)));
- return events[0]||null;
-}
-function demandNormalizeSaleForEvent(article,sale){
- if(sale===null||sale===undefined)return {saleUsed:sale,adjusted:false,event:null};
- const event=demandEventForCurrentSales(article);
- if(!event)return {saleUsed:sale,adjusted:false,event:null};
- const baseline=n(event.baselineRaw,0);
- if(!(baseline>0) || !(sale>baseline))return {saleUsed:sale,adjusted:false,event};
- return {
-   saleUsed:baseline,
-   adjusted:true,
-   event,
-   originalSale:sale,
-   baseline
- };
-}
-
-function demandBranchConfig(code=state.branch){
- code=normalizeBranch(code||state.branch);
- if(code===normalizeBranch(state.branch))return state;
- return loadLocalFor(code)||null;
-}
-function demandBaselineForBranch(code,article){
- code=normalizeBranch(code||state.branch);article=safeArticle(article);
- const cfg=demandBranchConfig(code)||{};
- let sale=null;
- if(code===normalizeBranch(state.branch) && Object.prototype.hasOwnProperty.call(state.sales||{},article))sale=n(state.sales[article]);
- else if(salesWorkbook?.[code]?.sales && Object.prototype.hasOwnProperty.call(salesWorkbook[code].sales,article))sale=n(salesWorkbook[code].sales[article]);
- const defaultMissing=n(cfg.params?.defaultMissing ?? state.params?.defaultMissing,14);
- const minimum=n(cfg.params?.minimumConsumption ?? state.params?.minimumConsumption,10);
- return sale===null?defaultMissing:(sale<minimum?minimum:sale);
-}
-
-function absenceReasonLabel(reason){
- return reason==='stockout'?'Quiebre / falta de producto':reason==='not_made'?'No elaborado':reason==='not_displayed'?'No exhibido / operativo':reason==='other'?'Otro':'';
-}
-function stockoutReasonFor(date,shift,article,code=presenceBranchCode||state.branch){
- article=safeArticle(article);
- const cfg=demandBranchConfig(code)||state;
- const row=(cfg.stockoutLog||[]).find(r=>r.date===date&&r.shift===shift&&safeArticle(r.article)===article);
- return row?.reason||'';
-}
-function setStockoutReason(date,shift,article,reason,code=presenceBranchCode||state.branch){
- article=safeArticle(article);code=normalizeBranch(code||state.branch);
- if(!article||!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))return;
- if(shift!=='pm')shift='am';
- const cfg=demandBranchConfig(code);if(!cfg)return;
- const valid=new Set(['stockout','not_made','not_displayed','other']);
- cfg.stockoutLog=(cfg.stockoutLog||[]).filter(r=>!(r.date===date&&r.shift===shift&&safeArticle(r.article)===article));
- if(valid.has(reason))cfg.stockoutLog.push({article,date,shift,reason,updatedAt:new Date().toISOString()});
- persistState(cfg);
-}
-function demandStockoutStats(article,code=state.branch){
- article=safeArticle(article);code=normalizeBranch(code||state.branch);
- const cfg=demandBranchConfig(code)||state;
- const currentStart=demandParseDate(cfg.startDate)||startDate();
- const from=new Date(currentStart);from.setDate(from.getDate()-45);
- const to=new Date(currentStart);to.setDate(to.getDate()+Math.max(1,n(cfg.params?.days,35))-1);
- const rows=(cfg.stockoutLog||[]).filter(r=>{
-   if(safeArticle(r.article)!==article||r.reason!=='stockout')return false;
-   const d=demandParseDate(r.date);return d&&d>=from&&d<=to;
- });
- const dowCounts={};
- rows.forEach(r=>{const d=demandParseDate(r.date);if(!d)return;const dow=(d.getDay()+6)%7;dowCounts[dow]=(dowCounts[dow]||0)+1;});
- let pattern='';
- const labels=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
- Object.entries(dowCounts).sort((a,b)=>b[1]-a[1]).some(([dow,count])=>{if(count>=2){pattern=labels[Number(dow)]||'';return true}return false});
- const count=rows.length;
- return {
-   count,
-   pattern,
-   level:count>=3?'critical':count>=2?'reinforce':count===1?'watch':'none'
- };
-}
-function demandEventCurrentCycleCount(code=presenceBranchCode||state.branch){
- code=normalizeBranch(code||state.branch);const cfg=demandBranchConfig(code)||state;
- const range=presenceProductionRange(code);
- return (cfg.demandEvents||[]).filter(e=>{
-   const a=demandParseDate(e.startDate),b=demandParseDate(e.endDate);return a&&b&&a<=range.end&&b>=range.start;
- }).length;
-}
-function demandStockoutCurrentCycleCount(code=presenceBranchCode||state.branch){
- code=normalizeBranch(code||state.branch);const cfg=demandBranchConfig(code)||state;
- const range=presenceProductionRange(code);
- return (cfg.stockoutLog||[]).filter(r=>{
-   if(r.reason!=='stockout')return false;const d=demandParseDate(r.date);return d&&d>=range.start&&d<=range.end;
- }).length;
-}
-function renderDemandPlanAlerts(){
- const box=document.getElementById('demandPlanAlerts');if(!box)return;
- const alerts=[];
- (computed||[]).forEach(p=>{
-   if(!state.products.find(x=>safeArticle(x.article)===safeArticle(p.article))?.schedule?.some(v=>n(v)))return;
-   if(p.eventAdjustment?.adjusted){
-     alerts.push({cls:'event',html:`📅 <b>${esc(p.description)}</b>: venta real ${fmt(p.eventAdjustment.originalSale,1)} → base ${fmt(p.eventAdjustment.baseline,1)} por ${esc(p.eventAdjustment.event?.name||'evento')}.`});
-   }
-   const st=demandStockoutStats(p.article);
-   if(st.level==='critical')alerts.push({cls:'critical',html:`🔴 <b>${esc(p.description)}</b>: ${st.count} quiebres recientes${st.pattern?' · patrón '+st.pattern:''}. Reforzar pedido.`});
-   else if(st.level==='reinforce')alerts.push({cls:'warn',html:`🟠 <b>${esc(p.description)}</b>: ${st.count} quiebres recientes${st.pattern?' · patrón '+st.pattern:''}. Reforzar próximo pedido.`});
-   else if(st.level==='watch')alerts.push({cls:'warn',html:`⚠️ <b>${esc(p.description)}</b>: 1 quiebre reciente. Controlar próxima reposición.`});
- });
- box.innerHTML=alerts.slice(0,10).map(a=>`<span class="demand-alert-chip ${a.cls}">${a.html}</span>`).join('');
-}
-function renderDemandIntelligenceSummary(){
- const box=document.getElementById('demandIntelligenceSummary');if(!box)return;
- const code=normalizeBranch(presenceBranchCode||state.branch);
- const cfg=demandBranchConfig(code)||state;
- const events=demandEventCurrentCycleCount(code);
- const stockouts=demandStockoutCurrentCycleCount(code);
- const recurrent=(cfg.products||[]).filter(p=>demandStockoutStats(p.article,code).count>=2).length;
- box.innerHTML=`<div class="demand-intel-head"><div><div class="presence-card-title">🧠 Inteligencia de demanda</div><div class="presence-card-sub">Eventos y quiebres que MIGA utiliza para interpretar mejor la demanda.</div></div><div class="demand-intel-actions"><button type="button" class="presence-action-btn" onclick="openDemandEventModal()">📅 Gestionar eventos</button></div></div><div class="demand-intel-stats"><div class="demand-intel-stat"><b>${events}</b><span>EVENTOS DEL CICLO</span></div><div class="demand-intel-stat"><b>${stockouts}</b><span>QUIEBRES MARCADOS</span></div><div class="demand-intel-stat"><b>${recurrent}</b><span>REF. A REFORZAR</span></div></div><div class="demand-intel-note">📌 La venta real de Prisma nunca se modifica. Si una referencia fue afectada por un evento, MIGA conserva la base normal previa para evitar que el siguiente ciclo quede inflado. Los refuerzos por quiebre se muestran como recomendación y no cambian cantidades automáticamente.</div>`;
-}
-function openDemandEventModal(){
- if(!presenceBranchCode)ensurePresenceSelection();
- if(!presenceBranchCode)return;
- const modal=document.getElementById('demandEventModal');if(!modal)return;
- const select=document.getElementById('demandEventArticle');
- const products=(presenceBranchState(presenceBranchCode)?.products||[]).filter(p=>p.schedule?.some(v=>n(v))).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}));
- select.innerHTML=products.map(p=>`<option value="${safeArticle(p.article)}">${safeArticle(p.article)} · ${esc(p.description||'')}</option>`).join('');
- const range=presenceProductionRange(presenceBranchCode);
- const from=document.getElementById('demandEventFrom');const to=document.getElementById('demandEventTo');
- [from,to].forEach(el=>{if(el){el.min=range.startRaw;el.max=range.endRaw;}});
- if(from)from.value=presenceDateISO&&presenceDateInRange(presenceDateISO,range)?presenceDateISO:range.startRaw;
- if(to)to.value=from?.value||range.startRaw;
- const name=document.getElementById('demandEventName');if(name)name.value='';
- refreshDemandEventBaseline();renderDemandEventList();
- modal.classList.add('show');
-}
-function closeDemandEventModal(){document.getElementById('demandEventModal')?.classList.remove('show')}
-function refreshDemandEventBaseline(){
- const art=safeArticle(document.getElementById('demandEventArticle')?.value||'');
- const box=document.getElementById('demandEventBaseline');if(!box)return;
- const code=normalizeBranch(presenceBranchCode||state.branch);
- const baseline=demandBaselineForBranch(code,art);
- let sale=null;
- if(code===normalizeBranch(state.branch) && Object.prototype.hasOwnProperty.call(state.sales||{},art))sale=n(state.sales[art]);
- else if(salesWorkbook?.[code]?.sales && Object.prototype.hasOwnProperty.call(salesWorkbook[code].sales,art))sale=n(salesWorkbook[code].sales[art]);
- box.innerHTML=art?`Base normal que se guardará: <b>${fmt(baseline,1)}</b> · Venta Prisma actual: <b>${sale===null?'Sin dato':fmt(sale,1)}</b>.`:'Base normal: —';
-}
-function saveDemandEvent(){
- const art=safeArticle(document.getElementById('demandEventArticle')?.value||'');
- const from=String(document.getElementById('demandEventFrom')?.value||'');
- const to=String(document.getElementById('demandEventTo')?.value||'');
- const name=String(document.getElementById('demandEventName')?.value||'').trim();
- if(!art||!from||!to||!name){alert('Completá referencia, período y nombre del evento.');return}
- if(to<from){alert('La fecha Hasta no puede ser anterior a Desde.');return}
- const range=presenceProductionRange(presenceBranchCode);
- if(!presenceDateInRange(from,range)||!presenceDateInRange(to,range)){alert('El evento debe quedar dentro del ciclo de producción actual.');return}
- const code=normalizeBranch(presenceBranchCode||state.branch);
- const cfg=demandBranchConfig(code);if(!cfg){alert('No se pudo cargar la configuración de la sucursal seleccionada.');return}
- const baseline=demandBaselineForBranch(code,art);
- cfg.demandEvents=cfg.demandEvents||[];
- cfg.demandEvents.push({id:'evt_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),article:art,name:name.slice(0,60),startDate:from,endDate:to,baselineRaw:baseline,cycleStart:String(cfg.startDate||''),createdAt:new Date().toISOString()});
- persistState(cfg);
- renderDemandEventList();renderDemandIntelligenceSummary();renderDemandPlanAlerts();
- document.getElementById('demandEventName').value='';
- alert('Evento guardado. La venta real no fue modificada. MIGA usará esta marca para proteger el sugerido del ciclo siguiente.');
-}
-function renderDemandEventList(){
- const box=document.getElementById('demandEventList');if(!box)return;
- const code=presenceBranchCode||state.branch;
- const cfg=presenceBranchState(code)||state;
- const events=(cfg.demandEvents||[]).slice().sort((a,b)=>String(b.startDate).localeCompare(String(a.startDate)));
- if(!events.length){box.innerHTML='<div class="demand-event-empty">Todavía no hay eventos registrados.</div>';return}
- const prodMap={};(cfg.products||[]).forEach(p=>prodMap[safeArticle(p.article)]=p.description||'');
- box.innerHTML=events.map(e=>`<div class="demand-event-row"><div class="demand-event-row-main"><b>${esc(prodMap[safeArticle(e.article)]||e.article)} · ${esc(e.name)}</b><span>${esc(e.startDate)} → ${esc(e.endDate)} · Base guardada ${fmt(n(e.baselineRaw,0),1)}</span></div><button type="button" class="demand-event-delete" onclick="deleteDemandEvent('${escAttr(e.id)}')">Eliminar</button></div>`).join('');
-}
-function deleteDemandEvent(id){
- if(!confirm('¿Eliminar este evento?'))return;
- const code=normalizeBranch(presenceBranchCode||state.branch);const cfg=demandBranchConfig(code);if(!cfg)return;
- cfg.demandEvents=(cfg.demandEvents||[]).filter(e=>String(e.id)!==String(id));
- persistState(cfg);renderDemandEventList();renderDemandIntelligenceSummary();renderDemandPlanAlerts();
-}
-
 function computeProduct(p){
  const sale=Object.prototype.hasOwnProperty.call(state.sales,p.article)?n(state.sales[p.article]):null;
- const eventAdjustment=demandNormalizeSaleForEvent(p.article,sale);
- const saleUsed=eventAdjustment.saleUsed;
- const raw=saleUsed===null?n(state.params.defaultMissing,14):(saleUsed<n(state.params.minimumConsumption,10)?n(state.params.minimumConsumption,10):saleUsed);
+ const raw=sale===null?n(state.params.defaultMissing,14):(sale<n(state.params.minimumConsumption,10)?n(state.params.minimumConsumption,10):sale);
  const inc=n(p.increment,0),consumption=raw*(1+inc),daily=[];
  for(let d=0;d<35;d++){
    const week=Math.floor(d/7),dow=d%7,weights=state.params.weekWeights||[0,0,0,0,0];
@@ -6880,7 +6672,7 @@ function computeProduct(p){
  const weekly=[],planWeekly=[];
  for(let w=0;w<5;w++){weekly.push(daily.slice(w*7,w*7+7).reduce((a,b)=>a+b,0));planWeekly.push(plan.slice(w*7,w*7+7).reduce((a,b)=>a+(b||0),0))}
  const sum=weekly.reduce((a,b)=>a+b,0),difference=sum-(consumption/(1+inc)),incrementPct=consumption?difference/consumption:0;
- return {...p,sale,saleUsed,eventAdjustment,raw,consumption,daily,weekly,plan,planWeekly,active:sched.reduce((a,b)=>a+b,0),sum,difference,incrementPct};
+ return {...p,sale,raw,consumption,daily,weekly,plan,planWeekly,active:sched.reduce((a,b)=>a+b,0),sum,difference,incrementPct};
 }
 function recalc(){
  computed=state.products.map(computeProduct);
@@ -8191,10 +7983,27 @@ async function cycleRefreshCloudBeforeCriticalAction(){
  }
  return true;
 }
+function collectExplicitAbsenceRefsForCycle(code){
+ const range=presenceProductionRange(code);const data=loadPresenceLocal(code);const set=new Set();
+ for(let i=0;i<range.days;i++){
+   const d=new Date(range.start);d.setDate(d.getDate()+i);const date=presenceDateKeyFromDate(d);const row=data[date];if(!row)continue;
+   ['amAbsent','pmAbsent'].forEach(k=>Object.keys(normalizePresenceBoolMap(row[k]||{})).forEach(art=>set.add(art)));
+ }
+ return [...set].sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+}
 function cycleConfigsWithNewStart(startDate,days,{resetCoefficients=false}={}){
  const out={};
  allBranchCodes().forEach(code=>{
    const cfg=getEditableBranchState(code);
+   const previousStart=cfg.startDate||'';
+   const zoneId=branchZoneId(code)||cfg.zoneId||'';
+   cfg.cycleAlerts={
+     sourceCycleStart:previousStart,
+     targetCycleStart:startDate,
+     eventRefs:loadEventNextCycle(zoneId),
+     absenceRefs:collectExplicitAbsenceRefsForCycle(code),
+     createdAt:new Date().toISOString()
+   };
    cfg.startDate=startDate;
    cfg.monthLabel=monthNameFromDateForValue(startDate);
    cfg.params=cfg.params||{};
@@ -8259,6 +8068,7 @@ async function startNewProductionCycle(){
  try{
    const configs=cycleConfigsWithNewStart(startDate,days,{resetCoefficients:reset});
    await cycleSaveConfigsBulk(configs);
+   clearAllEventNextCycleQueues({syncCloud:true});
    state=attachSalesToState(loadLocalFor(state.branch)||state,state.branch);
    recalc();
    document.getElementById('adminStartDate').value=startDate;
@@ -8491,7 +8301,8 @@ function firebaseSystemSnapshot(){
  const keys=[
    MOTHER_ELABORATORS_STORAGE,
    ELABORATOR_WHATSAPP_STORAGE,
-   ACTIVE_ZONES_STORAGE
+   ACTIVE_ZONES_STORAGE,
+   ...zoneOrder.map(eventNextCycleKey)
  ];
  for(const code of allBranchCodes())keys.push(motherSelectionKey(code));
 
@@ -8512,6 +8323,7 @@ function firebaseApplySystemSnapshot(storage){
      MOTHER_ELABORATORS_STORAGE,
      ELABORATOR_WHATSAPP_STORAGE,
      ACTIVE_ZONES_STORAGE,
+     ...zoneOrder.map(eventNextCycleKey),
      ...allBranchCodes().map(code=>motherSelectionKey(code))
    ];
    allowed.forEach(key=>{
@@ -8981,7 +8793,7 @@ function renderAdminReferenceZoneTabs(){
  const info=document.getElementById('adminRefZoneInfo');
  if(info){
    const refs=loadZoneReferences(selected);
-   info.textContent=zoneName(selected)+' · '+refs.length+' referencias · '+branchesForZone(selected).length+' sucursales';
+   info.textContent=zoneName(selected)+' · '+refs.length+' referencias · '+branchesForZone(selected).length+' sucursales · '+loadEventNextCycle(selected).length+' evento próx.';
  }
 }
 function selectAdminReferenceZone(zoneId){
@@ -9255,14 +9067,16 @@ function renderAdminReferences(){
  const count=document.getElementById('adminRefCount');
  if(count)count.textContent=rows.length+' refs.';
 
+ const eventSet=new Set(loadEventNextCycle(zoneId));
  const info=document.getElementById('adminRefZoneInfo');
- if(info)info.textContent=zoneName(zoneId)+' · '+source.length+' referencias · '+branchesForZone(zoneId).length+' sucursales';
+ if(info)info.textContent=zoneName(zoneId)+' · '+source.length+' referencias · '+branchesForZone(zoneId).length+' sucursales · '+eventSet.size+' evento próx.';
 
  box.innerHTML=`<table class="admin-ref-table"><thead><tr>
- <th class="admin-ref-check">Sel.</th><th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
+ <th class="admin-ref-check">Sel.</th><th class="admin-event-check">Evento próx.</th><th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
  </tr></thead><tbody>`+
  rows.map(p=>`<tr>
  <td class="admin-ref-check"><input type="checkbox" ${adminSelectedReferences.has(p.article)?'checked':''} onchange="adminToggleReferenceSelection('${p.article}',this.checked)"></td>
+ <td class="admin-event-check"><input type="checkbox" title="Resaltar en amarillo durante el próximo ciclo" ${eventSet.has(p.article)?'checked':''} onchange="adminToggleEventNextCycle('${p.article}',this.checked)"></td>
  <td>${esc(p.article)}</td><td>${esc(p.description)}</td><td>${esc(p.brand)}</td>
  <td>${esc(p.aptitude)}</td><td>${esc(p.um)}</td><td>${esc(p.bto)}</td>
  <td class="ref-actions"><button type="button" onclick="editAdminReference('${p.article}')">Editar</button><button type="button" onclick="deleteAdminReference('${p.article}')">Eliminar</button></td>
@@ -9449,9 +9263,14 @@ function normalizePresenceData(data){
    if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !raw || typeof raw!=='object')return;
    const row={
      am:normalizePresenceBoolMap(raw.am),
-     pm:normalizePresenceBoolMap(raw.pm)
+     pm:normalizePresenceBoolMap(raw.pm),
+     amAbsent:normalizePresenceBoolMap(raw.amAbsent),
+     pmAbsent:normalizePresenceBoolMap(raw.pmAbsent)
    };
-   if(Object.keys(row.am).length||Object.keys(row.pm).length)out[date]=row;
+   // Presente y Ausente son estados mutuamente excluyentes.
+   Object.keys(row.am).forEach(art=>delete row.amAbsent[art]);
+   Object.keys(row.pm).forEach(art=>delete row.pmAbsent[art]);
+   if(Object.keys(row.am).length||Object.keys(row.pm).length||Object.keys(row.amAbsent).length||Object.keys(row.pmAbsent).length)out[date]=row;
  });
  return out;
 }
@@ -9558,22 +9377,29 @@ function presenceShiftMap(code,date,shift){
  const data=loadPresenceLocal(code);
  return normalizePresenceBoolMap(data?.[date]?.[shift]||{});
 }
-function presenceSetItemValue(code,date,shift,article,checked){
- code=normalizeBranch(code);
- article=safeArticle(article);
+function presenceAbsentMap(code,date,shift){
+ const data=loadPresenceLocal(code);
+ return normalizePresenceBoolMap(data?.[date]?.[shift==='pm'?'pmAbsent':'amAbsent']||{});
+}
+function presenceSetItemStatus(code,date,shift,article,status){
+ code=normalizeBranch(code);article=safeArticle(article);
  if(!code||!article)return;
  const range=presenceProductionRange(code);
  if(!presenceDateInRange(date,range)||presenceDateIsFuture(date))return;
  const data=loadPresenceLocal(code);
- const row=data[date]||{am:{},pm:{}};
- row.am=normalizePresenceBoolMap(row.am||{});
- row.pm=normalizePresenceBoolMap(row.pm||{});
- if(checked)row[shift][article]=true;
- else delete row[shift][article];
- if(Object.keys(row.am).length||Object.keys(row.pm).length)data[date]=row;
+ const row=data[date]||{am:{},pm:{},amAbsent:{},pmAbsent:{}};
+ row.am=normalizePresenceBoolMap(row.am||{});row.pm=normalizePresenceBoolMap(row.pm||{});
+ row.amAbsent=normalizePresenceBoolMap(row.amAbsent||{});row.pmAbsent=normalizePresenceBoolMap(row.pmAbsent||{});
+ const presentKey=shift==='pm'?'pm':'am';const absentKey=shift==='pm'?'pmAbsent':'amAbsent';
+ delete row[presentKey][article];delete row[absentKey][article];
+ if(status==='present')row[presentKey][article]=true;
+ if(status==='absent')row[absentKey][article]=true;
+ if(Object.keys(row.am).length||Object.keys(row.pm).length||Object.keys(row.amAbsent).length||Object.keys(row.pmAbsent).length)data[date]=row;
  else delete data[date];
- storePresenceLocal(code,data);
- queuePresenceCloudSync(code);
+ storePresenceLocal(code,data);queuePresenceCloudSync(code);
+}
+function presenceSetItemValue(code,date,shift,article,checked){
+ presenceSetItemStatus(code,date,shift,article,checked?'present':'unmarked');
 }
 function queuePresenceCloudSync(code){
  if(firebaseCloudApplying||!firebaseCloudInitialized)return;
@@ -9601,10 +9427,11 @@ function queuePresenceCloudSync(code){
 function presenceShiftTotals(code,date,shift,rows){
  const list=Array.isArray(rows)?rows:presenceRowsForDate(code,date);
  const map=presenceShiftMap(code,date,shift);
- let present=0;
- list.forEach(item=>{if(map[safeArticle(item.article)])present++;});
+ const absentMap=presenceAbsentMap(code,date,shift);
+ let present=0,absent=0;
+ list.forEach(item=>{const art=safeArticle(item.article);if(map[art])present++;else if(absentMap[art])absent++;});
  const total=list.length;
- return {present,total,missing:Math.max(0,total-present),pct:total?present/total*100:0};
+ return {present,absent,total,missing:Math.max(0,total-present-absent),pct:total?present/total*100:0};
 }
 function presenceCycleTotals(code,range){
  let present=0,total=0;
@@ -9674,55 +9501,34 @@ function presenceFilteredRows(code,date){
 function presenceToggleItem(article,checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
  presenceSetItemValue(presenceBranchCode,presenceDateISO,presenceShift,article,!!checked);
- if(checked)setStockoutReason(presenceDateISO,presenceShift,article,'',presenceBranchCode);
- renderPresenceSummary();
- renderPresenceServiceChart();
- renderPresenceCalendar();
- renderPresenceChecklistStats();
- renderPresenceAnalytics();
- renderDemandIntelligenceSummary();
- renderDemandPlanAlerts();
+ renderPresenceSummary();renderPresenceServiceChart();renderPresenceCalendar();renderPresenceChecklist();renderPresenceAnalytics();
 }
-
-function presenceSetAbsenceReason(article,reason){
+function presenceMarkStatus(article,status){
  if(!presenceCanEditBranch(presenceBranchCode))return;
- if(presenceDateIsFuture(presenceDateISO))return;
- article=safeArticle(article);
- if(!article)return;
- presenceSetItemValue(presenceBranchCode,presenceDateISO,presenceShift,article,false);
- setStockoutReason(presenceDateISO,presenceShift,article,reason,presenceBranchCode);
- renderPresenceSummary();
- renderPresenceServiceChart();
- renderPresenceCalendar();
- renderPresenceChecklist();
- renderDemandIntelligenceSummary();
- renderDemandPlanAlerts();
+ const art=safeArticle(article);if(!art)return;
+ const currentPresent=!!presenceShiftMap(presenceBranchCode,presenceDateISO,presenceShift)[art];
+ const currentAbsent=!!presenceAbsentMap(presenceBranchCode,presenceDateISO,presenceShift)[art];
+ // Volver a tocar el mismo estado lo deja Sin marcar.
+ const next=(status==='present'&&currentPresent)||(status==='absent'&&currentAbsent)?'unmarked':status;
+ presenceSetItemStatus(presenceBranchCode,presenceDateISO,presenceShift,art,next);
+ renderPresenceSummary();renderPresenceServiceChart();renderPresenceCalendar();renderPresenceChecklist();renderPresenceAnalytics();
 }
-
 function presenceSetAll(checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
  if(presenceDateIsFuture(presenceDateISO))return;
  const rows=presenceFilteredRows(presenceBranchCode,presenceDateISO);
  const data=loadPresenceLocal(presenceBranchCode);
- const row=data[presenceDateISO]||{am:{},pm:{}};
- row.am=normalizePresenceBoolMap(row.am||{});
- row.pm=normalizePresenceBoolMap(row.pm||{});
+ const row=data[presenceDateISO]||{am:{},pm:{},amAbsent:{},pmAbsent:{}};
+ row.am=normalizePresenceBoolMap(row.am||{});row.pm=normalizePresenceBoolMap(row.pm||{});
+ row.amAbsent=normalizePresenceBoolMap(row.amAbsent||{});row.pmAbsent=normalizePresenceBoolMap(row.pmAbsent||{});
+ const absentKey=presenceShift==='pm'?'pmAbsent':'amAbsent';
  rows.forEach(item=>{
-   const art=safeArticle(item.article);
-   if(!art)return;
-   if(checked)row[presenceShift][art]=true
-   else delete row[presenceShift][art];
+   const art=safeArticle(item.article);if(!art)return;
+   delete row[absentKey][art];
+   if(checked)row[presenceShift][art]=true;else delete row[presenceShift][art];
  });
- if(Object.keys(row.am).length||Object.keys(row.pm).length)data[presenceDateISO]=row;
+ if(Object.keys(row.am).length||Object.keys(row.pm).length||Object.keys(row.amAbsent).length||Object.keys(row.pmAbsent).length)data[presenceDateISO]=row;
  else delete data[presenceDateISO];
- if(checked){
-   const cfg=demandBranchConfig(presenceBranchCode);
-   if(cfg){
-     const arts=new Set(rows.map(item=>safeArticle(item.article)).filter(Boolean));
-     cfg.stockoutLog=(cfg.stockoutLog||[]).filter(r=>!(r.date===presenceDateISO&&r.shift===presenceShift&&arts.has(safeArticle(r.article))));
-     persistState(cfg);
-   }
- }
  storePresenceLocal(presenceBranchCode,data);
  queuePresenceCloudSync(presenceBranchCode);
  renderPresenceSummary();
@@ -9730,7 +9536,6 @@ function presenceSetAll(checked){
  renderPresenceCalendar();
  renderPresenceChecklist();
  renderPresenceAnalytics();
- renderDemandIntelligenceSummary();
 }
 function renderPresenceSummary(){
  if(!presenceBranchCode||!presenceDateISO)return;
@@ -9742,6 +9547,7 @@ function renderPresenceSummary(){
  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
  set('presenceKpiCompliance',pctText);
  set('presenceKpiPresent',String(shiftData.present));
+ set('presenceKpiAbsent',String(shiftData.absent||0));
  set('presenceKpiTotal',String(shiftData.total));
  set('presenceKpiMissing',String(shiftData.missing));
  set('presenceKpiCycle',cycle.pct.toLocaleString('es-AR',{maximumFractionDigits:1})+'%');
@@ -9835,7 +9641,7 @@ function renderPresenceChecklistStats(){
  const allRows=presenceRowsForDate(presenceBranchCode,presenceDateISO);
  const visibleRows=presenceFilteredRows(presenceBranchCode,presenceDateISO);
  const total=presenceShiftTotals(presenceBranchCode,presenceDateISO,presenceShift,allRows);
- statsBox.innerHTML=`<span><strong>${visibleRows.length}</strong> referencias visibles</span><span><strong>${total.present}</strong> presentes marcadas</span><span><strong>${total.total}</strong> referencias activas para ${presenceShift==='am'?'Mañana':'Tarde'}</span>`;
+ statsBox.innerHTML=`<span><strong>${visibleRows.length}</strong> referencias visibles</span><span><strong>${total.present}</strong> presentes</span><span><strong>${total.absent||0}</strong> ausentes</span><span><strong>${total.missing}</strong> sin marcar</span>`;
 }
 function renderPresenceChecklist(){
  const box=document.getElementById('presenceChecklist');
@@ -9850,6 +9656,7 @@ function renderPresenceChecklist(){
  const future=presenceDateIsFuture(date);
  const rows=presenceFilteredRows(code,date);
  const map=presenceShiftMap(code,date,presenceShift);
+ const absentMap=presenceAbsentMap(code,date,presenceShift);
  subtitle.textContent='Suc. '+code+' · '+(branchCatalog[code]?.name||'')+' · '+presenceFormatDate(presenceParseDate(date))+' · '+(presenceShift==='am'?'Turno Mañana':'Turno Tarde');
  if(note){
    if(future){note.style.display='block';note.textContent='La fecha seleccionada es futura. Podés consultar las referencias programadas, pero la carga queda bloqueada hasta ese día.'}
@@ -9866,8 +9673,8 @@ function renderPresenceChecklist(){
  empty.style.display='none';
  box.innerHTML=rows.map(item=>{
    const art=safeArticle(item.article);
-   const checked=!!map[art];
-   return `<div class="presence-item ${checked?'present':''}">
+   const checked=!!map[art];const absent=!!absentMap[art];
+   return `<div class="presence-item ${checked?'present':''}${absent?' absent':''}">
      <div class="presence-item-main">
        <div class="presence-item-code">${art}</div>
        <div class="presence-item-name">${esc(item.description||'')}</div>
@@ -9877,14 +9684,10 @@ function renderPresenceChecklist(){
          <span>${esc(item.um||'')}</span>
        </div>
      </div>
-     <div class="presence-item-check">
-       <span class="presence-item-label">${checked?'PRESENTE':'AUSENTE'}</span>
-       <label class="presence-switch">
-         <input type="checkbox" ${checked?'checked':''} ${canEdit?'':'disabled'} onchange="presenceToggleItem('${art}',this.checked)">
-         <span class="presence-slider"></span>
-       </label>
+     <div class="presence-status-actions" aria-label="Estado de la referencia">
+       <button type="button" class="presence-status-btn present ${checked?'active':''}" ${canEdit?'':'disabled'} onclick="presenceMarkStatus('${art}','present')" title="Marcar Presente"><span class="long">✓ Pres.</span><span class="short">✓</span></button>
+       <button type="button" class="presence-status-btn absent ${absent?'active':''}" ${canEdit?'':'disabled'} onclick="presenceMarkStatus('${art}','absent')" title="Marcar Ausente"><span class="long">✕ Aus.</span><span class="short">✕</span></button>
      </div>
-     ${checked?'':(()=>{const reason=stockoutReasonFor(date,presenceShift,art,code);return `<div class="presence-reason-wrap"><span class="presence-reason-label">Motivo ausencia</span><select class="presence-reason-select ${reason==='stockout'?'stockout':''}" ${canEdit?'':'disabled'} onchange="presenceSetAbsenceReason('${art}',this.value)"><option value="" ${!reason?'selected':''}>Sin marcar</option><option value="stockout" ${reason==='stockout'?'selected':''}>🔴 Quiebre / falta de producto</option><option value="not_made" ${reason==='not_made'?'selected':''}>🟡 No elaborado</option><option value="not_displayed" ${reason==='not_displayed'?'selected':''}>🟠 No exhibido / operativo</option><option value="other" ${reason==='other'?'selected':''}>⚪ Otro</option></select></div>`})()}
    </div>`;
  }).join('');
 }
@@ -9901,6 +9704,8 @@ function presenceAnalyticsData(code){
    const rows=presenceRowsForDate(code,date);
    const amMap=presenceShiftMap(code,date,'am');
    const pmMap=presenceShiftMap(code,date,'pm');
+   const amAbsent=presenceAbsentMap(code,date,'am');
+   const pmAbsent=presenceAbsentMap(code,date,'pm');
    let present=0,total=0;
    rows.forEach(item=>{
      const art=safeArticle(item.article);
@@ -9910,8 +9715,8 @@ function presenceAnalyticsData(code){
      stat.generalTotal+=2;
      stat.pmTotal+=1;
      total+=2;
-     if(amMap[art])present++; else stat.generalAbsent++;
-     if(pmMap[art])present++; else {stat.generalAbsent++;stat.pmAbsent++;}
+     if(amMap[art])present++; else if(amAbsent[art])stat.generalAbsent++;
+     if(pmMap[art])present++; else if(pmAbsent[art]){stat.generalAbsent++;stat.pmAbsent++;}
    });
    daily.push({date,label:String(d.getDate()),pct:total?Math.round((present/total)*1000)/10:0,total,present});
  }
@@ -11572,16 +11377,11 @@ function renderPlan(){
  computed.forEach((p,i)=>{
    // Panadería Suc muestra sólo referencias con al menos un día activo en Cronograma.
    if(!state.products[i]?.schedule?.some(v=>n(v)))return;
-   const stockout=demandStockoutStats(p.article);
-   const badges=[];
-   if(p.eventAdjustment?.adjusted)badges.push(`<span class="demand-row-badge event" title="Venta real ${fmt(p.eventAdjustment.originalSale,1)} · Base usada ${fmt(p.eventAdjustment.baseline,1)}">📅 ${esc(p.eventAdjustment.event?.name||'Evento')}</span>`);
-   if(stockout.count)badges.push(`<span class="demand-row-badge stockout ${stockout.level==='critical'?'critical':''}" title="${stockout.count} quiebres recientes${stockout.pattern?' · patrón '+stockout.pattern:''}">⚠ ${stockout.count} quiebre${stockout.count===1?'':'s'}</span>`);
-   rows+=`<tr><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${badges.length?`<div class="demand-row-badges">${badges.join('')}</div>`:''}</td><td class="left">${esc(p.brand)}</td><td class="center">${esc(p.aptitude)}</td><td class="center">${esc(p.um)}</td><td>${esc(p.bto)}</td><td>${fmt(p.consumption,1)}</td>`;
+   rows+=`<tr><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}</td><td class="left">${esc(p.brand)}</td><td class="center">${esc(p.aptitude)}</td><td class="center">${esc(p.um)}</td><td>${esc(p.bto)}</td><td>${fmt(p.consumption,1)}</td>`;
    for(let w=0;w<5;w++){for(let d=0;d<7;d++)rows+=`<td>${fmt(p.daily[w*7+d],1)}</td>`;rows+=`<td class="week-total">${fmt(p.weekly[w],1)}</td>`}
    rows+=`<td class="coef-cell">${coefficientSelectHtml(i,p.increment)}</td><td>${fmt(p.sum,1)}</td><td>${fmt(p.difference,1)}</td><td>${fmtPct(p.incrementPct)}</td></tr>`;
  });
  document.getElementById('planTable').innerHTML=`<table class="big-grid">${h}<tbody>${rows}</tbody></table>`;
- renderDemandPlanAlerts();
  initPlanNavigator();
  requestAnimationFrame(syncPlanNavigator);
  setTimeout(syncPlanNavigator,50);
@@ -11680,6 +11480,10 @@ function renderBaker(){
  const cal=calendar();
  const visibleWeeks=weekSel==='all'?5:1;
  const bakerColspan=5+(visibleWeeks*8);
+ const cycleAlertsNow=state.cycleAlerts||{};
+ const cycleAbsenceNow=new Set(Array.isArray(cycleAlertsNow.absenceRefs)?cycleAlertsNow.absenceRefs:[]);
+ const cycleEventNow=new Set(Array.isArray(cycleAlertsNow.eventRefs)?cycleAlertsNow.eventRefs:[]);
+ const legend=document.getElementById('bakerAlertLegend');if(legend)legend.style.display=(cycleAbsenceNow.size||cycleEventNow.size)?'flex':'none';
  let h=`<thead><tr class="print-baker-title-row"><th colspan="${bakerColspan}">HOJA DEL PANADERO SUC ${state.branch}</th></tr><tr><th class="sticky-art">Art.</th><th class="sticky-desc">Descripción</th><th>U/M</th><th>Consumo</th><th>Activo</th>`;
  for(let w=0;w<5;w++){if(weekSel!=='all'&&Number(weekSel)!==w)continue;for(let d=0;d<7;d++){const x=cal[w*7+d];h+=`<th class="week">${DOW_SHORT[d]}<br>${x.day}</th>`}h+=`<th>Total S${w+1}</th>`}
  h+='</tr></thead>';
@@ -11687,7 +11491,14 @@ function renderBaker(){
  for(const p of computed){
    if(activeOnly&&p.active===0)continue;
    if(q&&!(`${p.article} ${p.description} ${p.brand}`.toLowerCase().includes(q)))continue;
-   rows+=`<tr><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}</td><td class="center">${esc(p.um)}</td><td>${fmt(p.consumption,1)}</td><td>${p.active}</td>`;
+   const cycleAlerts=state.cycleAlerts||{};
+   const absenceSet=new Set(Array.isArray(cycleAlerts.absenceRefs)?cycleAlerts.absenceRefs:[]);
+   const eventSet=new Set(Array.isArray(cycleAlerts.eventRefs)?cycleAlerts.eventRefs:[]);
+   const hasAbsence=absenceSet.has(p.article),hasEvent=eventSet.has(p.article);
+   const alertClass=hasAbsence?'baker-alert-absence':(hasEvent?'baker-alert-event':'');
+   const alertBadge=hasAbsence?'<span class="baker-alert-badge absence">AUSENCIA ANT.</span>':(hasEvent?'<span class="baker-alert-badge event">EVENTO</span>':'');
+   const alertTitle=hasAbsence?' title="Referencia marcada Ausente en el ciclo anterior"':(hasEvent?' title="Referencia marcada por Admin como posible venta extraordinaria"':'');
+   rows+=`<tr class="${alertClass}"${alertTitle}><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${alertBadge}</td><td class="center">${esc(p.um)}</td><td>${fmt(p.consumption,1)}</td><td>${p.active}</td>`;
    for(let w=0;w<5;w++){if(weekSel!=='all'&&Number(weekSel)!==w)continue;for(let d=0;d<7;d++){const v=p.plan[w*7+d];rows+=`<td class="${v===null?'inactive':'production'}">${v===null?'':fmt(v,1)}</td>`}rows+=`<td class="week-total">${fmt(p.planWeekly[w],1)}</td>`}
    rows+='</tr>';
  }
@@ -11771,7 +11582,7 @@ function makeBranchState(code,name){
  x.branchName=name||meta.name||'';
  x.zoneId=meta.zoneId||'';
  x.zoneName=meta.zone||zoneName(meta.zoneId)||'';
- x.sales={};x.salesRows=[];x.version='61.0';x.demandEvents=[];x.stockoutLog=[];
+ x.sales={};x.salesRows=[];x.version='84.0';
  x.salesSource='';x.salesSheetName='';
  return syncBranchProductsWithZoneMaster(x,code);
 }
@@ -11954,12 +11765,11 @@ function loadDetectedBranches(branches,fileName){
 
  const loaded=Object.keys(branches).length;
  const currentCount=Object.keys(state.sales||{}).length;
- const normalizedByEvent=(computed||[]).filter(p=>p.eventAdjustment?.adjusted).length;
  const status=document.getElementById('branchFileStatus');
  if(status)status.textContent=`Ventas cargadas · ${loaded} sucursales disponibles · ${fileName}`;
 
  if(branches[code]){
-   messageSales(`Ventas actualizadas para Suc. ${code}: ${currentCount} referencias leídas.${normalizedByEvent?` ${normalizedByEvent} referencia(s) normalizada(s) por evento previo.`:''} Los parámetros de la sucursal no fueron modificados.`,true);
+   messageSales(`Ventas actualizadas para Suc. ${code}: ${currentCount} referencias leídas. Los parámetros de la sucursal no fueron modificados.`,true);
  }else{
    messageSales(`El archivo se abrió, pero no contiene ventas para la Suc. ${code}. Los parámetros no fueron modificados.`,false);
  }
