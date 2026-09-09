@@ -19,7 +19,7 @@
   --green:#217346;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:#dcdcdc;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:12px}
+html,body{margin:0;background:#dcdcdc;color:#000;font-family:"Aptos","Segoe UI Variable Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:12px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 button,input,select,textarea{font:inherit}
 .appbar{
   position:sticky;top:0;z-index:100;
@@ -4685,6 +4685,23 @@ body.checklist-sheet-active .mini-assistant{
 .baker-alert-legend span{display:inline-flex;align-items:center;gap:4px}
 @media(max-width:520px){.baker-alert-legend{font-size:7px;gap:5px;padding:5px 6px}}
 
+
+/* === V63 · TIPOGRAFÍA + ALERTAS DE EVENTO MÁS CLARAS === */
+button,input,select,textarea{font-family:inherit}
+.admin-card-title,.presence-titlebar,.sheet-tab,.section-title,.panel-title{font-family:"Aptos Display","Segoe UI Variable Display","Segoe UI",Roboto,sans-serif;letter-spacing:.01em}
+.admin-ref-bulkbar{align-items:center}
+.admin-ref-bulk-left{align-items:center;row-gap:6px}
+.admin-event-status{display:inline-flex;align-items:center;gap:5px;min-height:24px;padding:0 9px;border-radius:999px;background:#fff8d9;border:1px solid #e6c94f;color:#715600;font-size:10px;font-weight:800;white-space:nowrap}
+.admin-event-status.saved{background:#eef8f1;border-color:#aad1b5;color:#27673a}
+.admin-ref-selected-count{white-space:nowrap}
+.admin-event-direct-note{margin-top:7px;padding:7px 9px;border-radius:8px;background:#f8fafc;border:1px solid #dfe5eb;color:#526371;font-size:10px;line-height:1.35}
+.admin-event-direct-note b{color:#17394f}
+.admin-event-check input{accent-color:#d6a900;transform:scale(1.05)}
+@media(max-width:700px){
+  .admin-event-status{font-size:9px;padding:0 7px}
+  .admin-ref-bulk-left{align-items:flex-start}
+}
+
 </style>
 </head>
 <body>
@@ -5361,7 +5378,7 @@ body.checklist-sheet-active .mini-assistant{
           También podés seleccionar varias referencias para eliminarlas juntas o vaciar todo el padrón de la zona.
           El padrón se mantiene automáticamente <b>ordenado alfabéticamente por Descripción</b>.
           La carga del cronograma utiliza <b>guardado agrupado</b>: los clics se muestran al instante y se sincronizan juntos después de una breve pausa.
-          <div class="admin-event-next-note"><b>🟨 Alerta para próximo ciclo:</b> marcá como Evento aquellas referencias cuya venta pudo quedar influenciada por una fecha especial, promoción o evento extraordinario. Al iniciar el próximo ciclo quedarán sombreadas en amarillo en la Hoja del Panadero. La lista se limpia automáticamente después de iniciar ese ciclo.</div>
+          <div class="admin-event-next-note"><b>🟨 Alerta para próximo ciclo:</b> marcá directamente la casilla <b>Alerta evento</b> de cada referencia cuya venta pudo quedar influenciada por una fecha especial, promoción o evento extraordinario. La marca se guarda al instante. Al iniciar el próximo ciclo quedará sombreada en amarillo en la Hoja del Panadero y luego la lista pendiente se limpia automáticamente.</div><div class="admin-event-direct-note"><b>Importante:</b> la columna <b>Sel.</b> se usa únicamente para acciones masivas (marcar varias, quitar varias o eliminar). No es necesario seleccionar una fila para activar su alerta de evento.</div>
         </div>
 
         <div class="admin-ref-search-line">
@@ -5373,9 +5390,10 @@ body.checklist-sheet-active .mini-assistant{
           <div class="admin-ref-bulk-left">
             <button type="button" onclick="adminSelectVisibleReferences(true)">☑ Seleccionar visibles</button>
             <button type="button" onclick="adminSelectVisibleReferences(false)">☐ Quitar selección</button>
-            <button type="button" class="admin-event-bulk" onclick="adminMarkSelectedEventNextCycle(true)">🟨 Evento próximo ciclo</button>
-            <button type="button" class="admin-event-clear" onclick="adminMarkSelectedEventNextCycle(false)">Quitar evento</button>
-            <span id="adminRefSelectedCount" class="admin-ref-selected-count">0 seleccionadas</span>
+            <button type="button" class="admin-event-bulk" onclick="adminMarkSelectedEventNextCycle(true)">🟨 Marcar evento a seleccionadas</button>
+            <button type="button" class="admin-event-clear" onclick="adminMarkSelectedEventNextCycle(false)">Quitar evento a seleccionadas</button>
+            <span id="adminRefSelectedCount" class="admin-ref-selected-count">0 seleccionadas para acciones</span>
+            <span id="adminRefEventCount" class="admin-event-status">0 alertas de evento</span>
           </div>
           <div class="admin-ref-bulk-right">
             <button type="button" class="admin-ref-delete-selected" onclick="adminDeleteSelectedReferences()">🗑 Eliminar seleccionadas</button>
@@ -6213,23 +6231,47 @@ function saveEventNextCycle(zoneId,list,{syncCloud=true}={}){
  if(syncCloud)firebaseQueueSystemSync();
  return clean;
 }
+let adminEventStatusTimer=null;
+function adminUpdateEventCount(zoneId=adminSelectedReferenceZone(),flashText=''){
+ const eventCount=document.getElementById('adminRefEventCount');
+ const count=loadEventNextCycle(zoneId).length;
+ if(eventCount){
+   eventCount.textContent=flashText||(`${count} ${count===1?'alerta de evento':'alertas de evento'}`);
+   eventCount.classList.toggle('saved',!!flashText);
+   if(adminEventStatusTimer)clearTimeout(adminEventStatusTimer);
+   if(flashText){
+     adminEventStatusTimer=setTimeout(()=>{
+       const el=document.getElementById('adminRefEventCount');
+       if(el){el.textContent=`${loadEventNextCycle(zoneId).length} ${loadEventNextCycle(zoneId).length===1?'alerta de evento':'alertas de evento'}`;el.classList.remove('saved');}
+     },1100);
+   }
+ }
+ const info=document.getElementById('adminRefZoneInfo');
+ if(info){
+   const source=loadZoneReferences(zoneId);
+   info.textContent=zoneName(zoneId)+' · '+source.length+' referencias · '+branchesForZone(zoneId).length+' sucursales · '+count+' evento próx.';
+ }
+}
 function adminToggleEventNextCycle(article,checked){
  if(!isMasterAdmin())return;
  const zoneId=adminSelectedReferenceZone();
+ const art=safeArticle(article);
  const set=new Set(loadEventNextCycle(zoneId));
- if(checked)set.add(safeArticle(article));else set.delete(safeArticle(article));
- saveEventNextCycle(zoneId,[...set]);
- renderAdminReferences();
+ if(checked)set.add(art);else set.delete(art);
+ const saved=saveEventNextCycle(zoneId,[...set]);
+ const ok=saved.includes(art)===!!checked;
+ adminUpdateEventCount(zoneId,ok?'✓ Guardado':'⚠ No se pudo guardar');
 }
 function adminMarkSelectedEventNextCycle(mark=true){
  if(!isMasterAdmin())return;
  const zoneId=adminSelectedReferenceZone();
  const set=new Set(loadEventNextCycle(zoneId));
  const selected=[...adminSelectedReferences].filter(art=>loadZoneReferences(zoneId).some(r=>r.article===art));
- if(!selected.length){alert('Seleccioná al menos una referencia.');return;}
+ if(!selected.length){alert('Seleccioná al menos una referencia en la columna Sel. para usar esta acción masiva. Si querés marcar una sola, podés tildar directamente Alerta evento.');return;}
  selected.forEach(art=>mark?set.add(art):set.delete(art));
  saveEventNextCycle(zoneId,[...set]);
  renderAdminReferences();
+ adminUpdateEventCount(zoneId,'✓ Guardado');
 }
 function clearAllEventNextCycleQueues({syncCloud=true}={}){
  zoneOrder.forEach(zoneId=>{try{localStorage.setItem(eventNextCycleKey(zoneId),'[]')}catch(e){}});
@@ -8345,6 +8387,7 @@ function firebaseApplySystemSnapshot(storage){
    if(isMasterAdmin()){
      renderAdminWhatsapp();
      renderAdminBranchPasswords();
+     renderAdminReferences();
    }
  }finally{
    firebaseCloudApplying=false;
@@ -8969,7 +9012,7 @@ function adminVisibleReferenceArticles(){
 }
 function adminUpdateSelectedCount(){
  const el=document.getElementById('adminRefSelectedCount');
- if(el)el.textContent=adminSelectedReferences.size+' seleccionadas';
+ if(el)el.textContent=adminSelectedReferences.size+' seleccionadas para acciones';
 }
 function adminToggleReferenceSelection(article,checked){
  if(checked)adminSelectedReferences.add(article);
@@ -9072,17 +9115,18 @@ function renderAdminReferences(){
  if(info)info.textContent=zoneName(zoneId)+' · '+source.length+' referencias · '+branchesForZone(zoneId).length+' sucursales · '+eventSet.size+' evento próx.';
 
  box.innerHTML=`<table class="admin-ref-table"><thead><tr>
- <th class="admin-ref-check">Sel.</th><th class="admin-event-check">Evento próx.</th><th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
+ <th class="admin-ref-check">Sel.</th><th class="admin-event-check">Alerta evento</th><th>Articulo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Bto</th><th>Acciones</th>
  </tr></thead><tbody>`+
  rows.map(p=>`<tr>
  <td class="admin-ref-check"><input type="checkbox" ${adminSelectedReferences.has(p.article)?'checked':''} onchange="adminToggleReferenceSelection('${p.article}',this.checked)"></td>
- <td class="admin-event-check"><input type="checkbox" title="Resaltar en amarillo durante el próximo ciclo" ${eventSet.has(p.article)?'checked':''} onchange="adminToggleEventNextCycle('${p.article}',this.checked)"></td>
+ <td class="admin-event-check"><input type="checkbox" title="Se guarda al instante · Resaltar en amarillo durante el próximo ciclo" ${eventSet.has(p.article)?'checked':''} onchange="adminToggleEventNextCycle('${p.article}',this.checked)"></td>
  <td>${esc(p.article)}</td><td>${esc(p.description)}</td><td>${esc(p.brand)}</td>
  <td>${esc(p.aptitude)}</td><td>${esc(p.um)}</td><td>${esc(p.bto)}</td>
  <td class="ref-actions"><button type="button" onclick="editAdminReference('${p.article}')">Editar</button><button type="button" onclick="deleteAdminReference('${p.article}')">Eliminar</button></td>
  </tr>`).join('')+'</tbody></table>';
 
  adminUpdateSelectedCount();
+ adminUpdateEventCount(zoneId);
  renderAdminReferenceZoneTabs();
 }
 

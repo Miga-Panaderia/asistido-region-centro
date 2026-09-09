@@ -1,19 +1,13 @@
-# MIGA · Multizona v62 · Alertas para el próximo ciclo
+# MIGA · Multizona v63 · Alertas de evento + tipografía
 
-Versión basada en v60 con una lógica de alerta visual, sin modificar los sugeridos de producción.
+Versión basada en **v62 Alertas Próximo Ciclo**.
 
-## Novedades
+## Cambios v63
+- La casilla **Alerta evento** se guarda directamente al marcar/desmarcar; no requiere usar la columna `Sel.`.
+- Se separó visualmente el contador de filas seleccionadas del contador de alertas de evento.
+- Se agregó confirmación visual `✓ Guardado` al marcar una alerta.
+- Los botones de evento masivo indican que trabajan sobre las filas seleccionadas en `Sel.`.
+- La interfaz usa una tipografía de sistema más moderna: Aptos / Segoe UI Variable / Roboto con fallbacks locales, sin depender de fuentes externas.
+- No cambia la lógica de Firebase ni las reglas de Firestore.
 
-- Admin General puede marcar referencias del padrón como **Evento próximo ciclo**.
-- Al iniciar el ciclo, esas referencias quedan guardadas para las sucursales de su zona y la cola de eventos se limpia.
-- Checklist diferencia explícitamente **Presente**, **Ausente** y **Sin marcar**.
-- Las referencias marcadas Ausente durante el ciclo se transfieren como antecedente al ciclo siguiente.
-- En **Hoja del Panadero Suc**:
-  - amarillo = posible venta extraordinaria / evento,
-  - rojo = ausencia explícita en el ciclo anterior,
-  - rojo tiene prioridad si una referencia cumple ambas condiciones.
-- Los colores también se conservan al imprimir la Hoja del Panadero.
-
-La venta real de Prisma y el cálculo del sugerido no son modificados por estas alertas.
-
-No requiere cambios en las reglas de Firestore: utiliza las colecciones y permisos existentes.
+El resto de la funcionalidad de v62 se conserva.
