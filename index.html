@@ -4660,10 +4660,16 @@ body.checklist-sheet-active .mini-assistant{
 .baker-alert-badge.absence{background:#e45d5d;color:#fff;border:1px solid #c54848}
 #bakerTable tr.baker-alert-event>td{background:#fff3b5!important}
 #bakerTable tr.baker-alert-event>td.sticky-art,#bakerTable tr.baker-alert-event>td.sticky-desc{background:#fff3b5!important}
-#bakerTable tr.baker-alert-absence>td{background:#ffd2d2!important}
-#bakerTable tr.baker-alert-absence>td.sticky-art,#bakerTable tr.baker-alert-absence>td.sticky-desc{background:#ffd2d2!important}
-#bakerTable tr.baker-alert-absence{box-shadow:inset 4px 0 0 #cf3d3d}
 #bakerTable tr.baker-alert-event{box-shadow:inset 4px 0 0 #d6a900}
+/* V64.1: la ausencia ya no pinta la fila completa; sólo el día exacto registrado. */
+#bakerTable td.baker-absence-day{
+  background:#ffd2d2!important;
+  color:#8f2020!important;
+  font-weight:900!important;
+  box-shadow:inset 0 0 0 2px #cf3d3d!important;
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
 .presence-status-actions{display:flex;align-items:center;gap:4px;white-space:nowrap}
 .presence-status-btn{height:25px;min-width:34px;padding:0 7px;border:1px solid #ccd4d9;border-radius:7px;background:#fff;color:#657680;font-size:8px;font-weight:900;cursor:pointer}
 .presence-status-btn.present.active{background:#dff5e8;border-color:#6fc393;color:#17613e}
@@ -4677,7 +4683,7 @@ body.checklist-sheet-active .mini-assistant{
 }
 @media print{
  body.printing-baker #bakerTable tr.baker-alert-event>td{background:#fff3b5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- body.printing-baker #bakerTable tr.baker-alert-absence>td{background:#ffd2d2!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body.printing-baker #bakerTable td.baker-absence-day{background:#ffd2d2!important;color:#8f2020!important;box-shadow:inset 0 0 0 2px #cf3d3d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
 
@@ -4848,7 +4854,7 @@ button,input,select,textarea{font-family:inherit}
         <select id="bakerActive" onchange="renderBaker()"><option value="active">Solo activos</option><option value="all">Todos</option></select>
         <button onclick="printBakerFull()">🖨 Imprimir hoja</button>
       </div>
-      <div id="bakerAlertLegend" class="baker-alert-legend" style="display:none"><span class="event">🟨 Alerta de evento</span><span class="absence">🟥 Ausencia registrada en Checklist</span></div>
+      <div id="bakerAlertLegend" class="baker-alert-legend" style="display:none"><span class="event">🟨 Alerta de evento</span><span class="absence">🟥 Ausencia: se resalta el día registrado</span></div>
       <div class="sheet-scroll baker-horizontal-scroll" id="bakerTable"></div>
 <div id="bakerNav" class="plan-nav" aria-label="Desplazamiento horizontal Hoja del Panadero">
   <button type="button" id="bakerLeftBtn" class="plan-nav-btn" title="Ir hacia la izquierda">◀</button>
@@ -11524,17 +11530,40 @@ function initBakerNavigator(){
  setTimeout(syncBakerNavigator,120);
 }
 
-// V64 - Vista inmediata de alertas en Hoja del Panadero.
-// Conserva las alertas trasladadas al ciclo y suma, sólo para visualización,
-// las alertas de evento pendientes + ausencias explícitas del Checklist actual.
-function currentBakerAlertSets(){
+// V64.1 - Vista inmediata de alertas en Hoja del Panadero.
+// Evento: conserva el resaltado amarillo de la referencia.
+// Ausencia: en vez de pintar toda la fila, resalta únicamente la celda del día exacto
+// marcado como ausente en Checklist (Mañana, Tarde o ambos).
+function collectExplicitAbsenceDaysForCycle(code){
+ const range=presenceProductionRange(code);
+ const data=loadPresenceLocal(code);
+ const byArticle=new Map();
+ for(let i=0;i<range.days;i++){
+   const d=new Date(range.start);d.setDate(d.getDate()+i);
+   const date=presenceDateKeyFromDate(d);
+   const row=data[date];if(!row)continue;
+   [['amAbsent','Mañana'],['pmAbsent','Tarde']].forEach(([key,label])=>{
+     const map=normalizePresenceBoolMap(row[key]||{});
+     Object.keys(map).forEach(rawArt=>{
+       const art=safeArticle(rawArt);if(!art)return;
+       if(!byArticle.has(art))byArticle.set(art,new Map());
+       const byDate=byArticle.get(art);
+       if(!byDate.has(date))byDate.set(date,new Set());
+       byDate.get(date).add(label);
+     });
+   });
+ }
+ return byArticle;
+}
+function currentBakerAlertData(){
  const cycleAlerts=state.cycleAlerts||{};
- const absenceSet=new Set((Array.isArray(cycleAlerts.absenceRefs)?cycleAlerts.absenceRefs:[]).map(safeArticle).filter(Boolean));
+ const inheritedAbsenceSet=new Set((Array.isArray(cycleAlerts.absenceRefs)?cycleAlerts.absenceRefs:[]).map(safeArticle).filter(Boolean));
  const eventSet=new Set((Array.isArray(cycleAlerts.eventRefs)?cycleAlerts.eventRefs:[]).map(safeArticle).filter(Boolean));
  const currentZone=branchZoneId(state.branch)||state.zoneId||'';
  loadEventNextCycle(currentZone).forEach(art=>eventSet.add(safeArticle(art)));
- collectExplicitAbsenceRefsForCycle(state.branch).forEach(art=>absenceSet.add(safeArticle(art)));
- return {absenceSet,eventSet};
+ const absenceDays=collectExplicitAbsenceDaysForCycle(state.branch);
+ const currentAbsenceSet=new Set(absenceDays.keys());
+ return {inheritedAbsenceSet,currentAbsenceSet,absenceDays,eventSet};
 }
 function refreshBakerAlertPreviewForCurrentBranch(zoneId=''){
  const currentZone=branchZoneId(state.branch)||state.zoneId||'';
@@ -11548,8 +11577,8 @@ function renderBaker(){
  const cal=calendar();
  const visibleWeeks=weekSel==='all'?5:1;
  const bakerColspan=5+(visibleWeeks*8);
- const {absenceSet,eventSet}=currentBakerAlertSets();
- const legend=document.getElementById('bakerAlertLegend');if(legend)legend.style.display=(absenceSet.size||eventSet.size)?'flex':'none';
+ const {inheritedAbsenceSet,currentAbsenceSet,absenceDays,eventSet}=currentBakerAlertData();
+ const legend=document.getElementById('bakerAlertLegend');if(legend)legend.style.display=(inheritedAbsenceSet.size||currentAbsenceSet.size||eventSet.size)?'flex':'none';
  let h=`<thead><tr class="print-baker-title-row"><th colspan="${bakerColspan}">HOJA DEL PANADERO SUC ${state.branch}</th></tr><tr><th class="sticky-art">Art.</th><th class="sticky-desc">Descripción</th><th>U/M</th><th>Consumo</th><th>Activo</th>`;
  for(let w=0;w<5;w++){if(weekSel!=='all'&&Number(weekSel)!==w)continue;for(let d=0;d<7;d++){const x=cal[w*7+d];h+=`<th class="week">${DOW_SHORT[d]}<br>${x.day}</th>`}h+=`<th>Total S${w+1}</th>`}
  h+='</tr></thead>';
@@ -11558,12 +11587,30 @@ function renderBaker(){
    if(activeOnly&&p.active===0)continue;
    if(q&&!(`${p.article} ${p.description} ${p.brand}`.toLowerCase().includes(q)))continue;
    const art=safeArticle(p.article);
-   const hasAbsence=absenceSet.has(art),hasEvent=eventSet.has(art);
-   const alertClass=hasAbsence?'baker-alert-absence':(hasEvent?'baker-alert-event':'');
+   const currentAbsenceDays=absenceDays.get(art);
+   const hasCurrentAbsence=!!currentAbsenceDays?.size;
+   const hasInheritedAbsence=inheritedAbsenceSet.has(art);
+   const hasAbsence=hasCurrentAbsence||hasInheritedAbsence;
+   const hasEvent=eventSet.has(art);
+   // La fila sólo queda amarilla por evento. La ausencia roja se aplica celda por celda.
+   const alertClass=hasEvent?'baker-alert-event':'';
    const alertBadge=hasAbsence?'<span class="baker-alert-badge absence">AUSENCIA</span>':(hasEvent?'<span class="baker-alert-badge event">EVENTO</span>':'');
-   const alertTitle=hasAbsence?' title="Referencia con ausencia registrada en Checklist"':(hasEvent?' title="Referencia marcada por Admin como alerta de evento"':'');
+   const alertTitle=hasAbsence?' title="Referencia con ausencia registrada en Checklist; el día exacto se marca en rojo"':(hasEvent?' title="Referencia marcada por Admin como alerta de evento"':'');
    rows+=`<tr class="${alertClass}"${alertTitle}><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${alertBadge}</td><td class="center">${esc(p.um)}</td><td>${fmt(p.consumption,1)}</td><td>${p.active}</td>`;
-   for(let w=0;w<5;w++){if(weekSel!=='all'&&Number(weekSel)!==w)continue;for(let d=0;d<7;d++){const v=p.plan[w*7+d];rows+=`<td class="${v===null?'inactive':'production'}">${v===null?'':fmt(v,1)}</td>`}rows+=`<td class="week-total">${fmt(p.planWeekly[w],1)}</td>`}
+   for(let w=0;w<5;w++){
+     if(weekSel!=='all'&&Number(weekSel)!==w)continue;
+     for(let d=0;d<7;d++){
+       const idx=w*7+d;
+       const v=p.plan[idx];
+       const dateKey=presenceDateKeyFromDate(cal[idx].date);
+       const shifts=currentAbsenceDays?.get(dateKey);
+       const isAbsentDay=!!shifts?.size;
+       const cls=(v===null?'inactive':'production')+(isAbsentDay?' baker-absence-day':'');
+       const title=isAbsentDay?` title="Ausencia ${esc(presenceFormatDate(cal[idx].date))} · ${esc([...shifts].join(' / '))}"`:'';
+       rows+=`<td class="${cls}"${title}>${v===null?'':fmt(v,1)}</td>`;
+     }
+     rows+=`<td class="week-total">${fmt(p.planWeekly[w],1)}</td>`;
+   }
    rows+='</tr>';
  }
  document.getElementById('bakerTable').innerHTML=`<table class="big-grid">${h}<tbody>${rows}</tbody></table>`;
