@@ -4686,6 +4686,9 @@ body.checklist-sheet-active .mini-assistant{
 @media(max-width:520px){.baker-alert-legend{font-size:7px;gap:5px;padding:5px 6px}}
 
 
+/* === V64 · ALERTAS VISIBLES DE INMEDIATO EN HOJA DEL PANADERO === */
+/* Reutiliza los colores v62: evento amarillo, ausencia roja; rojo conserva prioridad. */
+
 /* === V63 · TIPOGRAFÍA + ALERTAS DE EVENTO MÁS CLARAS === */
 button,input,select,textarea{font-family:inherit}
 .admin-card-title,.presence-titlebar,.sheet-tab,.section-title,.panel-title{font-family:"Aptos Display","Segoe UI Variable Display","Segoe UI",Roboto,sans-serif;letter-spacing:.01em}
@@ -4845,7 +4848,7 @@ button,input,select,textarea{font-family:inherit}
         <select id="bakerActive" onchange="renderBaker()"><option value="active">Solo activos</option><option value="all">Todos</option></select>
         <button onclick="printBakerFull()">🖨 Imprimir hoja</button>
       </div>
-      <div id="bakerAlertLegend" class="baker-alert-legend" style="display:none"><span class="event">🟨 Posible venta extraordinaria</span><span class="absence">🟥 Ausencia registrada en ciclo anterior</span></div>
+      <div id="bakerAlertLegend" class="baker-alert-legend" style="display:none"><span class="event">🟨 Alerta de evento</span><span class="absence">🟥 Ausencia registrada en Checklist</span></div>
       <div class="sheet-scroll baker-horizontal-scroll" id="bakerTable"></div>
 <div id="bakerNav" class="plan-nav" aria-label="Desplazamiento horizontal Hoja del Panadero">
   <button type="button" id="bakerLeftBtn" class="plan-nav-btn" title="Ir hacia la izquierda">◀</button>
@@ -5378,7 +5381,7 @@ button,input,select,textarea{font-family:inherit}
           También podés seleccionar varias referencias para eliminarlas juntas o vaciar todo el padrón de la zona.
           El padrón se mantiene automáticamente <b>ordenado alfabéticamente por Descripción</b>.
           La carga del cronograma utiliza <b>guardado agrupado</b>: los clics se muestran al instante y se sincronizan juntos después de una breve pausa.
-          <div class="admin-event-next-note"><b>🟨 Alerta para próximo ciclo:</b> marcá directamente la casilla <b>Alerta evento</b> de cada referencia cuya venta pudo quedar influenciada por una fecha especial, promoción o evento extraordinario. La marca se guarda al instante. Al iniciar el próximo ciclo quedará sombreada en amarillo en la Hoja del Panadero y luego la lista pendiente se limpia automáticamente.</div><div class="admin-event-direct-note"><b>Importante:</b> la columna <b>Sel.</b> se usa únicamente para acciones masivas (marcar varias, quitar varias o eliminar). No es necesario seleccionar una fila para activar su alerta de evento.</div>
+          <div class="admin-event-next-note"><b>🟨 Alerta de evento:</b> marcá directamente la casilla <b>Alerta evento</b> de cada referencia cuya venta pudo quedar influenciada por una fecha especial, promoción o evento extraordinario. La marca se guarda al instante, se visualiza de inmediato en amarillo en la <b>Hoja del Panadero</b> para control y queda preparada para trasladarse al próximo ciclo. Al iniciar ese ciclo, la lista pendiente se limpia automáticamente.</div><div class="admin-event-direct-note"><b>Importante:</b> la columna <b>Sel.</b> se usa únicamente para acciones masivas (marcar varias, quitar varias o eliminar). No es necesario seleccionar una fila para activar su alerta de evento.</div>
         </div>
 
         <div class="admin-ref-search-line">
@@ -6261,6 +6264,7 @@ function adminToggleEventNextCycle(article,checked){
  const saved=saveEventNextCycle(zoneId,[...set]);
  const ok=saved.includes(art)===!!checked;
  adminUpdateEventCount(zoneId,ok?'✓ Guardado':'⚠ No se pudo guardar');
+ refreshBakerAlertPreviewForCurrentBranch(zoneId);
 }
 function adminMarkSelectedEventNextCycle(mark=true){
  if(!isMasterAdmin())return;
@@ -6272,6 +6276,7 @@ function adminMarkSelectedEventNextCycle(mark=true){
  saveEventNextCycle(zoneId,[...set]);
  renderAdminReferences();
  adminUpdateEventCount(zoneId,'✓ Guardado');
+ refreshBakerAlertPreviewForCurrentBranch(zoneId);
 }
 function clearAllEventNextCycleQueues({syncCloud=true}={}){
  zoneOrder.forEach(zoneId=>{try{localStorage.setItem(eventNextCycleKey(zoneId),'[]')}catch(e){}});
@@ -8389,6 +8394,7 @@ function firebaseApplySystemSnapshot(storage){
      renderAdminBranchPasswords();
      renderAdminReferences();
    }
+   refreshBakerAlertPreviewForCurrentBranch();
  }finally{
    firebaseCloudApplying=false;
  }
@@ -9119,7 +9125,7 @@ function renderAdminReferences(){
  </tr></thead><tbody>`+
  rows.map(p=>`<tr>
  <td class="admin-ref-check"><input type="checkbox" ${adminSelectedReferences.has(p.article)?'checked':''} onchange="adminToggleReferenceSelection('${p.article}',this.checked)"></td>
- <td class="admin-event-check"><input type="checkbox" title="Se guarda al instante · Resaltar en amarillo durante el próximo ciclo" ${eventSet.has(p.article)?'checked':''} onchange="adminToggleEventNextCycle('${p.article}',this.checked)"></td>
+ <td class="admin-event-check"><input type="checkbox" title="Se guarda al instante · Vista inmediata en Hoja del Panadero + próximo ciclo" ${eventSet.has(p.article)?'checked':''} onchange="adminToggleEventNextCycle('${p.article}',this.checked)"></td>
  <td>${esc(p.article)}</td><td>${esc(p.description)}</td><td>${esc(p.brand)}</td>
  <td>${esc(p.aptitude)}</td><td>${esc(p.um)}</td><td>${esc(p.bto)}</td>
  <td class="ref-actions"><button type="button" onclick="editAdminReference('${p.article}')">Editar</button><button type="button" onclick="deleteAdminReference('${p.article}')">Eliminar</button></td>
@@ -9556,6 +9562,7 @@ function presenceMarkStatus(article,status){
  const next=(status==='present'&&currentPresent)||(status==='absent'&&currentAbsent)?'unmarked':status;
  presenceSetItemStatus(presenceBranchCode,presenceDateISO,presenceShift,art,next);
  renderPresenceSummary();renderPresenceServiceChart();renderPresenceCalendar();renderPresenceChecklist();renderPresenceAnalytics();
+ if(normalizeBranch(presenceBranchCode)===normalizeBranch(state.branch))refreshBakerAlertPreviewForCurrentBranch(branchZoneId(presenceBranchCode));
 }
 function presenceSetAll(checked){
  if(!presenceCanEditBranch(presenceBranchCode))return;
@@ -9579,7 +9586,7 @@ function presenceSetAll(checked){
  renderPresenceServiceChart();
  renderPresenceCalendar();
  renderPresenceChecklist();
- renderPresenceAnalytics();
+ renderPresenceAnalytics(); if(normalizeBranch(presenceBranchCode)===normalizeBranch(state.branch))refreshBakerAlertPreviewForCurrentBranch(branchZoneId(presenceBranchCode));
 }
 function renderPresenceSummary(){
  if(!presenceBranchCode||!presenceDateISO)return;
@@ -11517,6 +11524,23 @@ function initBakerNavigator(){
  setTimeout(syncBakerNavigator,120);
 }
 
+// V64 - Vista inmediata de alertas en Hoja del Panadero.
+// Conserva las alertas trasladadas al ciclo y suma, sólo para visualización,
+// las alertas de evento pendientes + ausencias explícitas del Checklist actual.
+function currentBakerAlertSets(){
+ const cycleAlerts=state.cycleAlerts||{};
+ const absenceSet=new Set((Array.isArray(cycleAlerts.absenceRefs)?cycleAlerts.absenceRefs:[]).map(safeArticle).filter(Boolean));
+ const eventSet=new Set((Array.isArray(cycleAlerts.eventRefs)?cycleAlerts.eventRefs:[]).map(safeArticle).filter(Boolean));
+ const currentZone=branchZoneId(state.branch)||state.zoneId||'';
+ loadEventNextCycle(currentZone).forEach(art=>eventSet.add(safeArticle(art)));
+ collectExplicitAbsenceRefsForCycle(state.branch).forEach(art=>absenceSet.add(safeArticle(art)));
+ return {absenceSet,eventSet};
+}
+function refreshBakerAlertPreviewForCurrentBranch(zoneId=''){
+ const currentZone=branchZoneId(state.branch)||state.zoneId||'';
+ if(zoneId && currentZone && String(zoneId)!==String(currentZone))return;
+ if(document.getElementById('bakerTable'))renderBaker();
+}
 function renderBaker(){
  const q=(document.getElementById('bakerSearch')?.value||'').toLowerCase().trim();
  const weekSel=document.getElementById('bakerWeek')?.value||'all';
@@ -11524,10 +11548,8 @@ function renderBaker(){
  const cal=calendar();
  const visibleWeeks=weekSel==='all'?5:1;
  const bakerColspan=5+(visibleWeeks*8);
- const cycleAlertsNow=state.cycleAlerts||{};
- const cycleAbsenceNow=new Set(Array.isArray(cycleAlertsNow.absenceRefs)?cycleAlertsNow.absenceRefs:[]);
- const cycleEventNow=new Set(Array.isArray(cycleAlertsNow.eventRefs)?cycleAlertsNow.eventRefs:[]);
- const legend=document.getElementById('bakerAlertLegend');if(legend)legend.style.display=(cycleAbsenceNow.size||cycleEventNow.size)?'flex':'none';
+ const {absenceSet,eventSet}=currentBakerAlertSets();
+ const legend=document.getElementById('bakerAlertLegend');if(legend)legend.style.display=(absenceSet.size||eventSet.size)?'flex':'none';
  let h=`<thead><tr class="print-baker-title-row"><th colspan="${bakerColspan}">HOJA DEL PANADERO SUC ${state.branch}</th></tr><tr><th class="sticky-art">Art.</th><th class="sticky-desc">Descripción</th><th>U/M</th><th>Consumo</th><th>Activo</th>`;
  for(let w=0;w<5;w++){if(weekSel!=='all'&&Number(weekSel)!==w)continue;for(let d=0;d<7;d++){const x=cal[w*7+d];h+=`<th class="week">${DOW_SHORT[d]}<br>${x.day}</th>`}h+=`<th>Total S${w+1}</th>`}
  h+='</tr></thead>';
@@ -11535,13 +11557,11 @@ function renderBaker(){
  for(const p of computed){
    if(activeOnly&&p.active===0)continue;
    if(q&&!(`${p.article} ${p.description} ${p.brand}`.toLowerCase().includes(q)))continue;
-   const cycleAlerts=state.cycleAlerts||{};
-   const absenceSet=new Set(Array.isArray(cycleAlerts.absenceRefs)?cycleAlerts.absenceRefs:[]);
-   const eventSet=new Set(Array.isArray(cycleAlerts.eventRefs)?cycleAlerts.eventRefs:[]);
-   const hasAbsence=absenceSet.has(p.article),hasEvent=eventSet.has(p.article);
+   const art=safeArticle(p.article);
+   const hasAbsence=absenceSet.has(art),hasEvent=eventSet.has(art);
    const alertClass=hasAbsence?'baker-alert-absence':(hasEvent?'baker-alert-event':'');
-   const alertBadge=hasAbsence?'<span class="baker-alert-badge absence">AUSENCIA ANT.</span>':(hasEvent?'<span class="baker-alert-badge event">EVENTO</span>':'');
-   const alertTitle=hasAbsence?' title="Referencia marcada Ausente en el ciclo anterior"':(hasEvent?' title="Referencia marcada por Admin como posible venta extraordinaria"':'');
+   const alertBadge=hasAbsence?'<span class="baker-alert-badge absence">AUSENCIA</span>':(hasEvent?'<span class="baker-alert-badge event">EVENTO</span>':'');
+   const alertTitle=hasAbsence?' title="Referencia con ausencia registrada en Checklist"':(hasEvent?' title="Referencia marcada por Admin como alerta de evento"':'');
    rows+=`<tr class="${alertClass}"${alertTitle}><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${alertBadge}</td><td class="center">${esc(p.um)}</td><td>${fmt(p.consumption,1)}</td><td>${p.active}</td>`;
    for(let w=0;w<5;w++){if(weekSel!=='all'&&Number(weekSel)!==w)continue;for(let d=0;d<7;d++){const v=p.plan[w*7+d];rows+=`<td class="${v===null?'inactive':'production'}">${v===null?'':fmt(v,1)}</td>`}rows+=`<td class="week-total">${fmt(p.planWeekly[w],1)}</td>`}
    rows+='</tr>';
@@ -12260,6 +12280,7 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
    setTimeout(syncPlanNavigator,150);
  }
  if(targetSheet==='baker'){
+   renderBaker();
    requestAnimationFrame(()=>{
      initBakerNavigator();
      requestAnimationFrame(syncBakerNavigator);
