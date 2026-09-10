@@ -4657,7 +4657,9 @@ body.checklist-sheet-active .mini-assistant{
 .admin-event-clear{background:#fff!important;border-color:#d7dde1!important;color:#5b6870!important}
 .baker-alert-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 5px;border-radius:999px;font-size:7px;font-weight:900;line-height:1;white-space:nowrap;vertical-align:middle}
 .baker-alert-badge.event{background:#ffe27a;color:#614d00;border:1px solid #e2bf36}
-.baker-alert-badge.absence{background:#e45d5d;color:#fff;border:1px solid #c54848}
+.baker-alert-dot{display:inline-block;width:9px;height:9px;margin-left:6px;border-radius:50%;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.baker-alert-dot.absence{background:#e45d5d}
+.baker-alert-markers{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;margin-left:4px}
 #bakerTable tr.baker-alert-event>td{background:#fff3b5!important}
 #bakerTable tr.baker-alert-event>td.sticky-art,#bakerTable tr.baker-alert-event>td.sticky-desc{background:#fff3b5!important}
 #bakerTable tr.baker-alert-event{box-shadow:inset 4px 0 0 #d6a900}
@@ -4680,6 +4682,8 @@ body.checklist-sheet-active .mini-assistant{
  .presence-status-btn{min-width:30px;width:30px;padding:0;font-size:9px}
  .presence-status-btn .long{display:none}.presence-status-btn .short{display:inline}
  .baker-alert-badge{font-size:6px;padding:2px 4px;margin-left:3px}
+ .baker-alert-dot{width:8px;height:8px;margin-left:3px}
+ .baker-alert-markers{gap:3px;margin-left:2px}
 }
 @media print{
  body.printing-baker #bakerTable tr.baker-alert-event>td{background:#fff3b5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -11594,9 +11598,20 @@ function renderBaker(){
    const hasEvent=eventSet.has(art);
    // La fila sólo queda amarilla por evento. La ausencia roja se aplica celda por celda.
    const alertClass=hasEvent?'baker-alert-event':'';
-   const alertBadge=hasAbsence?'<span class="baker-alert-badge absence">AUSENCIA</span>':(hasEvent?'<span class="baker-alert-badge event">EVENTO</span>':'');
-   const alertTitle=hasAbsence?' title="Referencia con ausencia registrada en Checklist; el día exacto se marca en rojo"':(hasEvent?' title="Referencia marcada por Admin como alerta de evento"':'');
-   rows+=`<tr class="${alertClass}"${alertTitle}><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${alertBadge}</td><td class="center">${esc(p.um)}</td><td>${fmt(p.consumption,1)}</td><td>${p.active}</td>`;
+   const markerParts=[];
+   if(hasEvent)markerParts.push('<span class="baker-alert-badge event" title="Referencia marcada por Admin como alerta de evento">EVENTO</span>');
+   if(hasAbsence){
+     const absenceTitle=hasCurrentAbsence
+       ? 'Referencia con ausencia registrada en Checklist; el día exacto se marca en rojo'
+       : 'Referencia con ausencia registrada previamente; si el día está visible se marca en rojo';
+     markerParts.push(`<span class="baker-alert-dot absence" title="${absenceTitle}"></span>`);
+   }
+   const alertMarkers=markerParts.length?`<span class="baker-alert-markers">${markerParts.join('')}</span>`:'';
+   const rowTitleParts=[];
+   if(hasEvent)rowTitleParts.push('Referencia marcada por Admin como alerta de evento');
+   if(hasAbsence)rowTitleParts.push(hasCurrentAbsence?'Registra ausencia; el día exacto se marca en rojo':'Registra ausencia previa');
+   const alertTitle=rowTitleParts.length?` title="${esc(rowTitleParts.join(' · '))}"`:'';
+   rows+=`<tr class="${alertClass}"${alertTitle}><td class="sticky-art">${p.article}</td><td class="sticky-desc">${esc(p.description)}${alertMarkers}</td><td class="center">${esc(p.um)}</td><td>${fmt(p.consumption,1)}</td><td>${p.active}</td>`;
    for(let w=0;w<5;w++){
      if(weekSel!=='all'&&Number(weekSel)!==w)continue;
      for(let d=0;d<7;d++){
