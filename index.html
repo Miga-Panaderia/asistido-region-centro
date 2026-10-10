@@ -4715,6 +4715,57 @@ button,input,select,textarea{font-family:inherit}
   .admin-ref-bulk-left{align-items:flex-start}
 }
 
+
+/* =========================================================
+   V67 · REFERENCIAS ESPECIALES POR SUCURSAL
+   ========================================================= */
+.specialrefs-page{padding:12px;max-width:1500px;margin:0 auto;color:#17232d}
+.specialrefs-intro{padding:9px 11px;margin-bottom:10px;border:1px solid #cbd5dc;border-radius:8px;background:#f4f7f9;font-size:12px;line-height:1.45;color:#42515c}
+.specialrefs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.specialrefs-card{min-width:0;border:1px solid #c8d2d9;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 7px rgba(23,50,74,.06)}
+.specialrefs-card-head{padding:10px 12px;background:#17324a;color:#fff}
+.specialrefs-card-head.hot{background:#8a5a16}
+.specialrefs-card-head.check{background:#315f83}
+.specialrefs-card-title{font-size:13px;font-weight:900;letter-spacing:.2px}
+.specialrefs-card-sub{font-size:10px;line-height:1.4;opacity:.9;margin-top:3px}
+.specialrefs-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:10px;border-bottom:1px solid #e0e6ea;background:#f8fafb}
+.specialrefs-field{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:800;color:#43535e;min-width:0}
+.specialrefs-field.wide{grid-column:1/-1}
+.specialrefs-field input,.specialrefs-field select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #c5d0d7;border-radius:6px;padding:7px 8px;font-size:12px;background:#fff;color:#17232d}
+.specialrefs-days{display:flex;flex-wrap:wrap;gap:5px;padding-top:2px}
+.specialrefs-day{display:inline-flex;align-items:center;gap:3px;padding:4px 6px;border:1px solid #d2dbe1;border-radius:6px;background:#fff;font-size:10px;font-weight:800;color:#42515c}
+.specialrefs-day input{width:auto;margin:0;accent-color:#2f7657}
+.specialrefs-form-actions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.specialrefs-btn{border:1px solid #c5d0d7;border-radius:7px;padding:7px 10px;background:#fff;color:#243b4b;font-size:11px;font-weight:800;cursor:pointer}
+.specialrefs-btn.primary{background:#2f7657;border-color:#2f7657;color:#fff}
+.specialrefs-btn.danger{color:#a42f2f;border-color:#e4baba;background:#fff7f7}
+.specialrefs-btn:disabled{opacity:.45;cursor:not-allowed}
+.specialrefs-table-wrap{overflow-x:auto;padding:0 8px 8px}
+.specialrefs-table{border-collapse:collapse;width:100%;font-size:10px;background:#fff}
+.specialrefs-table th,.specialrefs-table td{border:1px solid #d7dfe4;padding:6px 7px;text-align:left;vertical-align:middle}
+.specialrefs-table th{background:#e7edf1;color:#17324a;font-weight:900;white-space:nowrap}
+.specialrefs-table td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.specialrefs-table .specialrefs-actions{display:flex;gap:4px;flex-wrap:wrap}
+.specialrefs-table .specialrefs-btn{padding:4px 6px;font-size:9px}
+.specialrefs-empty{padding:14px;text-align:center;color:#71808a;font-size:11px}
+#specialRefsMessage{display:none;margin:0 0 10px;padding:8px 10px;border-radius:7px;font-size:11px;font-weight:700}
+#specialRefsMessage.good{display:block;background:#e5f5eb;color:#21623f;border:1px solid #b8dfc6}
+#specialRefsMessage.bad{display:block;background:#fff0f0;color:#9a2e2e;border:1px solid #efc0c0}
+.specialrefs-plan-block{margin-top:12px;border:1px solid #b7c7d0;background:#fff;break-inside:avoid;page-break-inside:avoid}
+.specialrefs-plan-title{padding:7px 9px;background:#f5e7a8;color:#4c4110;font-weight:900;font-size:11px;border-bottom:1px solid #b7c7d0}
+.specialrefs-plan-note{padding:6px 9px;background:#fffdf2;color:#665d35;font-size:10px;border-bottom:1px solid #d8d1b3}
+.specialrefs-plan-table{width:100%;border-collapse:collapse;font-size:10px}
+.specialrefs-plan-table th,.specialrefs-plan-table td{border:1px solid #cbd5dc;padding:5px 7px;text-align:left}
+.specialrefs-plan-table th{background:#e7edf1;color:#17324a;font-weight:900}
+.specialrefs-plan-table td:first-child,.specialrefs-plan-table td:nth-child(2){white-space:nowrap}
+@media(max-width:1000px){.specialrefs-grid{grid-template-columns:1fr}.specialrefs-page{padding:8px}}
+@media print{
+ body.printing-mother #motherTable .specialrefs-plan-block{display:block!important;width:100%!important;margin-top:5mm!important;border:1px solid #444!important}
+ body.printing-mother #motherTable .specialrefs-plan-title{background:#f5e7a8!important;color:#17232d!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ body.printing-mother #motherTable .specialrefs-plan-table{width:100%!important;border-collapse:collapse!important;font-size:8px!important}
+ body.printing-mother #motherTable .specialrefs-plan-table th,body.printing-mother #motherTable .specialrefs-plan-table td{border:1px solid #444!important;padding:2px 4px!important;font-size:8px!important;white-space:normal!important}
+}
+
 </style>
 </head>
 <body>
@@ -5063,6 +5114,46 @@ button,input,select,textarea{font-family:inherit}
     </div>
   </section>
 
+  <section id="sheet-specialrefs" class="sheet-view">
+    <div class="specialrefs-page">
+      <div class="presence-titlebar">REFERENCIAS ESPECIALES · SUCURSAL <span id="specialRefsBranch"></span></div>
+      <div class="specialrefs-intro">Estos cuadros son independientes del padrón original. Los puntos calientes se muestran por separado en el Plan Elaboradora según las sucursales destino seleccionadas. Las referencias exclusivas de Checklist solo participan del control de presencia; no ingresan a los cálculos de producción.</div>
+      <div id="specialRefsAccessNote" class="presence-readonly-note" style="display:none"></div>
+      <div id="specialRefsMessage" role="status"></div>
+      <div class="specialrefs-grid">
+        <article class="specialrefs-card">
+          <div class="specialrefs-card-head hot"><div class="specialrefs-card-title">🔥 PUNTOS CALIENTES</div><div class="specialrefs-card-sub">Referencias fuera del padrón original que deben visualizarse en el Plan Elaboradora.</div></div>
+          <div class="specialrefs-form">
+            <label class="specialrefs-field">Artículo<input id="hotSpotArticleInput" inputmode="numeric" maxlength="7" placeholder="Código de artículo"></label>
+            <label class="specialrefs-field">Descripción<input id="hotSpotDescriptionInput" maxlength="120" placeholder="Descripción de la referencia"></label>
+            <label class="specialrefs-field">Marca<input id="hotSpotBrandInput" maxlength="60" placeholder="Marca (opcional)"></label>
+            <label class="specialrefs-field">U/M<input id="hotSpotUmInput" maxlength="12" placeholder="Ej. UN, KGR"></label>
+            <div class="specialrefs-field wide">Días en que se trabaja
+              <div class="specialrefs-days" id="hotSpotDaysInput">
+                <label class="specialrefs-day"><input type="checkbox" value="0" checked>Lun</label><label class="specialrefs-day"><input type="checkbox" value="1" checked>Mar</label><label class="specialrefs-day"><input type="checkbox" value="2" checked>Mié</label><label class="specialrefs-day"><input type="checkbox" value="3" checked>Jue</label><label class="specialrefs-day"><input type="checkbox" value="4" checked>Vie</label><label class="specialrefs-day"><input type="checkbox" value="5" checked>Sáb</label><label class="specialrefs-day"><input type="checkbox" value="6" checked>Dom</label>
+              </div>
+            </div>
+            <div class="specialrefs-form-actions"><button type="button" id="hotSpotSubmitBtn" class="specialrefs-btn primary" onclick="saveSpecialReference('hotSpotRefs')">＋ Agregar punto caliente</button><button type="button" id="hotSpotCancelEditBtn" class="specialrefs-btn" onclick="cancelSpecialReferenceEdit('hotSpotRefs')" style="display:none">Cancelar edición</button></div>
+          </div>
+          <div id="hotSpotRefsTable" class="specialrefs-table-wrap"></div>
+        </article>
+
+        <article class="specialrefs-card">
+          <div class="specialrefs-card-head check"><div class="specialrefs-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST</div><div class="specialrefs-card-sub">Referencias que deben controlarse por fecha y turno, pero no son de elaboración.</div></div>
+          <div class="specialrefs-form">
+            <label class="specialrefs-field">Artículo<input id="checkExtraArticleInput" inputmode="numeric" maxlength="7" placeholder="Código de artículo"></label>
+            <label class="specialrefs-field">Descripción<input id="checkExtraDescriptionInput" maxlength="120" placeholder="Descripción de la referencia"></label>
+            <label class="specialrefs-field">Marca<input id="checkExtraBrandInput" maxlength="60" placeholder="Marca (opcional)"></label>
+            <label class="specialrefs-field">Aptitud<input id="checkExtraAptitudeInput" maxlength="20" placeholder="Aptitud (opcional)"></label>
+            <label class="specialrefs-field">U/M<input id="checkExtraUmInput" maxlength="12" placeholder="Ej. UN, KGR"></label>
+            <div class="specialrefs-form-actions"><button type="button" id="checkExtraSubmitBtn" class="specialrefs-btn primary" onclick="saveSpecialReference('checklistExtraRefs')">＋ Agregar a Checklist</button><button type="button" id="checkExtraCancelEditBtn" class="specialrefs-btn" onclick="cancelSpecialReferenceEdit('checklistExtraRefs')" style="display:none">Cancelar edición</button></div>
+          </div>
+          <div id="checklistExtraRefsTable" class="specialrefs-table-wrap"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <div class="excel-tabs">
@@ -5072,6 +5163,7 @@ button,input,select,textarea{font-family:inherit}
   <button class="sheet-tab" data-sheet="baker">Hoja del Panadero Suc</button>
   <button class="sheet-tab" data-sheet="mother">Plan Elaboradora</button>
   <button id="presenceTabBtn" class="sheet-tab" data-sheet="presence">Checklist</button>
+  <button id="specialRefsTabBtn" class="sheet-tab" data-sheet="specialrefs">Referencias especiales</button>
   <span class="tab-status" id="tabStatus">Sucursal 068</span>
 </div>
 
@@ -6314,6 +6406,26 @@ function safeArticle(v){
  if(digits.length>7)return '';
  return digits.padStart(7,'0');
 }
+function normalizeSpecialRefList(list,withSchedule=true){
+ const seen=new Set();
+ return (Array.isArray(list)?list:[]).map(item=>{
+   if(!item||typeof item!=='object')return null;
+   const article=safeArticle(item.article||item.code);
+   const description=String(item.description||'').trim();
+   if(!article||!description||seen.has(article))return null;
+   seen.add(article);
+   const sourceSchedule=Array.isArray(item.schedule)?item.schedule:null;
+   const schedule=Array.from({length:7},(_,i)=>sourceSchedule?(Number(sourceSchedule[i])>0?1:0):1);
+   return {
+     article,
+     description,
+     brand:String(item.brand||'').trim(),
+     aptitude:String(item.aptitude||'').trim(),
+     um:String(item.um||'').trim(),
+     schedule:withSchedule?schedule:[1,1,1,1,1,1,1]
+   };
+ }).filter(Boolean);
+}
 function normalizeStateArticles(obj){
  if(!obj||typeof obj!=='object')return obj;
 
@@ -6337,6 +6449,9 @@ function normalizeStateArticles(obj){
  obj.sales=normalizedSales;
 
  obj.salesRows=(obj.salesRows||[]).map(r=>({...r,article:safeArticle(r.article)})).filter(r=>r.article);
+ // Las referencias especiales pertenecen a la configuración de cada sucursal.
+ obj.hotSpotRefs=normalizeSpecialRefList(obj.hotSpotRefs,true);
+ obj.checklistExtraRefs=normalizeSpecialRefList(obj.checklistExtraRefs,false);
  return obj;
 }
 state=normalizeStateArticles(state);
@@ -6739,6 +6854,7 @@ function recalc(){
  renderSales();
  renderBaker();
  renderMotherSheet();
+ if(typeof renderSpecialRefs==='function')renderSpecialRefs();
  initMobileTouchScrolling();
  clearCronogramaDirtyState();
 }
@@ -9270,6 +9386,132 @@ async function adminReplaceReferences(file){
 
 
 
+/* ===================== REFERENCIAS ESPECIALES · V67 ===================== */
+const SPECIAL_REF_TYPES={
+ hotSpotRefs:{prefix:'hotSpot',label:'punto caliente',other:'checklistExtraRefs'},
+ checklistExtraRefs:{prefix:'checkExtra',label:'referencia de Checklist',other:'hotSpotRefs'}
+};
+const SPECIAL_REF_DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const specialRefEditing={hotSpotRefs:'',checklistExtraRefs:''};
+function specialRefCanEdit(){return canEditCurrentBranch()}
+function specialRefSetMessage(message,good=false){
+ const box=document.getElementById('specialRefsMessage');if(!box)return;
+ box.textContent=message||'';
+ box.className=message?(good?'good':'bad'):'';
+ box.style.display=message?'block':'none';
+}
+function specialRefFormValues(type){
+ const cfg=SPECIAL_REF_TYPES[type];if(!cfg)return null;
+ const get=id=>String(document.getElementById(id)?.value||'').trim();
+ const values={
+   article:safeArticle(get(cfg.prefix+'ArticleInput')),
+   description:get(cfg.prefix+'DescriptionInput'),
+   brand:get(cfg.prefix+'BrandInput'),
+   aptitude:type==='checklistExtraRefs'?get('checkExtraAptitudeInput'):'',
+   um:get(cfg.prefix+'UmInput')
+ };
+ if(type==='hotSpotRefs'){
+   const checks=[...(document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]'))];
+   values.schedule=Array.from({length:7},(_,i)=>checks.some(x=>Number(x.value)===i&&x.checked)?1:0);
+ }else values.schedule=[1,1,1,1,1,1,1];
+ return values;
+}
+function specialRefResetForm(type){
+ const cfg=SPECIAL_REF_TYPES[type];if(!cfg)return;
+ ['ArticleInput','DescriptionInput','BrandInput','UmInput'].forEach(suffix=>{const el=document.getElementById(cfg.prefix+suffix);if(el)el.value=''});
+ if(type==='checklistExtraRefs'){const el=document.getElementById('checkExtraAptitudeInput');if(el)el.value=''}
+ if(type==='hotSpotRefs')document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]').forEach(x=>x.checked=true);
+ specialRefEditing[type]='';
+ const submit=document.getElementById(cfg.prefix+'SubmitBtn');if(submit)submit.textContent=type==='hotSpotRefs'?'＋ Agregar punto caliente':'＋ Agregar a Checklist';
+ const cancel=document.getElementById(cfg.prefix+'CancelEditBtn');if(cancel)cancel.style.display='none';
+}
+function cancelSpecialReferenceEdit(type){specialRefResetForm(type);specialRefSetMessage('Edición cancelada.',true)}
+function specialRefConflict(article,type,editingArticle=''){
+ const art=safeArticle(article);
+ if((state.products||[]).some(p=>safeArticle(p.article)===art))return 'La referencia ya pertenece al padrón original. No se puede duplicar en un cuadro especial.';
+ const other=state[SPECIAL_REF_TYPES[type].other]||[];
+ if(other.some(p=>safeArticle(p.article)===art))return 'La referencia ya está cargada en el otro cuadro especial.';
+ const own=state[type]||[];
+ if(own.some(p=>safeArticle(p.article)===art && safeArticle(p.article)!==safeArticle(editingArticle)))return 'Ese artículo ya está cargado en este cuadro.';
+ return '';
+}
+function saveSpecialReference(type){
+ const cfg=SPECIAL_REF_TYPES[type];if(!cfg)return;
+ if(!specialRefCanEdit()){specialRefSetMessage('No tenés permisos para modificar la configuración de esta sucursal.');return}
+ const values=specialRefFormValues(type);
+ if(!values.article){specialRefSetMessage('Ingresá un código de artículo válido.');return}
+ if(!values.description){specialRefSetMessage('La descripción es obligatoria.');return}
+ if(type==='hotSpotRefs'&&!values.schedule.some(Boolean)){specialRefSetMessage('Seleccioná al menos un día para trabajar el punto caliente.');return}
+ const editingArticle=specialRefEditing[type]||'';
+ const conflict=specialRefConflict(values.article,type,editingArticle);
+ if(conflict){specialRefSetMessage(conflict);return}
+ const list=Array.isArray(state[type])?state[type].slice():[];
+ const existingIndex=editingArticle?list.findIndex(x=>safeArticle(x.article)===safeArticle(editingArticle)):-1;
+ const entry={...values};
+ if(existingIndex>=0)list[existingIndex]=entry;else list.push(entry);
+ state[type]=normalizeSpecialRefList(list,type==='hotSpotRefs');
+ const label=existingIndex>=0?'Referencia actualizada.':'Referencia agregada.';
+ specialRefResetForm(type);
+ specialRefSetMessage(label+' Se guardará automáticamente en la sucursal '+state.branch+'.',true);
+ renderSpecialRefs();
+ scheduleSave();
+ if(activeSheetName()==='presence'&&normalizeBranch(presenceBranchCode)===normalizeBranch(state.branch))renderPresenceSheet();
+ if(activeSheetName()==='mother')renderMotherSheet();
+}
+function editSpecialReference(type,article){
+ if(!specialRefCanEdit()){specialRefSetMessage('No tenés permisos para editar estas referencias.');return}
+ const cfg=SPECIAL_REF_TYPES[type];const item=(state[type]||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!cfg||!item)return;
+ document.getElementById(cfg.prefix+'ArticleInput').value=item.article;
+ document.getElementById(cfg.prefix+'DescriptionInput').value=item.description||'';
+ document.getElementById(cfg.prefix+'BrandInput').value=item.brand||'';
+ document.getElementById(cfg.prefix+'UmInput').value=item.um||'';
+ if(type==='checklistExtraRefs')document.getElementById('checkExtraAptitudeInput').value=item.aptitude||'';
+ if(type==='hotSpotRefs')document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]').forEach(x=>x.checked=!!item.schedule?.[Number(x.value)]);
+ specialRefEditing[type]=safeArticle(item.article);
+ const submit=document.getElementById(cfg.prefix+'SubmitBtn');if(submit)submit.textContent='Guardar cambios';
+ const cancel=document.getElementById(cfg.prefix+'CancelEditBtn');if(cancel)cancel.style.display='';
+ specialRefSetMessage('Editando '+item.article+' · '+item.description,true);
+ const field=document.getElementById(cfg.prefix+'DescriptionInput');if(field)field.focus();
+}
+function deleteSpecialReference(type,article){
+ if(!specialRefCanEdit()){specialRefSetMessage('No tenés permisos para eliminar estas referencias.');return}
+ const list=Array.isArray(state[type])?state[type]:[];
+ const item=list.find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de este cuadro?'))return;
+ state[type]=list.filter(x=>safeArticle(x.article)!==safeArticle(article));
+ if(specialRefEditing[type]===safeArticle(article))specialRefResetForm(type);
+ specialRefSetMessage('Referencia eliminada de la sucursal '+state.branch+'.',true);
+ renderSpecialRefs();scheduleSave();
+ if(activeSheetName()==='presence'&&normalizeBranch(presenceBranchCode)===normalizeBranch(state.branch))renderPresenceSheet();
+ if(activeSheetName()==='mother')renderMotherSheet();
+}
+function renderSpecialRefTable(type){
+ const target=document.getElementById(type==='hotSpotRefs'?'hotSpotRefsTable':'checklistExtraRefsTable');if(!target)return;
+ const list=Array.isArray(state[type])?state[type].slice():[];
+ const canEdit=specialRefCanEdit();
+ list.sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
+ if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias cargadas en este cuadro.</div>';return}
+ const actions=item=>`<div class="specialrefs-actions"><button type="button" class="specialrefs-btn" ${canEdit?'':'disabled'} onclick="editSpecialReference('${type}','${escAttr(item.article)}')">Editar</button><button type="button" class="specialrefs-btn danger" ${canEdit?'':'disabled'} onclick="deleteSpecialReference('${type}','${escAttr(item.article)}')">Eliminar</button></div>`;
+ if(type==='hotSpotRefs'){
+   target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>U/M</th><th>Días</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>{
+     const days=SPECIAL_REF_DAYS.filter((_,i)=>item.schedule?.[i]).join(', ')||'Sin días';
+     return `<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.um||'—')}</td><td>${esc(days)}</td><td>${actions(item)}</td></tr>`;
+   }).join('')}</tbody></table>`;
+ }else{
+   target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>`<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td>${actions(item)}</td></tr>`).join('')}</tbody></table>`;
+ }
+}
+function renderSpecialRefs(){
+ const title=document.getElementById('specialRefsBranch');if(title)title.textContent=state.branch+' · '+(state.branchName||branchCatalog[state.branch]?.name||'');
+ const note=document.getElementById('specialRefsAccessNote');
+ const canEdit=specialRefCanEdit();
+ if(note){note.style.display=canEdit?'none':'block';note.textContent='Vista de solo lectura. Para administrar estas referencias, ingresá a la sucursal correspondiente o usá Administrador General.'}
+ ['hotSpotArticleInput','hotSpotDescriptionInput','hotSpotBrandInput','hotSpotUmInput','checkExtraArticleInput','checkExtraDescriptionInput','checkExtraBrandInput','checkExtraAptitudeInput','checkExtraUmInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!canEdit});
+ document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]').forEach(el=>el.disabled=!canEdit);
+ ['hotSpotSubmitBtn','hotSpotCancelEditBtn','checkExtraSubmitBtn','checkExtraCancelEditBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!canEdit});
+ renderSpecialRefTable('hotSpotRefs');renderSpecialRefTable('checklistExtraRefs');
+}
+
 /* ===================== PLAN ELABORADORA ===================== */
 const MOTHER_SELECTION_PREFIX='panaderia_multizona_elaboradora_dest_';
 const MOTHER_BRANCH_STORAGE='panaderia_multizona_elaboradora_madre_v43';
@@ -9422,16 +9664,23 @@ function presenceDayIndex(date){
 }
 function presenceRowsForDate(code,date){
  const cfg=presenceBranchState(code);
- if(!cfg||!Array.isArray(cfg.products))return [];
- return cfg.products
-   .filter(p=>{
-     const art=safeArticle(p.article);
-     if(!art)return false;
-     if(!Array.isArray(p.schedule))return true;
-     return p.schedule.some(v=>Number(v)>0);
-   })
-   .slice()
-   .sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
+ if(!cfg)return [];
+ const byArticle=new Map();
+ (Array.isArray(cfg.products)?cfg.products:[]).filter(p=>{
+   const art=safeArticle(p.article);
+   if(!art)return false;
+   if(!Array.isArray(p.schedule))return true;
+   return p.schedule.some(v=>Number(v)>0);
+ }).forEach(p=>{
+   const art=safeArticle(p.article);if(!art||byArticle.has(art))return;
+   byArticle.set(art,{...p,article:art});
+ });
+ // Las referencias exclusivas de Checklist siempre se controlan, pero nunca se agregan al padrón ni a los cálculos.
+ (Array.isArray(cfg.checklistExtraRefs)?cfg.checklistExtraRefs:[]).forEach(ref=>{
+   const art=safeArticle(ref.article);if(!art||byArticle.has(art))return;
+   byArticle.set(art,{...ref,article:art,source:'checklist-special'});
+ });
+ return Array.from(byArticle.values()).sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
 }
 function presenceShiftMap(code,date,shift){
  const data=loadPresenceLocal(code);
@@ -10103,6 +10352,7 @@ function updateMotherAdminUI(){
  const presenceTab=document.getElementById('presenceTabBtn');
  if(presenceTab)presenceTab.classList.remove('presence-admin-hidden');
  if(document.getElementById('presenceCalendar'))renderPresenceSheet();
+ if(document.getElementById('specialRefsBranch')&&typeof renderSpecialRefs==='function')renderSpecialRefs();
  if(isMasterAdmin())populateEmergencyRestoreSelectors();
 }
 async function toggleMotherAdmin(){
@@ -10165,7 +10415,7 @@ function saveMotherSelection(){
 }
 function getBranchStateForMother(code){
  const meta=branchCatalog[code]||{code,name:''};
- let s=loadLocalFor(code)||makeBranchState(code,meta.name);
+ let s=(normalizeBranch(code)===normalizeBranch(state.branch)?state:loadLocalFor(code))||makeBranchState(code,meta.name);
  s=clone(s);
  s.branch=code;
  s.branchName=meta.name||s.branchName||'';
@@ -10442,6 +10692,29 @@ function renderMotherSheet(){
  initMotherNavigator();
  updateMotherAdminUI();
 }
+function motherHotSpotRows(selected,branchData,dateISO){
+ const out=[];
+ (selected||[]).forEach(code=>{
+   const data=branchData?.[code];if(!data||data.index<0||data.index>=35)return;
+   const dayIndex=data.index%7;
+   (Array.isArray(data.state?.hotSpotRefs)?data.state.hotSpotRefs:[]).forEach(ref=>{
+     const article=safeArticle(ref.article);if(!article)return;
+     const schedule=Array.isArray(ref.schedule)?ref.schedule:[1,1,1,1,1,1,1];
+     if(!Number(schedule[dayIndex]))return;
+     out.push({
+       branch:code,branchName:branchCatalog[code]?.name||'',article,
+       description:String(ref.description||''),brand:String(ref.brand||''),
+       aptitude:String(ref.aptitude||''),um:String(ref.um||'')
+     });
+   });
+ });
+ return out.sort((a,b)=>Number(a.branch)-Number(b.branch)||String(a.description).localeCompare(String(b.description),'es',{sensitivity:'base'})||a.article.localeCompare(b.article));
+}
+function renderMotherHotSpotBlock(rows){
+ const list=Array.isArray(rows)?rows:[];
+ const body=list.length?list.map(item=>`<tr><td>${esc(item.branch)} · ${esc(item.branchName)}</td><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.um||'—')}</td></tr>`).join(''):'<tr><td colspan="5" class="specialrefs-empty">No hay puntos calientes configurados para esta fecha en las sucursales destino seleccionadas.</td></tr>';
+ return `<div class="specialrefs-plan-block"><div class="specialrefs-plan-title">🔥 PUNTOS CALIENTES · REFERENCIAS ESPECIALES</div><div class="specialrefs-plan-note">Listado separado del padrón original. Se muestran según las sucursales destino seleccionadas y los días configurados; no se suman a los cálculos ni a los totales de kilos.</div><table class="specialrefs-plan-table"><thead><tr><th>Sucursal destino</th><th>Artículo</th><th>Descripción</th><th>Marca</th><th>U/M</th></tr></thead><tbody>${body}</tbody></table></div>`;
+}
 function renderMotherTable(){
  const target=document.getElementById('motherTable');
  if(!target)return;
@@ -10479,6 +10752,7 @@ function renderMotherTable(){
    });
    branchData[code]={state:s,index,map};
  });
+ const hotSpotRows=motherHotSpotRows(selected,branchData,motherDateISO);
 
  let h='<table class="mother-grid"><thead>';
  h+='<tr class="mother-head-row-1"><th class="article" rowspan="2">Articulo</th><th class="description" rowspan="2">Descripción</th><th class="brand mobile-hide-mother" rowspan="2">Marca</th><th class="aptitude mobile-hide-mother" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto mobile-hide-mother" rowspan="2">Bto</th>';
@@ -10512,6 +10786,7 @@ function renderMotherTable(){
  h+=`<td class="product-total">${fmt(grandTotal,1)}</td></tr>`;
 
  h+='</tbody></table>';
+ h+=renderMotherHotSpotBlock(hotSpotRows);
  target.innerHTML=h;
  requestAnimationFrame(syncMotherNavigator);
  setTimeout(syncMotherNavigator,60);
@@ -10568,6 +10843,7 @@ function motherOutputDataset(){
  });
 
  const grandTotal=selected.reduce((sum,code)=>sum+branchTotals[code],0);
+ const hotSpotRows=motherHotSpotRows(selected,branchData,motherDateISO);
  return {
    elaborator:motherBranchCode,
    elaboratorName:branchCatalog[motherBranchCode]?.name||'',
@@ -10576,6 +10852,7 @@ function motherOutputDataset(){
    dateLabel:spanishDayDate(motherDateISO),
    selected,
    rows,
+   hotSpotRows,
    branchTotals,
    grandTotal
  };
@@ -10991,7 +11268,20 @@ function buildMotherXlsx(data){
  const totalValues=['TOTAL DE KILOS POR SUCURSAL','','','','','',
    ...data.selected.map(code=>data.branchTotals[code]),data.grandTotal];
  rows.push(`<row r="${r}" ht="20" customHeight="1">${totalValues.map((v,i)=>xlsxCellXml(v,r,i+1,7,i<6)).join('')}</row>`);
- const lastRow=r;
+ const baseLastRow=r;
+ let hotSpotTitleRow=0,hotSpotHeaderRow=0;
+ if(Array.isArray(data.hotSpotRows)&&data.hotSpotRows.length){
+   r+=2;hotSpotTitleRow=r;
+   rows.push(`<row r="${r}" ht="23" customHeight="1">${xlsxCellXml('PUNTOS CALIENTES · REFERENCIAS ESPECIALES',r,1,1,true)}</row>`);r++;
+   hotSpotHeaderRow=r;
+   const hotHeaders=['Sucursal destino','Artículo','Descripción','Marca','U/M'];
+   rows.push(`<row r="${r}" ht="22" customHeight="1">${hotHeaders.map((h,i)=>xlsxCellXml(h,r,i+1,4,true)).join('')}</row>`);r++;
+   data.hotSpotRows.forEach(item=>{
+     const values=[item.branch+(item.branchName?' - '+item.branchName:''),item.article,item.description,item.brand||'',item.um||''];
+     rows.push(`<row r="${r}" ht="18" customHeight="1">${values.map((v,i)=>xlsxCellXml(v,r,i+1,0,true)).join('')}</row>`);r++;
+   });
+ }
+ const lastRow=Math.max(baseLastRow,r-1);
 
  const cols=[];
  headers.forEach((_,i)=>{
@@ -11016,12 +11306,13 @@ function buildMotherXlsx(data){
  <sheetFormatPr defaultRowHeight="15"/>
  <cols>${cols.join('')}</cols>
  <sheetData>${rows.join('')}</sheetData>
- <autoFilter ref="A${headerRow}:${lastCol}${lastRow-1}"/>
- <mergeCells count="4">
+ <autoFilter ref="A${headerRow}:${lastCol}${totalRow-1}"/>
+ <mergeCells count="${hotSpotTitleRow?5:4}">
   <mergeCell ref="A1:${lastCol}1"/>
   <mergeCell ref="A2:${lastCol}2"/>
   <mergeCell ref="A3:${lastCol}3"/>
-  <mergeCell ref="A${totalRow}:F${totalRow}"/>
+  <mergeCell ref="A${totalRow}:F${totalRow}"/>${hotSpotTitleRow?`
+  <mergeCell ref="A${hotSpotTitleRow}:E${hotSpotTitleRow}"/>`:''}
  </mergeCells>
  <printOptions horizontalCentered="1"/>
  <pageMargins left="0.2" right="0.2" top="0.3" bottom="0.3" header="0.1" footer="0.1"/>
@@ -11596,14 +11887,12 @@ function renderBaker(){
    const hasInheritedAbsence=inheritedAbsenceSet.has(art);
    const hasAbsence=hasCurrentAbsence||hasInheritedAbsence;
    const hasEvent=eventSet.has(art);
-   // La fila sólo queda amarilla por evento. La ausencia roja se aplica celda por celda.
+   // La fila sólo queda amarilla por evento. La ausencia se indica con un punto y en la celda del día exacto.
    const alertClass=hasEvent?'baker-alert-event':'';
    const markerParts=[];
    if(hasEvent)markerParts.push('<span class="baker-alert-badge event" title="Referencia marcada por Admin como alerta de evento">EVENTO</span>');
    if(hasAbsence){
-     const absenceTitle=hasCurrentAbsence
-       ? 'Referencia con ausencia registrada en Checklist; el día exacto se marca en rojo'
-       : 'Referencia con ausencia registrada previamente; si el día está visible se marca en rojo';
+     const absenceTitle=hasCurrentAbsence?'Referencia con ausencia registrada en Checklist; el día exacto se marca en rojo':'Referencia con ausencia registrada previamente; si el día está visible se marca en rojo';
      markerParts.push(`<span class="baker-alert-dot absence" title="${absenceTitle}"></span>`);
    }
    const alertMarkers=markerParts.length?`<span class="baker-alert-markers">${markerParts.join('')}</span>`:'';
@@ -12360,6 +12649,9 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
  }
  if(targetSheet==='presence'){
    requestAnimationFrame(renderPresenceSheet);
+ }
+ if(targetSheet==='specialrefs'){
+   requestAnimationFrame(renderSpecialRefs);
  }
  setTimeout(initMobileTouchScrolling,0);
  assistantUpdateContext();
