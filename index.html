@@ -4759,6 +4759,38 @@ button,input,select,textarea{font-family:inherit}
 .specialrefs-plan-table th{background:#e7edf1;color:#17324a;font-weight:900}
 .specialrefs-plan-table td:first-child,.specialrefs-plan-table td:nth-child(2){white-space:nowrap}
 @media(max-width:1000px){.specialrefs-grid{grid-template-columns:1fr}.specialrefs-page{padding:8px}}
+.checklist-config-panel{max-width:1500px;margin:14px auto 18px;padding:12px;border:1px solid #cbd5dc;border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(23,50,74,.06);color:#17232d}
+.checklist-config-header{display:flex;justify-content:space-between;gap:10px;padding:3px 2px 10px;border-bottom:1px solid #e2e8ec;margin-bottom:10px}
+.checklist-config-title{font-size:13px;font-weight:900;letter-spacing:.3px;color:#17324a}
+.checklist-config-subtitle{font-size:10px;line-height:1.45;color:#657580;margin-top:4px}
+.checklist-config-grid{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,1.6fr);gap:12px;align-items:start}
+.checklist-config-card{min-width:0;border:1px solid #d4dde2;border-radius:9px;padding:10px;background:#fbfcfd}
+.checklist-config-card-title{font-size:11px;font-weight:900;color:#17324a;margin-bottom:8px}
+.checklist-config-field{display:flex;flex-direction:column;gap:4px;font-size:10px;font-weight:800;color:#465761;min-width:0}
+.checklist-config-field input,.checklist-config-field select{box-sizing:border-box;width:100%;min-width:0;padding:7px 8px;border:1px solid #c5d0d7;border-radius:6px;background:#fff;color:#17232d;font-size:11px}
+.checklist-config-field input:disabled,.checklist-config-field select:disabled{background:#eef1f3;color:#7b878d}
+.checklist-config-note{font-size:10px;line-height:1.45;color:#667782;margin:7px 0}
+.checklist-config-preview-title{font-size:9px;font-weight:900;color:#8a5a16;margin-top:10px;padding-top:8px;border-top:1px solid #e2e8ec}
+.checklist-hotspot-preview{list-style:none;padding:0;margin:6px 0 0;display:flex;flex-direction:column;gap:4px;max-height:210px;overflow:auto;font-size:10px;color:#334650}
+.checklist-hotspot-preview li{padding:5px 7px;border-radius:5px;background:#fff6d8;border:1px solid #ead99a}
+.checklist-config-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}
+.checklist-config-form-actions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.checklist-config-form-actions button{border:1px solid #c5d0d7;border-radius:6px;padding:7px 10px;background:#fff;color:#243b4b;font-size:10px;font-weight:800;cursor:pointer}
+.checklist-config-form-actions button:first-child{background:#2f7657;border-color:#2f7657;color:#fff}
+.checklist-config-form-actions button:disabled{opacity:.45;cursor:not-allowed}
+.checklist-config-status{min-height:0;font-size:10px;margin:6px 0;color:#9a2e2e}
+.checklist-config-status:empty{display:none}
+.checklist-config-status.good{color:#21623f}
+#adminHotSpotCard{grid-column:1/-1}
+.admin-hotspot-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-items:end;padding:10px;border:1px solid #c8d1d7;background:#fff;box-sizing:border-box}
+.admin-hotspot-form .admin-field{margin-bottom:0;min-width:0}
+.admin-hotspot-form .admin-wide{grid-column:1/-1;min-width:0}
+.admin-hotspot-form .admin-field input,.admin-hotspot-form .admin-field select{box-sizing:border-box;width:100%;min-width:0;height:30px;border:1px solid #c5d0d7;border-radius:5px;padding:4px 7px;background:#fff;color:#17232d}
+.admin-hotspot-form .admin-actions{grid-column:1/-1;margin-top:0}
+#adminHotSpotList{margin-top:9px;max-height:380px;overflow:auto}
+@media(max-width:900px){.checklist-config-grid{grid-template-columns:1fr}.checklist-config-panel{margin:10px 4px;padding:8px}.admin-hotspot-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.checklist-config-form{grid-template-columns:1fr}.checklist-config-form-actions{grid-column:auto}.checklist-config-title{font-size:11px}.admin-hotspot-form{grid-template-columns:1fr}.admin-hotspot-form .admin-wide{grid-column:auto}}
+
 @media print{
  body.printing-mother #motherTable .specialrefs-plan-block{display:block!important;width:100%!important;margin-top:5mm!important;border:1px solid #444!important}
  body.printing-mother #motherTable .specialrefs-plan-title{background:#f5e7a8!important;color:#17232d!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -4868,6 +4900,7 @@ button,input,select,textarea{font-family:inherit}
         <div id="patronSheet" class="patron-wrap"></div>
       </div>
     </div>
+    <div id="checklistConfigParams" class="checklist-config-panel"></div>
   </section>
 
   <section id="sheet-plan" class="sheet-view">
@@ -5114,45 +5147,6 @@ button,input,select,textarea{font-family:inherit}
     </div>
   </section>
 
-  <section id="sheet-specialrefs" class="sheet-view">
-    <div class="specialrefs-page">
-      <div class="presence-titlebar">REFERENCIAS ESPECIALES · SUCURSAL <span id="specialRefsBranch"></span></div>
-      <div class="specialrefs-intro">Estos cuadros son independientes del padrón original. Los puntos calientes se muestran por separado en el Plan Elaboradora según las sucursales destino seleccionadas. Las referencias exclusivas de Checklist solo participan del control de presencia; no ingresan a los cálculos de producción.</div>
-      <div id="specialRefsAccessNote" class="presence-readonly-note" style="display:none"></div>
-      <div id="specialRefsMessage" role="status"></div>
-      <div class="specialrefs-grid">
-        <article class="specialrefs-card">
-          <div class="specialrefs-card-head hot"><div class="specialrefs-card-title">🔥 PUNTOS CALIENTES</div><div class="specialrefs-card-sub">Referencias fuera del padrón original que deben visualizarse en el Plan Elaboradora.</div></div>
-          <div class="specialrefs-form">
-            <label class="specialrefs-field">Artículo<input id="hotSpotArticleInput" inputmode="numeric" maxlength="7" placeholder="Código de artículo"></label>
-            <label class="specialrefs-field">Descripción<input id="hotSpotDescriptionInput" maxlength="120" placeholder="Descripción de la referencia"></label>
-            <label class="specialrefs-field">Marca<input id="hotSpotBrandInput" maxlength="60" placeholder="Marca (opcional)"></label>
-            <label class="specialrefs-field">U/M<input id="hotSpotUmInput" maxlength="12" placeholder="Ej. UN, KGR"></label>
-            <div class="specialrefs-field wide">Días en que se trabaja
-              <div class="specialrefs-days" id="hotSpotDaysInput">
-                <label class="specialrefs-day"><input type="checkbox" value="0" checked>Lun</label><label class="specialrefs-day"><input type="checkbox" value="1" checked>Mar</label><label class="specialrefs-day"><input type="checkbox" value="2" checked>Mié</label><label class="specialrefs-day"><input type="checkbox" value="3" checked>Jue</label><label class="specialrefs-day"><input type="checkbox" value="4" checked>Vie</label><label class="specialrefs-day"><input type="checkbox" value="5" checked>Sáb</label><label class="specialrefs-day"><input type="checkbox" value="6" checked>Dom</label>
-              </div>
-            </div>
-            <div class="specialrefs-form-actions"><button type="button" id="hotSpotSubmitBtn" class="specialrefs-btn primary" onclick="saveSpecialReference('hotSpotRefs')">＋ Agregar punto caliente</button><button type="button" id="hotSpotCancelEditBtn" class="specialrefs-btn" onclick="cancelSpecialReferenceEdit('hotSpotRefs')" style="display:none">Cancelar edición</button></div>
-          </div>
-          <div id="hotSpotRefsTable" class="specialrefs-table-wrap"></div>
-        </article>
-
-        <article class="specialrefs-card">
-          <div class="specialrefs-card-head check"><div class="specialrefs-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST</div><div class="specialrefs-card-sub">Referencias que deben controlarse por fecha y turno, pero no son de elaboración.</div></div>
-          <div class="specialrefs-form">
-            <label class="specialrefs-field">Artículo<input id="checkExtraArticleInput" inputmode="numeric" maxlength="7" placeholder="Código de artículo"></label>
-            <label class="specialrefs-field">Descripción<input id="checkExtraDescriptionInput" maxlength="120" placeholder="Descripción de la referencia"></label>
-            <label class="specialrefs-field">Marca<input id="checkExtraBrandInput" maxlength="60" placeholder="Marca (opcional)"></label>
-            <label class="specialrefs-field">Aptitud<input id="checkExtraAptitudeInput" maxlength="20" placeholder="Aptitud (opcional)"></label>
-            <label class="specialrefs-field">U/M<input id="checkExtraUmInput" maxlength="12" placeholder="Ej. UN, KGR"></label>
-            <div class="specialrefs-form-actions"><button type="button" id="checkExtraSubmitBtn" class="specialrefs-btn primary" onclick="saveSpecialReference('checklistExtraRefs')">＋ Agregar a Checklist</button><button type="button" id="checkExtraCancelEditBtn" class="specialrefs-btn" onclick="cancelSpecialReferenceEdit('checklistExtraRefs')" style="display:none">Cancelar edición</button></div>
-          </div>
-          <div id="checklistExtraRefsTable" class="specialrefs-table-wrap"></div>
-        </article>
-      </div>
-    </div>
-  </section>
 
 </div>
 
@@ -5163,7 +5157,6 @@ button,input,select,textarea{font-family:inherit}
   <button class="sheet-tab" data-sheet="baker">Hoja del Panadero Suc</button>
   <button class="sheet-tab" data-sheet="mother">Plan Elaboradora</button>
   <button id="presenceTabBtn" class="sheet-tab" data-sheet="presence">Checklist</button>
-  <button id="specialRefsTabBtn" class="sheet-tab" data-sheet="specialrefs">Referencias especiales</button>
   <span class="tab-status" id="tabStatus">Sucursal 068</span>
 </div>
 
@@ -5422,6 +5415,28 @@ button,input,select,textarea{font-family:inherit}
       </section>
 
       
+      <section class="admin-card master-admin-only" id="adminHotSpotCard">
+        <div class="admin-card-title">🔥 PUNTOS CALIENTES POR ELABORADORA</div>
+        <div class="admin-help" style="margin-top:0">
+          El Administrador General mantiene este padrón central. Cada sucursal selecciona en <b>Parámetros Suc</b> la elaboradora que la abastece; las referencias asignadas a esa elaboradora se incorporan automáticamente al <b>Checklist original</b>, sin modificar el padrón ni los cálculos.
+        </div>
+        <div class="admin-hotspot-form" style="margin-top:8px">
+          <label class="admin-field admin-wide"><span>Elaboradora asignada a la referencia</span><select id="adminHotSpotElaboratorSelect"></select></label>
+          <label class="admin-field"><span>Artículo</span><input id="adminHotSpotArticle" inputmode="numeric" maxlength="7" placeholder="Ej. 0602553"></label>
+          <label class="admin-field admin-wide"><span>Descripción</span><input id="adminHotSpotDescription" maxlength="120" placeholder="Descripción de la referencia"></label>
+          <label class="admin-field"><span>Marca</span><input id="adminHotSpotBrand" maxlength="60" placeholder="Marca (opcional)"></label>
+          <label class="admin-field"><span>Aptitud</span><input id="adminHotSpotAptitude" maxlength="20" placeholder="Aptitud (opcional)"></label>
+          <label class="admin-field"><span>U/M</span><input id="adminHotSpotUm" maxlength="12" placeholder="Ej. UN, KGR"></label>
+          <div class="admin-actions admin-wide">
+            <button id="adminHotSpotSaveBtn" type="button" onclick="saveAdminHotSpotRef()">＋ Agregar punto caliente</button>
+            <button type="button" onclick="resetAdminHotSpotForm()">Limpiar</button>
+            <button id="adminHotSpotCancelBtn" type="button" onclick="resetAdminHotSpotForm()" style="display:none">Cancelar edición</button>
+          </div>
+        </div>
+        <div id="adminHotSpotStatus" class="admin-help"></div>
+        <div id="adminHotSpotList" class="admin-reference-list"></div>
+      </section>
+
       <section class="admin-card branch-admin-only" id="branchOwnPasswordCard" style="display:none">
         <div class="admin-card-title">MI CONTRASEÑA · SUCURSAL</div>
         <div class="admin-help" style="margin-top:0">
@@ -6452,6 +6467,7 @@ function normalizeStateArticles(obj){
  // Las referencias especiales pertenecen a la configuración de cada sucursal.
  obj.hotSpotRefs=normalizeSpecialRefList(obj.hotSpotRefs,true);
  obj.checklistExtraRefs=normalizeSpecialRefList(obj.checklistExtraRefs,false);
+ obj.elaboratorCode=normalizeBranch(obj.elaboratorCode||'');
  return obj;
 }
 state=normalizeStateArticles(state);
@@ -6854,7 +6870,6 @@ function recalc(){
  renderSales();
  renderBaker();
  renderMotherSheet();
- if(typeof renderSpecialRefs==='function')renderSpecialRefs();
  initMobileTouchScrolling();
  clearCronogramaDirtyState();
 }
@@ -8473,6 +8488,7 @@ function firebaseSystemSnapshot(){
  const storage={};
  const keys=[
    MOTHER_ELABORATORS_STORAGE,
+   HOT_SPOT_MASTER_STORAGE,
    ELABORATOR_WHATSAPP_STORAGE,
    ACTIVE_ZONES_STORAGE,
    ...zoneOrder.map(eventNextCycleKey)
@@ -8494,6 +8510,7 @@ function firebaseApplySystemSnapshot(storage){
  try{
    const allowed=[
      MOTHER_ELABORATORS_STORAGE,
+     HOT_SPOT_MASTER_STORAGE,
      ELABORATOR_WHATSAPP_STORAGE,
      ACTIVE_ZONES_STORAGE,
      ...zoneOrder.map(eventNextCycleKey),
@@ -8519,10 +8536,14 @@ function firebaseApplySystemSnapshot(storage){
      renderAdminWhatsapp();
      renderAdminBranchPasswords();
      renderAdminReferences();
+     renderAdminHotSpotRefs();
    }
+   renderChecklistSpecialParams();
+   if(document.getElementById('presenceChecklist'))renderPresenceSheet();
    refreshBakerAlertPreviewForCurrentBranch();
  }finally{
    firebaseCloudApplying=false;
+   if(hotSpotMigrationPendingSync&&isMasterAdmin()&&firebaseCloudInitialized){hotSpotMigrationPendingSync=false;firebaseQueueSystemSync()}
  }
 }
 
@@ -8909,6 +8930,7 @@ function openAdminMenu(){
  if(isMasterAdmin()){
    renderAdminWhatsapp();
    renderAdminBranchPasswords();
+   renderAdminHotSpotRefs();
    updateBackupAdminStatus();
    renderAdminZoneVisibility();
    populateEmergencyRestoreSelectors();
@@ -9386,136 +9408,267 @@ async function adminReplaceReferences(file){
 
 
 
-/* ===================== REFERENCIAS ESPECIALES · V67 ===================== */
-const SPECIAL_REF_TYPES={
- hotSpotRefs:{prefix:'hotSpot',label:'punto caliente',other:'checklistExtraRefs'},
- checklistExtraRefs:{prefix:'checkExtra',label:'referencia de Checklist',other:'hotSpotRefs'}
-};
+/* ===================== REFERENCIAS DE CHECKLIST · REVISIÓN V67.1 ===================== */
 const SPECIAL_REF_DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-const specialRefEditing={hotSpotRefs:'',checklistExtraRefs:''};
+const paramChecklistRefEditing={article:''};
+let adminHotSpotEditing={article:'',elaboratorCode:''};
+let hotSpotMigrationPendingSync=false;
 function specialRefCanEdit(){return canEditCurrentBranch()}
-function specialRefSetMessage(message,good=false){
- const box=document.getElementById('specialRefsMessage');if(!box)return;
+function normalizeHotSpotMaster(list){
+ const seen=new Set();
+ return (Array.isArray(list)?list:[]).map(item=>{
+   if(!item||typeof item!=='object')return null;
+   const article=safeArticle(item.article||item.code);
+   const description=String(item.description||'').trim();
+   const elaboratorCode=normalizeBranch(item.elaboratorCode||item.elaborator||'');
+   if(!article||!description)return null;
+   const key=elaboratorCode+'|'+article;
+   if(seen.has(key))return null;
+   seen.add(key);
+   const sourceSchedule=Array.isArray(item.schedule)?item.schedule:null;
+   const schedule=Array.from({length:7},(_,i)=>sourceSchedule?(Number(sourceSchedule[i])>0?1:0):1);
+   return {article,description,brand:String(item.brand||'').trim(),aptitude:String(item.aptitude||'').trim(),um:String(item.um||'').trim(),schedule,elaboratorCode};
+ }).filter(Boolean).sort((a,b)=>Number(a.elaboratorCode||0)-Number(b.elaboratorCode||0)||String(a.description).localeCompare(String(b.description),'es',{sensitivity:'base'})||a.article.localeCompare(b.article));
+}
+function storeHotSpotMasterLocal(list){
+ const normalized=normalizeHotSpotMaster(list);
+ try{localStorage.setItem(HOT_SPOT_MASTER_STORAGE,JSON.stringify(normalized))}catch(e){}
+ return normalized;
+}
+function loadHotSpotMaster({migrateLegacy=false}={}){
+ try{
+   const raw=localStorage.getItem(HOT_SPOT_MASTER_STORAGE);
+   if(raw!==null){const parsed=JSON.parse(raw);return normalizeHotSpotMaster(parsed)}
+ }catch(e){}
+ if(!migrateLegacy)return [];
+ // Migración única: conserva las referencias de la v67 anterior. Si la configuración
+ // de destinos identifica una sola elaboradora para la sucursal, la asigna; si no,
+ // la deja pendiente para que Admin General la clasifique sin adivinar.
+ const migrated=[];
+ const enabled=loadEnabledElaborators();
+ allBranchCodes().forEach(code=>{
+   const branchState=loadRawLocalFor(code);
+   const legacy=Array.isArray(branchState?.hotSpotRefs)?branchState.hotSpotRefs:[];
+   const candidates=enabled.filter(elab=>loadMotherSelection(elab).includes(code));
+   const elaboratorCode=candidates.length===1?candidates[0]:'';
+   legacy.forEach(ref=>migrated.push({...ref,elaboratorCode}));
+ });
+ const normalized=storeHotSpotMasterLocal(migrated);
+ if(isMasterAdmin()&&firebaseCloudInitialized){if(firebaseCloudApplying)hotSpotMigrationPendingSync=true;else firebaseQueueSystemSync()}
+ return normalized;
+}
+function selectedBranchHotSpots(code=state.elaboratorCode){
+ const elab=normalizeBranch(code||'');
+ if(!elab)return [];
+ return loadHotSpotMaster().filter(ref=>ref.elaboratorCode===elab);
+}
+function adminHotSpotSetStatus(message,good=false){
+ const box=document.getElementById('adminHotSpotStatus');if(!box)return;
  box.textContent=message||'';
- box.className=message?(good?'good':'bad'):'';
- box.style.display=message?'block':'none';
+ box.style.color=good?'#21623f':(message?'#9a2e2e':'');
 }
-function specialRefFormValues(type){
- const cfg=SPECIAL_REF_TYPES[type];if(!cfg)return null;
+function adminHotSpotFormValues(){
  const get=id=>String(document.getElementById(id)?.value||'').trim();
- const values={
-   article:safeArticle(get(cfg.prefix+'ArticleInput')),
-   description:get(cfg.prefix+'DescriptionInput'),
-   brand:get(cfg.prefix+'BrandInput'),
-   aptitude:type==='checklistExtraRefs'?get('checkExtraAptitudeInput'):'',
-   um:get(cfg.prefix+'UmInput')
+ return {
+   elaboratorCode:normalizeBranch(get('adminHotSpotElaboratorSelect')),
+   article:safeArticle(get('adminHotSpotArticle')),
+   description:get('adminHotSpotDescription'),
+   brand:get('adminHotSpotBrand'),
+   aptitude:get('adminHotSpotAptitude'),
+   um:get('adminHotSpotUm'),
+   schedule:[1,1,1,1,1,1,1]
  };
- if(type==='hotSpotRefs'){
-   const checks=[...(document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]'))];
-   values.schedule=Array.from({length:7},(_,i)=>checks.some(x=>Number(x.value)===i&&x.checked)?1:0);
- }else values.schedule=[1,1,1,1,1,1,1];
- return values;
 }
-function specialRefResetForm(type){
- const cfg=SPECIAL_REF_TYPES[type];if(!cfg)return;
- ['ArticleInput','DescriptionInput','BrandInput','UmInput'].forEach(suffix=>{const el=document.getElementById(cfg.prefix+suffix);if(el)el.value=''});
- if(type==='checklistExtraRefs'){const el=document.getElementById('checkExtraAptitudeInput');if(el)el.value=''}
- if(type==='hotSpotRefs')document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]').forEach(x=>x.checked=true);
- specialRefEditing[type]='';
- const submit=document.getElementById(cfg.prefix+'SubmitBtn');if(submit)submit.textContent=type==='hotSpotRefs'?'＋ Agregar punto caliente':'＋ Agregar a Checklist';
- const cancel=document.getElementById(cfg.prefix+'CancelEditBtn');if(cancel)cancel.style.display='none';
+function resetAdminHotSpotForm(){
+ adminHotSpotEditing={article:'',elaboratorCode:''};
+ ['adminHotSpotArticle','adminHotSpotDescription','adminHotSpotBrand','adminHotSpotAptitude','adminHotSpotUm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+ const select=document.getElementById('adminHotSpotElaboratorSelect');
+ if(select){const first=loadEnabledElaborators()[0]||'';select.value=first}
+ const save=document.getElementById('adminHotSpotSaveBtn');if(save)save.textContent='＋ Agregar punto caliente';
+ const cancel=document.getElementById('adminHotSpotCancelBtn');if(cancel)cancel.style.display='none';
 }
-function cancelSpecialReferenceEdit(type){specialRefResetForm(type);specialRefSetMessage('Edición cancelada.',true)}
-function specialRefConflict(article,type,editingArticle=''){
- const art=safeArticle(article);
- if((state.products||[]).some(p=>safeArticle(p.article)===art))return 'La referencia ya pertenece al padrón original. No se puede duplicar en un cuadro especial.';
- const other=state[SPECIAL_REF_TYPES[type].other]||[];
- if(other.some(p=>safeArticle(p.article)===art))return 'La referencia ya está cargada en el otro cuadro especial.';
- const own=state[type]||[];
- if(own.some(p=>safeArticle(p.article)===art && safeArticle(p.article)!==safeArticle(editingArticle)))return 'Ese artículo ya está cargado en este cuadro.';
- return '';
+function renderAdminHotSpotRefs(){
+ const select=document.getElementById('adminHotSpotElaboratorSelect');
+ const table=document.getElementById('adminHotSpotList');
+ if(!select||!table)return;
+ const list=loadHotSpotMaster({migrateLegacy:true});
+ const enabled=loadEnabledElaborators();
+ const allCodes=[...new Set([...enabled,...list.map(x=>x.elaboratorCode).filter(Boolean)])].sort((a,b)=>Number(a)-Number(b));
+ const current=select.value;
+ select.innerHTML='<option value="">Seleccionar elaboradora…</option>'+allCodes.map(code=>`<option value="${escAttr(code)}">${esc(code)} · ${esc(branchCatalog[code]?.name||'')} ${enabled.includes(code)?'':'(no habilitada)'}</option>`).join('');
+ if(current&&allCodes.includes(current))select.value=current;
+ else if(!adminHotSpotEditing.article)select.value=enabled[0]||'';
+ if(!enabled.length){adminHotSpotSetStatus('Primero habilitá al menos una sucursal elaboradora desde Plan Elaboradora.');}
+ const rows=list.map(item=>{
+   const elabLabel=item.elaboratorCode?(item.elaboratorCode+' · '+(branchCatalog[item.elaboratorCode]?.name||'')+(enabled.includes(item.elaboratorCode)?'':' (no habilitada)')):'Sin asignar';
+   return `<tr><td>${esc(elabLabel)}</td><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td><div class="specialrefs-actions"><button type="button" class="specialrefs-btn" onclick="editAdminHotSpotRef('${escAttr(item.elaboratorCode)}','${escAttr(item.article)}')">Editar / asignar</button><button type="button" class="specialrefs-btn danger" onclick="deleteAdminHotSpotRef('${escAttr(item.elaboratorCode)}','${escAttr(item.article)}')">Eliminar</button></div></td></tr>`;
+ }).join('');
+ table.innerHTML=list.length?`<table class="specialrefs-table"><thead><tr><th>Elaboradora</th><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="specialrefs-empty">No hay puntos calientes cargados. Agregalos y asigná cada referencia a una elaboradora.</div>';
 }
-function saveSpecialReference(type){
- const cfg=SPECIAL_REF_TYPES[type];if(!cfg)return;
- if(!specialRefCanEdit()){specialRefSetMessage('No tenés permisos para modificar la configuración de esta sucursal.');return}
- const values=specialRefFormValues(type);
- if(!values.article){specialRefSetMessage('Ingresá un código de artículo válido.');return}
- if(!values.description){specialRefSetMessage('La descripción es obligatoria.');return}
- if(type==='hotSpotRefs'&&!values.schedule.some(Boolean)){specialRefSetMessage('Seleccioná al menos un día para trabajar el punto caliente.');return}
- const editingArticle=specialRefEditing[type]||'';
- const conflict=specialRefConflict(values.article,type,editingArticle);
- if(conflict){specialRefSetMessage(conflict);return}
- const list=Array.isArray(state[type])?state[type].slice():[];
- const existingIndex=editingArticle?list.findIndex(x=>safeArticle(x.article)===safeArticle(editingArticle)):-1;
- const entry={...values};
- if(existingIndex>=0)list[existingIndex]=entry;else list.push(entry);
- state[type]=normalizeSpecialRefList(list,type==='hotSpotRefs');
- const label=existingIndex>=0?'Referencia actualizada.':'Referencia agregada.';
- specialRefResetForm(type);
- specialRefSetMessage(label+' Se guardará automáticamente en la sucursal '+state.branch+'.',true);
- renderSpecialRefs();
- scheduleSave();
- if(activeSheetName()==='presence'&&normalizeBranch(presenceBranchCode)===normalizeBranch(state.branch))renderPresenceSheet();
- if(activeSheetName()==='mother')renderMotherSheet();
+function saveAdminHotSpotRef(){
+ if(!isMasterAdmin()){adminHotSpotSetStatus('Solo el Administrador General puede administrar los puntos calientes.');return}
+ const value=adminHotSpotFormValues();
+ if(!value.elaboratorCode||!loadEnabledElaborators().includes(value.elaboratorCode)){adminHotSpotSetStatus('Seleccioná una elaboradora habilitada.');return}
+ if(!value.article){adminHotSpotSetStatus('Ingresá un código de artículo válido.');return}
+ if(!value.description){adminHotSpotSetStatus('La descripción es obligatoria.');return}
+ let list=loadHotSpotMaster({migrateLegacy:true});
+ const oldKey=adminHotSpotEditing.elaboratorCode+'|'+adminHotSpotEditing.article;
+ const newKey=value.elaboratorCode+'|'+value.article;
+ const duplicate=list.some(item=>(item.elaboratorCode+'|'+item.article)===newKey && (item.elaboratorCode+'|'+item.article)!==oldKey);
+ if(duplicate){adminHotSpotSetStatus('Ese artículo ya está asignado a esa elaboradora.');return}
+ const index=adminHotSpotEditing.article?list.findIndex(item=>(item.elaboratorCode+'|'+item.article)===oldKey):-1;
+ if(index>=0)list[index]={...value};else list.push({...value});
+ list=storeHotSpotMasterLocal(list);
+ resetAdminHotSpotForm();
+ adminHotSpotSetStatus(index>=0?'Punto caliente actualizado y sincronizado.':'Punto caliente agregado y sincronizado.',true);
+ firebaseQueueSystemSync();
+ renderAdminHotSpotRefs();
+ renderChecklistSpecialParams();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
-function editSpecialReference(type,article){
- if(!specialRefCanEdit()){specialRefSetMessage('No tenés permisos para editar estas referencias.');return}
- const cfg=SPECIAL_REF_TYPES[type];const item=(state[type]||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!cfg||!item)return;
- document.getElementById(cfg.prefix+'ArticleInput').value=item.article;
- document.getElementById(cfg.prefix+'DescriptionInput').value=item.description||'';
- document.getElementById(cfg.prefix+'BrandInput').value=item.brand||'';
- document.getElementById(cfg.prefix+'UmInput').value=item.um||'';
- if(type==='checklistExtraRefs')document.getElementById('checkExtraAptitudeInput').value=item.aptitude||'';
- if(type==='hotSpotRefs')document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]').forEach(x=>x.checked=!!item.schedule?.[Number(x.value)]);
- specialRefEditing[type]=safeArticle(item.article);
- const submit=document.getElementById(cfg.prefix+'SubmitBtn');if(submit)submit.textContent='Guardar cambios';
- const cancel=document.getElementById(cfg.prefix+'CancelEditBtn');if(cancel)cancel.style.display='';
- specialRefSetMessage('Editando '+item.article+' · '+item.description,true);
- const field=document.getElementById(cfg.prefix+'DescriptionInput');if(field)field.focus();
-}
-function deleteSpecialReference(type,article){
- if(!specialRefCanEdit()){specialRefSetMessage('No tenés permisos para eliminar estas referencias.');return}
- const list=Array.isArray(state[type])?state[type]:[];
- const item=list.find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
- if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de este cuadro?'))return;
- state[type]=list.filter(x=>safeArticle(x.article)!==safeArticle(article));
- if(specialRefEditing[type]===safeArticle(article))specialRefResetForm(type);
- specialRefSetMessage('Referencia eliminada de la sucursal '+state.branch+'.',true);
- renderSpecialRefs();scheduleSave();
- if(activeSheetName()==='presence'&&normalizeBranch(presenceBranchCode)===normalizeBranch(state.branch))renderPresenceSheet();
- if(activeSheetName()==='mother')renderMotherSheet();
-}
-function renderSpecialRefTable(type){
- const target=document.getElementById(type==='hotSpotRefs'?'hotSpotRefsTable':'checklistExtraRefsTable');if(!target)return;
- const list=Array.isArray(state[type])?state[type].slice():[];
- const canEdit=specialRefCanEdit();
- list.sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
- if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias cargadas en este cuadro.</div>';return}
- const actions=item=>`<div class="specialrefs-actions"><button type="button" class="specialrefs-btn" ${canEdit?'':'disabled'} onclick="editSpecialReference('${type}','${escAttr(item.article)}')">Editar</button><button type="button" class="specialrefs-btn danger" ${canEdit?'':'disabled'} onclick="deleteSpecialReference('${type}','${escAttr(item.article)}')">Eliminar</button></div>`;
- if(type==='hotSpotRefs'){
-   target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>U/M</th><th>Días</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>{
-     const days=SPECIAL_REF_DAYS.filter((_,i)=>item.schedule?.[i]).join(', ')||'Sin días';
-     return `<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.um||'—')}</td><td>${esc(days)}</td><td>${actions(item)}</td></tr>`;
-   }).join('')}</tbody></table>`;
- }else{
-   target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>`<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td>${actions(item)}</td></tr>`).join('')}</tbody></table>`;
+function editAdminHotSpotRef(elaboratorCode,article){
+ if(!isMasterAdmin())return;
+ const key=normalizeBranch(elaboratorCode||'')+'|'+safeArticle(article);
+ const item=loadHotSpotMaster({migrateLegacy:true}).find(x=>(x.elaboratorCode+'|'+x.article)===key);
+ if(!item)return;
+ adminHotSpotEditing={article:item.article,elaboratorCode:item.elaboratorCode};
+ const elabSelect=document.getElementById('adminHotSpotElaboratorSelect');
+ if(elabSelect){
+   const codes=[...new Set([...loadEnabledElaborators(),...loadHotSpotMaster().map(x=>x.elaboratorCode).filter(Boolean)])];
+   if(item.elaboratorCode&&!Array.from(elabSelect.options).some(o=>o.value===item.elaboratorCode))elabSelect.insertAdjacentHTML('beforeend',`<option value="${escAttr(item.elaboratorCode)}">${esc(item.elaboratorCode)} · ${esc(branchCatalog[item.elaboratorCode]?.name||'')} (no habilitada)</option>`);
+   elabSelect.value=item.elaboratorCode||'';
  }
+ document.getElementById('adminHotSpotArticle').value=item.article;
+ document.getElementById('adminHotSpotDescription').value=item.description||'';
+ document.getElementById('adminHotSpotBrand').value=item.brand||'';
+ document.getElementById('adminHotSpotAptitude').value=item.aptitude||'';
+ document.getElementById('adminHotSpotUm').value=item.um||'';
+ const save=document.getElementById('adminHotSpotSaveBtn');if(save)save.textContent='Guardar cambios';
+ const cancel=document.getElementById('adminHotSpotCancelBtn');if(cancel)cancel.style.display='';
+ adminHotSpotSetStatus('Editando '+item.article+' · '+item.description,true);
 }
-function renderSpecialRefs(){
- const title=document.getElementById('specialRefsBranch');if(title)title.textContent=state.branch+' · '+(state.branchName||branchCatalog[state.branch]?.name||'');
- const note=document.getElementById('specialRefsAccessNote');
- const canEdit=specialRefCanEdit();
- if(note){note.style.display=canEdit?'none':'block';note.textContent='Vista de solo lectura. Para administrar estas referencias, ingresá a la sucursal correspondiente o usá Administrador General.'}
- ['hotSpotArticleInput','hotSpotDescriptionInput','hotSpotBrandInput','hotSpotUmInput','checkExtraArticleInput','checkExtraDescriptionInput','checkExtraBrandInput','checkExtraAptitudeInput','checkExtraUmInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!canEdit});
- document.querySelectorAll('#hotSpotDaysInput input[type="checkbox"]').forEach(el=>el.disabled=!canEdit);
- ['hotSpotSubmitBtn','hotSpotCancelEditBtn','checkExtraSubmitBtn','checkExtraCancelEditBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!canEdit});
- renderSpecialRefTable('hotSpotRefs');renderSpecialRefTable('checklistExtraRefs');
+function deleteAdminHotSpotRef(elaboratorCode,article){
+ if(!isMasterAdmin())return;
+ const key=normalizeBranch(elaboratorCode||'')+'|'+safeArticle(article);
+ const item=loadHotSpotMaster({migrateLegacy:true}).find(x=>(x.elaboratorCode+'|'+x.article)===key);
+ if(!item)return;
+ if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de los puntos calientes?'))return;
+ storeHotSpotMasterLocal(loadHotSpotMaster().filter(x=>(x.elaboratorCode+'|'+x.article)!==key));
+ if(adminHotSpotEditing.article===item.article&&adminHotSpotEditing.elaboratorCode===item.elaboratorCode)resetAdminHotSpotForm();
+ adminHotSpotSetStatus('Punto caliente eliminado.',true);
+ firebaseQueueSystemSync();
+ renderAdminHotSpotRefs();renderChecklistSpecialParams();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
+}
+function saveBranchChecklistElaborator(value){
+ if(!canEditCurrentBranch()){renderChecklistSpecialParams();return}
+ const code=normalizeBranch(value||'');
+ if(code&&!loadEnabledElaborators().includes(code)){alert('Elegí una elaboradora habilitada.');renderChecklistSpecialParams();return}
+ state.elaboratorCode=code;
+ scheduleSave();
+ renderChecklistSpecialParams();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
+}
+function paramChecklistRefSetStatus(message,good=false){
+ const box=document.getElementById('paramChecklistExtraStatus');if(!box)return;
+ box.textContent=message||'';
+ box.className='checklist-config-status'+(message?(good?' good':' bad'):'');
+}
+function resetParamChecklistRefForm(){
+ paramChecklistRefEditing={article:''};
+ ['paramExtraArticle','paramExtraDescription','paramExtraBrand','paramExtraAptitude','paramExtraUm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+ const btn=document.getElementById('paramExtraSaveBtn');if(btn)btn.textContent='＋ Agregar al Checklist';
+ const cancel=document.getElementById('paramExtraCancelBtn');if(cancel)cancel.style.display='none';
+}
+function saveParamChecklistRef(){
+ if(!specialRefCanEdit()){paramChecklistRefSetStatus('Ingresá con el acceso de la sucursal para modificar estas referencias.');return}
+ const get=id=>String(document.getElementById(id)?.value||'').trim();
+ const value={article:safeArticle(get('paramExtraArticle')),description:get('paramExtraDescription'),brand:get('paramExtraBrand'),aptitude:get('paramExtraAptitude'),um:get('paramExtraUm'),schedule:[1,1,1,1,1,1,1]};
+ if(!value.article){paramChecklistRefSetStatus('Ingresá un código de artículo válido.');return}
+ if(!value.description){paramChecklistRefSetStatus('La descripción es obligatoria.');return}
+ if((state.products||[]).some(p=>safeArticle(p.article)===value.article)){paramChecklistRefSetStatus('La referencia ya pertenece al padrón original; no se puede duplicar aquí.');return}
+ const current=Array.isArray(state.checklistExtraRefs)?state.checklistExtraRefs.slice():[];
+ const editing=paramChecklistRefEditing.article;
+ if(current.some(item=>safeArticle(item.article)===value.article&&safeArticle(item.article)!==safeArticle(editing))){paramChecklistRefSetStatus('Ese artículo ya está cargado en Referencias exclusivas de Checklist.');return}
+ const index=editing?current.findIndex(item=>safeArticle(item.article)===safeArticle(editing)):-1;
+ if(index>=0)current[index]=value;else current.push(value);
+ state.checklistExtraRefs=normalizeSpecialRefList(current,false);
+ resetParamChecklistRefForm();
+ renderChecklistSpecialParams();
+ paramChecklistRefSetStatus(index>=0?'Referencia actualizada.':'Referencia agregada al Checklist.',true);
+ scheduleSave();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
+}
+function editParamChecklistRef(article){
+ if(!specialRefCanEdit())return;
+ const item=(state.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ paramChecklistRefEditing={article:safeArticle(item.article)};
+ document.getElementById('paramExtraArticle').value=item.article;
+ document.getElementById('paramExtraDescription').value=item.description||'';
+ document.getElementById('paramExtraBrand').value=item.brand||'';
+ document.getElementById('paramExtraAptitude').value=item.aptitude||'';
+ document.getElementById('paramExtraUm').value=item.um||'';
+ const btn=document.getElementById('paramExtraSaveBtn');if(btn)btn.textContent='Guardar cambios';
+ const cancel=document.getElementById('paramExtraCancelBtn');if(cancel)cancel.style.display='';
+ paramChecklistRefSetStatus('Editando '+item.article+' · '+item.description,true);
+}
+function deleteParamChecklistRef(article){
+ if(!specialRefCanEdit())return;
+ const item=(state.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de las referencias exclusivas de Checklist?'))return;
+ state.checklistExtraRefs=(state.checklistExtraRefs||[]).filter(x=>safeArticle(x.article)!==safeArticle(article));
+ if(paramChecklistRefEditing.article===safeArticle(article))resetParamChecklistRefForm();
+ renderChecklistSpecialParams();
+ paramChecklistRefSetStatus('Referencia eliminada.',true);
+ scheduleSave();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
+}
+function renderParamChecklistExtraTable(canEdit){
+ const target=document.getElementById('paramChecklistExtraTable');if(!target)return;
+ const list=(Array.isArray(state.checklistExtraRefs)?state.checklistExtraRefs:[]).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
+ if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias exclusivas de Checklist cargadas para esta sucursal.</div>';return}
+ target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>`<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td><div class="specialrefs-actions"><button type="button" class="specialrefs-btn" ${canEdit?'':'disabled'} onclick="editParamChecklistRef('${escAttr(item.article)}')">Editar</button><button type="button" class="specialrefs-btn danger" ${canEdit?'':'disabled'} onclick="deleteParamChecklistRef('${escAttr(item.article)}')">Eliminar</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+function renderChecklistSpecialParams(){
+ const target=document.getElementById('checklistConfigParams');if(!target)return;
+ const canEdit=canEditCurrentBranch();
+ const enabled=loadEnabledElaborators();
+ const selected=normalizeBranch(state.elaboratorCode||'');
+ const hotRefs=selected?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selected):[];
+ const allCodes=[...new Set([...enabled,...(selected&&!enabled.includes(selected)?[selected]:[])])].sort((a,b)=>Number(a)-Number(b));
+ const options='<option value="">Seleccionar elaboradora…</option>'+allCodes.map(code=>`<option value="${escAttr(code)}" ${selected===code?'selected':''}>${esc(code)} · ${esc(branchCatalog[code]?.name||'')}${enabled.includes(code)?'':' (no habilitada)'}</option>`).join('');
+ const preview=selected?(hotRefs.length?`<ul class="checklist-hotspot-preview">${hotRefs.map(ref=>`<li><b>${esc(ref.article)}</b> · ${esc(ref.description)}${ref.brand?' · '+esc(ref.brand):''}</li>`).join('')}</ul>`:'<div class="checklist-config-note">La elaboradora seleccionada no tiene puntos calientes asignados.</div>'):'<div class="checklist-config-note">Seleccioná una elaboradora para incorporar sus puntos calientes al Checklist.</div>';
+ target.innerHTML=`<div class="checklist-config-header"><div><div class="checklist-config-title">CONFIGURACIÓN DEL CHECKLIST</div><div class="checklist-config-subtitle">Las referencias de elaboración se administran desde Administrador General. Las referencias que no son de elaboración se registran aquí, por sucursal.</div></div></div>
+ <div class="checklist-config-grid">
+   <section class="checklist-config-card">
+     <div class="checklist-config-card-title">🏭 ELABORADORA QUE ABASTECE A ESTA SUCURSAL</div>
+     <label class="checklist-config-field"><span>Seleccionar elaboradora</span><select id="branchChecklistElaboratorSelect" ${canEdit?'':'disabled'} onchange="saveBranchChecklistElaborator(this.value)">${options}</select></label>
+     <div class="checklist-config-note">Las referencias de Punto Caliente de la elaboradora elegida se suman automáticamente al Checklist original, sin duplicar artículos ni afectar los cálculos.</div>
+     <div class="checklist-config-preview-title">PUNTOS CALIENTES QUE SE INCORPORAN (${hotRefs.length})</div>${preview}
+   </section>
+   <section class="checklist-config-card">
+     <div class="checklist-config-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST · NO ELABORACIÓN</div>
+     <div class="checklist-config-note">Se controlan por fecha y turno en el Checklist. No forman parte del padrón original ni de los cálculos de producción.</div>
+     <div class="checklist-config-form">
+       <label class="checklist-config-field"><span>Artículo</span><input id="paramExtraArticle" inputmode="numeric" maxlength="7" placeholder="Código de artículo" ${canEdit?'':'disabled'}></label>
+       <label class="checklist-config-field"><span>Descripción</span><input id="paramExtraDescription" maxlength="120" placeholder="Descripción de la referencia" ${canEdit?'':'disabled'}></label>
+       <label class="checklist-config-field"><span>Marca</span><input id="paramExtraBrand" maxlength="60" placeholder="Marca (opcional)" ${canEdit?'':'disabled'}></label>
+       <label class="checklist-config-field"><span>Aptitud</span><input id="paramExtraAptitude" maxlength="20" placeholder="Aptitud (opcional)" ${canEdit?'':'disabled'}></label>
+       <label class="checklist-config-field"><span>U/M</span><input id="paramExtraUm" maxlength="12" placeholder="Ej. UN, KGR" ${canEdit?'':'disabled'}></label>
+       <div class="checklist-config-form-actions"><button id="paramExtraSaveBtn" type="button" ${canEdit?'':'disabled'} onclick="saveParamChecklistRef()">＋ Agregar al Checklist</button><button id="paramExtraCancelBtn" type="button" style="display:none" onclick="resetParamChecklistRefForm()">Cancelar edición</button></div>
+     </div>
+     <div id="paramChecklistExtraStatus" class="checklist-config-status"></div>
+     <div id="paramChecklistExtraTable"></div>
+   </section>
+ </div>`;
+ renderParamChecklistExtraTable(canEdit);
 }
 
 /* ===================== PLAN ELABORADORA ===================== */
 const MOTHER_SELECTION_PREFIX='panaderia_multizona_elaboradora_dest_';
 const MOTHER_BRANCH_STORAGE='panaderia_multizona_elaboradora_madre_v43';
 const MOTHER_ELABORATORS_STORAGE='panaderia_elaboradoras_habilitadas_multizona_v43';
+const HOT_SPOT_MASTER_STORAGE='miga_hot_spot_master_by_elaborator_v671';
 const MOTHER_ZONE_STORAGE='panaderia_multizona_elaboradora_zone_v45';
 const FIREBASE_ADMIN_EMAIL='admin@miga-panaderia.app';
 let motherAdminMode=false;
@@ -9675,7 +9828,15 @@ function presenceRowsForDate(code,date){
    const art=safeArticle(p.article);if(!art||byArticle.has(art))return;
    byArticle.set(art,{...p,article:art});
  });
- // Las referencias exclusivas de Checklist siempre se controlan, pero nunca se agregan al padrón ni a los cálculos.
+ // Los puntos calientes vienen del padrón central del Administrador General y dependen
+ // de la elaboradora elegida por esta sucursal. Se suman al Checklist sin entrar al padrón.
+ const selectedElaborator=normalizeBranch(cfg.elaboratorCode||'');
+ (selectedElaborator?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selectedElaborator):[]).forEach(ref=>{
+   const art=safeArticle(ref.article);if(!art||byArticle.has(art))return;
+   byArticle.set(art,{...ref,article:art,source:'checklist-hotspot'});
+ });
+ // Las referencias que no son de elaboración también se controlan en Checklist,
+ // pero quedan documentadas y administradas desde Parámetros Suc.
  (Array.isArray(cfg.checklistExtraRefs)?cfg.checklistExtraRefs:[]).forEach(ref=>{
    const art=safeArticle(ref.article);if(!art||byArticle.has(art))return;
    byArticle.set(art,{...ref,article:art,source:'checklist-special'});
@@ -10268,7 +10429,7 @@ function toggleElaboratorEnabled(code){
  renderMotherBranchChecks();
  renderMotherTable();
  renderElaboratorManager();
- if(isMasterAdmin())renderAdminWhatsapp();
+ if(isMasterAdmin()){renderAdminWhatsapp();renderAdminHotSpotRefs();}
 }
 function toggleElaboratorManager(){
  if(!isMasterAdmin())return;
@@ -10352,7 +10513,6 @@ function updateMotherAdminUI(){
  const presenceTab=document.getElementById('presenceTabBtn');
  if(presenceTab)presenceTab.classList.remove('presence-admin-hidden');
  if(document.getElementById('presenceCalendar'))renderPresenceSheet();
- if(document.getElementById('specialRefsBranch')&&typeof renderSpecialRefs==='function')renderSpecialRefs();
  if(isMasterAdmin())populateEmergencyRestoreSelectors();
 }
 async function toggleMotherAdmin(){
@@ -10692,29 +10852,6 @@ function renderMotherSheet(){
  initMotherNavigator();
  updateMotherAdminUI();
 }
-function motherHotSpotRows(selected,branchData,dateISO){
- const out=[];
- (selected||[]).forEach(code=>{
-   const data=branchData?.[code];if(!data||data.index<0||data.index>=35)return;
-   const dayIndex=data.index%7;
-   (Array.isArray(data.state?.hotSpotRefs)?data.state.hotSpotRefs:[]).forEach(ref=>{
-     const article=safeArticle(ref.article);if(!article)return;
-     const schedule=Array.isArray(ref.schedule)?ref.schedule:[1,1,1,1,1,1,1];
-     if(!Number(schedule[dayIndex]))return;
-     out.push({
-       branch:code,branchName:branchCatalog[code]?.name||'',article,
-       description:String(ref.description||''),brand:String(ref.brand||''),
-       aptitude:String(ref.aptitude||''),um:String(ref.um||'')
-     });
-   });
- });
- return out.sort((a,b)=>Number(a.branch)-Number(b.branch)||String(a.description).localeCompare(String(b.description),'es',{sensitivity:'base'})||a.article.localeCompare(b.article));
-}
-function renderMotherHotSpotBlock(rows){
- const list=Array.isArray(rows)?rows:[];
- const body=list.length?list.map(item=>`<tr><td>${esc(item.branch)} · ${esc(item.branchName)}</td><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.um||'—')}</td></tr>`).join(''):'<tr><td colspan="5" class="specialrefs-empty">No hay puntos calientes configurados para esta fecha en las sucursales destino seleccionadas.</td></tr>';
- return `<div class="specialrefs-plan-block"><div class="specialrefs-plan-title">🔥 PUNTOS CALIENTES · REFERENCIAS ESPECIALES</div><div class="specialrefs-plan-note">Listado separado del padrón original. Se muestran según las sucursales destino seleccionadas y los días configurados; no se suman a los cálculos ni a los totales de kilos.</div><table class="specialrefs-plan-table"><thead><tr><th>Sucursal destino</th><th>Artículo</th><th>Descripción</th><th>Marca</th><th>U/M</th></tr></thead><tbody>${body}</tbody></table></div>`;
-}
 function renderMotherTable(){
  const target=document.getElementById('motherTable');
  if(!target)return;
@@ -10752,8 +10889,6 @@ function renderMotherTable(){
    });
    branchData[code]={state:s,index,map};
  });
- const hotSpotRows=motherHotSpotRows(selected,branchData,motherDateISO);
-
  let h='<table class="mother-grid"><thead>';
  h+='<tr class="mother-head-row-1"><th class="article" rowspan="2">Articulo</th><th class="description" rowspan="2">Descripción</th><th class="brand mobile-hide-mother" rowspan="2">Marca</th><th class="aptitude mobile-hide-mother" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto mobile-hide-mother" rowspan="2">Bto</th>';
  h+=`<th class="mother-branches-title" colspan="${selected.length}">SUCURSALES</th><th class="product-total" rowspan="2">Total Kilos x Producto</th></tr>`;
@@ -10786,7 +10921,6 @@ function renderMotherTable(){
  h+=`<td class="product-total">${fmt(grandTotal,1)}</td></tr>`;
 
  h+='</tbody></table>';
- h+=renderMotherHotSpotBlock(hotSpotRows);
  target.innerHTML=h;
  requestAnimationFrame(syncMotherNavigator);
  setTimeout(syncMotherNavigator,60);
@@ -10843,7 +10977,6 @@ function motherOutputDataset(){
  });
 
  const grandTotal=selected.reduce((sum,code)=>sum+branchTotals[code],0);
- const hotSpotRows=motherHotSpotRows(selected,branchData,motherDateISO);
  return {
    elaborator:motherBranchCode,
    elaboratorName:branchCatalog[motherBranchCode]?.name||'',
@@ -10852,7 +10985,6 @@ function motherOutputDataset(){
    dateLabel:spanishDayDate(motherDateISO),
    selected,
    rows,
-   hotSpotRows,
    branchTotals,
    grandTotal
  };
@@ -11269,19 +11401,7 @@ function buildMotherXlsx(data){
    ...data.selected.map(code=>data.branchTotals[code]),data.grandTotal];
  rows.push(`<row r="${r}" ht="20" customHeight="1">${totalValues.map((v,i)=>xlsxCellXml(v,r,i+1,7,i<6)).join('')}</row>`);
  const baseLastRow=r;
- let hotSpotTitleRow=0,hotSpotHeaderRow=0;
- if(Array.isArray(data.hotSpotRows)&&data.hotSpotRows.length){
-   r+=2;hotSpotTitleRow=r;
-   rows.push(`<row r="${r}" ht="23" customHeight="1">${xlsxCellXml('PUNTOS CALIENTES · REFERENCIAS ESPECIALES',r,1,1,true)}</row>`);r++;
-   hotSpotHeaderRow=r;
-   const hotHeaders=['Sucursal destino','Artículo','Descripción','Marca','U/M'];
-   rows.push(`<row r="${r}" ht="22" customHeight="1">${hotHeaders.map((h,i)=>xlsxCellXml(h,r,i+1,4,true)).join('')}</row>`);r++;
-   data.hotSpotRows.forEach(item=>{
-     const values=[item.branch+(item.branchName?' - '+item.branchName:''),item.article,item.description,item.brand||'',item.um||''];
-     rows.push(`<row r="${r}" ht="18" customHeight="1">${values.map((v,i)=>xlsxCellXml(v,r,i+1,0,true)).join('')}</row>`);r++;
-   });
- }
- const lastRow=Math.max(baseLastRow,r-1);
+ const lastRow=baseLastRow;
 
  const cols=[];
  headers.forEach((_,i)=>{
@@ -11461,7 +11581,7 @@ function renderHeader(){
  if(src)src.textContent=state.salesSheetName?('Fuente: '+state.salesSheetName+' · '+Object.keys(state.sales||{}).length+' artículos'):'Sin archivo de ventas cargado para esta sucursal';
  document.title='Pedidos Asistidos Panadería - Suc. '+state.branch;
 }
-function renderParamSheet(){renderCalendar();renderParameterBlocks();renderPatron()}
+function renderParamSheet(){renderCalendar();renderParameterBlocks();renderPatron();renderChecklistSpecialParams()}
 function renderCalendar(){
  const cal=calendar();
  state.monthLabel=monthNameFromDate(state.startDate);
@@ -12649,9 +12769,6 @@ document.querySelectorAll('.sheet-tab').forEach(btn=>btn.addEventListener('click
  }
  if(targetSheet==='presence'){
    requestAnimationFrame(renderPresenceSheet);
- }
- if(targetSheet==='specialrefs'){
-   requestAnimationFrame(renderSpecialRefs);
  }
  setTimeout(initMobileTouchScrolling,0);
  assistantUpdateContext();

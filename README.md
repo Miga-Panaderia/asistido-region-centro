@@ -1,17 +1,21 @@
-# MIGA · Multizona v67 · Referencias especiales
+# MIGA · Multizona v67.1 · Checklist por elaboradora
 
-Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día e indicador discreto)**.
+Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día) + revisión de referencias especiales**.
 
-## Funcionalidad conservada de v64 y v64.1
-- **Alerta evento** marcada por Administrador se guarda como antes y ahora se visualiza **de inmediato en amarillo** en la Hoja del Panadero de las sucursales de esa zona.
-- La alerta de evento **mantiene la lógica de próximo ciclo**: al iniciar un nuevo ciclo se traslada a `cycleAlerts` y la cola pendiente se limpia.
-- Las referencias con ausencia en Checklist se señalan con un **punto rojo discreto** y el día exacto se resalta en rojo en Hoja del Panadero.
+## Funcionalidad conservada
+- **Alerta evento** marcada por Administrador se visualiza de inmediato en amarillo en la Hoja del Panadero y mantiene la lógica de próximo ciclo.
+- Las referencias con ausencia en Checklist se señalan con un punto rojo discreto y el día exacto se resalta en rojo en Hoja del Panadero.
 - Si coinciden evento y ausencia, la fila conserva el contexto amarillo del evento y la celda del día ausente queda roja por encima.
-- Al ingresar a **Hoja del Panadero** se fuerza un nuevo render para leer el estado más reciente.
-- Los cambios de alerta de evento y de ausencia actualizan la vista de Hoja del Panadero sin modificar los cálculos.
-- Se conserva la tipografía introducida en v63.
-- **No se modifican** ventas Prisma, fórmulas, sugeridos, coeficientes, cronogramas ni reglas de cálculo.
-- Se conserva la estructura de Firebase/Firestore y del proyecto GitHub Pages.
+- Se conservan la tipografía y la estructura multizona de Firebase/Firestore y GitHub Pages.
+- No se modifican ventas Prisma, fórmulas, sugeridos, coeficientes, cronogramas ni reglas de cálculo del padrón original.
+
+## Referencias de Checklist · v67.1
+- **Puntos calientes:** se administran desde **Administrador General → Puntos calientes por elaboradora**. Cada referencia queda asignada a una elaboradora habilitada.
+- **Selección por sucursal:** en **Parámetros Suc**, cada sucursal elige la elaboradora que la abastece. Las referencias de Punto Caliente asignadas a esa elaboradora se incorporan al Checklist original.
+- **Referencias que no son de elaboración:** se registran por sucursal en **Parámetros Suc** y también aparecen en Checklist.
+- Los dos tipos de referencias especiales se mantienen fuera del padrón original y no participan de los cálculos de producción.
+- Los puntos calientes se guardan en la configuración global sincronizada por Firebase; la elaboradora elegida y las referencias exclusivas de Checklist se guardan en la configuración de cada sucursal.
+- Si se encuentran puntos calientes heredados de la versión anterior, se conservan durante la migración. Cuando no puede inferirse una elaboradora sin ambigüedad, quedan como **Sin asignar** para que el Administrador General los clasifique.
 
 ## Estructura
 - `index.html`
@@ -20,11 +24,3 @@ Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día e ind
 - `assets/miga-avatar.png`
 - `config/sucursales.js`
 - `firebase/firestore.rules`
-
-
-## Cambios v67 · Referencias especiales por sucursal
-- Nueva hoja **Referencias especiales** con dos cuadros independientes por sucursal.
-- **Puntos calientes**: referencias fuera del padrón original, con días configurables; se muestran en un bloque separado del Plan Elaboradora cuando la sucursal está seleccionada como destino y el día está activo. No se incorporan al padrón ni a los totales/cálculos estándar.
-- **Referencias exclusivas de Checklist**: se agregan al control de presencia por fecha y turno, sin ingresar al padrón de elaboración ni a sus cálculos.
-- Ambas listas se guardan en la configuración de la sucursal y siguen el mecanismo de sincronización de MIGA.
-- Se conserva el resaltado de ausencia por día y el punto rojo discreto en la referencia.
