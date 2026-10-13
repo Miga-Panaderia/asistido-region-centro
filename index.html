@@ -4901,7 +4901,7 @@ button,input,select,textarea{font-family:inherit}
         <div id="patronSheet" class="patron-wrap"></div>
       </div>
     </div>
-    <div id="checklistConfigParams" class="checklist-config-panel"></div>
+    <div id="checklistConfigParams" class="checklist-config-panel" style="display:none" aria-hidden="true"></div>
   </section>
 
   <section id="sheet-plan" class="sheet-view">
@@ -5419,7 +5419,7 @@ button,input,select,textarea{font-family:inherit}
       <section class="admin-card master-admin-only" id="adminHotSpotCard">
         <div class="admin-card-title">🔥 PUNTO CALIENTE POR ELABORADORA</div>
         <div class="admin-help" style="margin-top:0">
-          El Administrador General mantiene este padrón central. Cada sucursal selecciona en <b>Parámetros Suc</b> la elaboradora que la abastece; las referencias asignadas a esa elaboradora se incorporan automáticamente al <b>Checklist original</b>, sin modificar el padrón ni los cálculos.
+          El Administrador General mantiene este padrón central. Las referencias se incorporan automáticamente al <b>Checklist</b> de las sucursales incluidas en la configuración de destinos de la elaboradora asignada. No modifican el padrón ni los cálculos de producción.
         </div>
         <div class="admin-hotspot-form" style="margin-top:8px">
           <label class="admin-field admin-wide"><span>Elaboradora asignada a la referencia</span><select id="adminHotSpotElaboratorSelect"></select></label>
@@ -5436,6 +5436,28 @@ button,input,select,textarea{font-family:inherit}
         </div>
         <div id="adminHotSpotStatus" class="admin-help"></div>
         <div id="adminHotSpotList" class="admin-reference-list"></div>
+      </section>
+
+      <section class="admin-card master-admin-only" id="adminChecklistExtraCard">
+        <div class="admin-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST · NO ELABORACIÓN</div>
+        <div class="admin-help" style="margin-top:0">
+          Administrá estas referencias desde el Administrador General. Elegí la sucursal a la que corresponden; se incorporan únicamente a su Checklist, diferenciadas de las referencias tradicionales, sin formar parte del padrón ni de los cálculos.
+        </div>
+        <div class="admin-hotspot-form" style="margin-top:8px">
+          <label class="admin-field admin-wide"><span>Sucursal a configurar</span><select id="adminChecklistExtraBranch" onchange="resetParamChecklistRefForm();renderAdminChecklistExtraRefs()"></select></label>
+          <label class="admin-field"><span>Artículo</span><input id="paramExtraArticle" inputmode="numeric" maxlength="7" placeholder="Ej. 0602553"></label>
+          <label class="admin-field admin-wide"><span>Descripción</span><input id="paramExtraDescription" maxlength="120" placeholder="Descripción de la referencia"></label>
+          <label class="admin-field"><span>Marca</span><input id="paramExtraBrand" maxlength="60" placeholder="Marca (opcional)"></label>
+          <label class="admin-field"><span>Aptitud</span><input id="paramExtraAptitude" maxlength="20" placeholder="Aptitud (opcional)"></label>
+          <label class="admin-field"><span>U/M</span><input id="paramExtraUm" maxlength="12" placeholder="Ej. UN, KGR"></label>
+          <div class="admin-actions admin-wide">
+            <button id="paramExtraSaveBtn" type="button" onclick="saveParamChecklistRef()">＋ Agregar al Checklist</button>
+            <button type="button" onclick="resetParamChecklistRefForm()">Limpiar</button>
+            <button id="paramExtraCancelBtn" type="button" onclick="resetParamChecklistRefForm()" style="display:none">Cancelar edición</button>
+          </div>
+        </div>
+        <div id="paramChecklistExtraStatus" class="admin-help"></div>
+        <div id="adminChecklistExtraTable" class="admin-reference-list"></div>
       </section>
 
       <section class="admin-card branch-admin-only" id="branchOwnPasswordCard" style="display:none">
@@ -8538,6 +8560,7 @@ function firebaseApplySystemSnapshot(storage){
      renderAdminBranchPasswords();
      renderAdminReferences();
      renderAdminHotSpotRefs();
+     renderAdminChecklistExtraRefs();
    }
    renderChecklistSpecialParams();
    if(document.getElementById('presenceChecklist'))renderPresenceSheet();
@@ -9411,7 +9434,7 @@ async function adminReplaceReferences(file){
 
 /* ===================== REFERENCIAS DE CHECKLIST · REVISIÓN V67.1 ===================== */
 const SPECIAL_REF_DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-const paramChecklistRefEditing={article:''};
+const paramChecklistRefEditing={branch:'',article:''};
 let adminHotSpotEditing={article:'',elaboratorCode:''};
 let hotSpotMigrationPendingSync=false;
 function specialRefCanEdit(){return canEditCurrentBranch()}
@@ -9458,11 +9481,27 @@ function loadHotSpotMaster({migrateLegacy=false}={}){
  if(isMasterAdmin()&&firebaseCloudInitialized){if(firebaseCloudApplying)hotSpotMigrationPendingSync=true;else firebaseQueueSystemSync()}
  return normalized;
 }
-function selectedBranchHotSpots(code=state.elaboratorCode){
- const elab=normalizeBranch(code||'');
- if(!elab)return [];
- return loadHotSpotMaster().filter(ref=>ref.elaboratorCode===elab);
+function assignedElaboratorsForBranch(branchCode){
+ const branch=normalizeBranch(branchCode||'');
+ if(!branch)return [];
+ // Solo se considera una asignación explícita guardada en Destinos de Elaboradora.
+ // No usamos el fallback de loadMotherSelection (todas las sucursales), porque eso
+ // podría asignar puntos calientes a sucursales que no son destino real.
+ return loadEnabledElaborators().filter(elab=>{
+   try{
+     const raw=localStorage.getItem(motherSelectionKey(elab));
+     if(raw===null)return false;
+     const destinations=JSON.parse(raw);
+     return Array.isArray(destinations)&&destinations.map(normalizeBranch).includes(branch);
+   }catch(e){return false}
+ });
 }
+function hotSpotsForBranch(branchCode){
+ const assigned=new Set(assignedElaboratorsForBranch(branchCode));
+ if(!assigned.size)return [];
+ return loadHotSpotMaster().filter(ref=>assigned.has(normalizeBranch(ref.elaboratorCode)));
+}
+function selectedBranchHotSpots(code=state.branch){return hotSpotsForBranch(code)}
 function adminHotSpotSetStatus(message,good=false){
  const box=document.getElementById('adminHotSpotStatus');if(!box)return;
  box.textContent=message||'';
@@ -9561,49 +9600,53 @@ function deleteAdminHotSpotRef(elaboratorCode,article){
  renderAdminHotSpotRefs();renderChecklistSpecialParams();
  if(document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
-function saveBranchChecklistElaborator(value){
- if(!canEditCurrentBranch()){renderChecklistSpecialParams();return}
- const code=normalizeBranch(value||'');
- if(code&&!loadEnabledElaborators().includes(code)){alert('Elegí una elaboradora habilitada.');renderChecklistSpecialParams();return}
- state.elaboratorCode=code;
- scheduleSave();
- renderChecklistSpecialParams();
- if(document.getElementById('presenceChecklist'))renderPresenceSheet();
-}
 function paramChecklistRefSetStatus(message,good=false){
  const box=document.getElementById('paramChecklistExtraStatus');if(!box)return;
  box.textContent=message||'';
- box.className='checklist-config-status'+(message?(good?' good':' bad'):'');
+ box.style.color=good?'#21623f':(message?'#9a2e2e':'');
+}
+function adminChecklistExtraBranchCode(){return normalizeBranch(document.getElementById('adminChecklistExtraBranch')?.value||'')}
+function adminChecklistExtraState(code){
+ code=normalizeBranch(code||'');
+ if(!code)return null;
+ if(code===normalizeBranch(state.branch))return state;
+ return loadRawLocalFor(code)||makeBranchState(code,branchCatalog[code]?.name||'');
 }
 function resetParamChecklistRefForm(){
- paramChecklistRefEditing={article:''};
+ paramChecklistRefEditing={branch:'',article:''};
  ['paramExtraArticle','paramExtraDescription','paramExtraBrand','paramExtraAptitude','paramExtraUm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
  const btn=document.getElementById('paramExtraSaveBtn');if(btn)btn.textContent='＋ Agregar al Checklist';
  const cancel=document.getElementById('paramExtraCancelBtn');if(cancel)cancel.style.display='none';
 }
 function saveParamChecklistRef(){
- if(!specialRefCanEdit()){paramChecklistRefSetStatus('Ingresá con el acceso de la sucursal para modificar estas referencias.');return}
+ if(!isMasterAdmin()){paramChecklistRefSetStatus('Solo el Administrador General puede modificar estas referencias.');return}
+ const code=adminChecklistExtraBranchCode();
+ if(!code){paramChecklistRefSetStatus('Seleccioná una sucursal.');return}
+ const targetState=adminChecklistExtraState(code);
+ if(!targetState){paramChecklistRefSetStatus('No se pudo cargar la configuración de la sucursal.');return}
  const get=id=>String(document.getElementById(id)?.value||'').trim();
  const value={article:safeArticle(get('paramExtraArticle')),description:get('paramExtraDescription'),brand:get('paramExtraBrand'),aptitude:get('paramExtraAptitude'),um:get('paramExtraUm'),schedule:[1,1,1,1,1,1,1]};
  if(!value.article){paramChecklistRefSetStatus('Ingresá un código de artículo válido.');return}
  if(!value.description){paramChecklistRefSetStatus('La descripción es obligatoria.');return}
- if((state.products||[]).some(p=>safeArticle(p.article)===value.article)){paramChecklistRefSetStatus('La referencia ya pertenece al padrón original; no se puede duplicar aquí.');return}
- const current=Array.isArray(state.checklistExtraRefs)?state.checklistExtraRefs.slice():[];
- const editing=paramChecklistRefEditing.article;
+ if((targetState.products||[]).some(p=>safeArticle(p.article)===value.article)){paramChecklistRefSetStatus('La referencia ya pertenece al padrón original; no se puede duplicar aquí.');return}
+ const current=Array.isArray(targetState.checklistExtraRefs)?targetState.checklistExtraRefs.slice():[];
+ const editing=paramChecklistRefEditing.branch===code?paramChecklistRefEditing.article:'';
  if(current.some(item=>safeArticle(item.article)===value.article&&safeArticle(item.article)!==safeArticle(editing))){paramChecklistRefSetStatus('Ese artículo ya está cargado en Referencias exclusivas de Checklist.');return}
  const index=editing?current.findIndex(item=>safeArticle(item.article)===safeArticle(editing)):-1;
  if(index>=0)current[index]=value;else current.push(value);
- state.checklistExtraRefs=normalizeSpecialRefList(current,false);
+ targetState.checklistExtraRefs=normalizeSpecialRefList(current,false);
+ if(!persistState(targetState)){paramChecklistRefSetStatus('No se pudo guardar la configuración de la sucursal.');return}
  resetParamChecklistRefForm();
- renderChecklistSpecialParams();
- paramChecklistRefSetStatus(index>=0?'Referencia actualizada.':'Referencia agregada al Checklist.',true);
- scheduleSave();
- if(document.getElementById('presenceChecklist'))renderPresenceSheet();
+ renderAdminChecklistExtraRefs();
+ paramChecklistRefSetStatus(index>=0?'Referencia actualizada y sincronizada.':'Referencia agregada al Checklist y sincronizada.',true);
+ if(code===normalizeBranch(state.branch)&&document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
 function editParamChecklistRef(article){
- if(!specialRefCanEdit())return;
- const item=(state.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
- paramChecklistRefEditing={article:safeArticle(item.article)};
+ if(!isMasterAdmin())return;
+ const code=adminChecklistExtraBranchCode();
+ const targetState=adminChecklistExtraState(code);if(!targetState)return;
+ const item=(targetState.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ paramChecklistRefEditing={branch:code,article:safeArticle(item.article)};
  document.getElementById('paramExtraArticle').value=item.article;
  document.getElementById('paramExtraDescription').value=item.description||'';
  document.getElementById('paramExtraBrand').value=item.brand||'';
@@ -9614,169 +9657,40 @@ function editParamChecklistRef(article){
  paramChecklistRefSetStatus('Editando '+item.article+' · '+item.description,true);
 }
 function deleteParamChecklistRef(article){
- if(!specialRefCanEdit())return;
- const item=(state.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
- if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de las referencias exclusivas de Checklist?'))return;
- state.checklistExtraRefs=(state.checklistExtraRefs||[]).filter(x=>safeArticle(x.article)!==safeArticle(article));
- if(paramChecklistRefEditing.article===safeArticle(article))resetParamChecklistRefForm();
- renderChecklistSpecialParams();
- paramChecklistRefSetStatus('Referencia eliminada.',true);
- scheduleSave();
- if(document.getElementById('presenceChecklist'))renderPresenceSheet();
+ if(!isMasterAdmin())return;
+ const code=adminChecklistExtraBranchCode();
+ const targetState=adminChecklistExtraState(code);if(!targetState)return;
+ const item=(targetState.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de las referencias exclusivas de Checklist de la sucursal '+code+'?'))return;
+ targetState.checklistExtraRefs=(targetState.checklistExtraRefs||[]).filter(x=>safeArticle(x.article)!==safeArticle(article));
+ if(!persistState(targetState)){paramChecklistRefSetStatus('No se pudo guardar la eliminación.');return}
+ if(paramChecklistRefEditing.branch===code&&paramChecklistRefEditing.article===safeArticle(article))resetParamChecklistRefForm();
+ renderAdminChecklistExtraRefs();
+ paramChecklistRefSetStatus('Referencia eliminada y sincronizada.',true);
+ if(code===normalizeBranch(state.branch)&&document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
-function renderParamChecklistExtraTable(canEdit){
- const target=document.getElementById('paramChecklistExtraTable');if(!target)return;
- const list=(Array.isArray(state.checklistExtraRefs)?state.checklistExtraRefs:[]).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
- if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias exclusivas de Checklist cargadas para esta sucursal.</div>';return}
+function renderParamChecklistExtraTable(canEdit=true){
+ const target=document.getElementById('adminChecklistExtraTable');if(!target)return;
+ const code=adminChecklistExtraBranchCode();
+ const branchState=adminChecklistExtraState(code);
+ const list=(Array.isArray(branchState?.checklistExtraRefs)?branchState.checklistExtraRefs:[]).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
+ if(!code){target.innerHTML='<div class="specialrefs-empty">Seleccioná una sucursal para consultar sus referencias.</div>';return}
+ if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias exclusivas de Checklist cargadas para la sucursal '+esc(code)+'.</div>';return}
  target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>`<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td><div class="specialrefs-actions"><button type="button" class="specialrefs-btn" ${canEdit?'':'disabled'} onclick="editParamChecklistRef('${escAttr(item.article)}')">Editar</button><button type="button" class="specialrefs-btn danger" ${canEdit?'':'disabled'} onclick="deleteParamChecklistRef('${escAttr(item.article)}')">Eliminar</button></div></td></tr>`).join('')}</tbody></table>`;
 }
+function renderAdminChecklistExtraRefs(){
+ const select=document.getElementById('adminChecklistExtraBranch');
+ const target=document.getElementById('adminChecklistExtraTable');
+ if(!select||!target)return;
+ const current=normalizeBranch(select.value||state.branch||'');
+ const codes=allBranchCodes();
+ select.innerHTML=codes.map(code=>`<option value="${escAttr(code)}">${esc(code)} · ${esc(branchCatalog[code]?.name||'')}</option>`).join('');
+ select.value=codes.includes(current)?current:(codes[0]||'');
+ renderParamChecklistExtraTable(isMasterAdmin());
+}
 function renderChecklistSpecialParams(){
- const target=document.getElementById('checklistConfigParams');if(!target)return;
- const canEdit=canEditCurrentBranch();
- const enabled=loadEnabledElaborators();
- const selected=normalizeBranch(state.elaboratorCode||'');
- const hotRefs=selected?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selected):[];
- const allCodes=[...new Set([...enabled,...(selected&&!enabled.includes(selected)?[selected]:[])])].sort((a,b)=>Number(a)-Number(b));
- const options='<option value="">Seleccionar elaboradora…</option>'+allCodes.map(code=>`<option value="${escAttr(code)}" ${selected===code?'selected':''}>${esc(code)} · ${esc(branchCatalog[code]?.name||'')}${enabled.includes(code)?'':' (no habilitada)'}</option>`).join('');
- const preview=selected?(hotRefs.length?`<ul class="checklist-hotspot-preview">${hotRefs.map(ref=>`<li><b>${esc(ref.article)}</b> · ${esc(ref.description)}${ref.brand?' · '+esc(ref.brand):''}</li>`).join('')}</ul>`:'<div class="checklist-config-note">La elaboradora seleccionada no tiene referencias de Punto Caliente asignadas.</div>'):'<div class="checklist-config-note">Seleccioná una elaboradora para incorporar sus referencias de Punto Caliente al Checklist.</div>';
- target.innerHTML=`<div class="checklist-config-header"><div><div class="checklist-config-title">CONFIGURACIÓN DEL CHECKLIST</div><div class="checklist-config-subtitle">Las referencias de elaboración se administran desde Administrador General. Las referencias que no son de elaboración se registran aquí, por sucursal.</div></div></div>
- <div class="checklist-config-grid">
-   <section class="checklist-config-card">
-     <div class="checklist-config-card-title">🏭 ELABORADORA QUE ABASTECE A ESTA SUCURSAL</div>
-     <label class="checklist-config-field"><span>Seleccionar elaboradora</span><select id="branchChecklistElaboratorSelect" ${canEdit?'':'disabled'} onchange="saveBranchChecklistElaborator(this.value)">${options}</select></label>
-     <div class="checklist-config-note">Las referencias de Punto Caliente de la elaboradora elegida se suman automáticamente al Checklist original. Se muestran junto a las tradicionales, con una etiqueta distintiva, sin duplicar artículos ni afectar los cálculos.</div>
-     <div class="checklist-config-preview-title">REFERENCIAS DE PUNTO CALIENTE QUE SE INCORPORAN (${hotRefs.length})</div>${preview}
-   </section>
-   <section class="checklist-config-card">
-     <div class="checklist-config-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST · NO ELABORACIÓN</div>
-     <div class="checklist-config-note">Se controlan por fecha y turno en el Checklist. No forman parte del padrón original ni de los cálculos de producción.</div>
-     <div class="checklist-config-form">
-       <label class="checklist-config-field"><span>Artículo</span><input id="paramExtraArticle" inputmode="numeric" maxlength="7" placeholder="Código de artículo" ${canEdit?'':'disabled'}></label>
-       <label class="checklist-config-field"><span>Descripción</span><input id="paramExtraDescription" maxlength="120" placeholder="Descripción de la referencia" ${canEdit?'':'disabled'}></label>
-       <label class="checklist-config-field"><span>Marca</span><input id="paramExtraBrand" maxlength="60" placeholder="Marca (opcional)" ${canEdit?'':'disabled'}></label>
-       <label class="checklist-config-field"><span>Aptitud</span><input id="paramExtraAptitude" maxlength="20" placeholder="Aptitud (opcional)" ${canEdit?'':'disabled'}></label>
-       <label class="checklist-config-field"><span>U/M</span><input id="paramExtraUm" maxlength="12" placeholder="Ej. UN, KGR" ${canEdit?'':'disabled'}></label>
-       <div class="checklist-config-form-actions"><button id="paramExtraSaveBtn" type="button" ${canEdit?'':'disabled'} onclick="saveParamChecklistRef()">＋ Agregar al Checklist</button><button id="paramExtraCancelBtn" type="button" style="display:none" onclick="resetParamChecklistRefForm()">Cancelar edición</button></div>
-     </div>
-     <div id="paramChecklistExtraStatus" class="checklist-config-status"></div>
-     <div id="paramChecklistExtraTable"></div>
-   </section>
- </div>`;
- renderParamChecklistExtraTable(canEdit);
-}
-
-/* ===================== PLAN ELABORADORA ===================== */
-const MOTHER_SELECTION_PREFIX='panaderia_multizona_elaboradora_dest_';
-const MOTHER_BRANCH_STORAGE='panaderia_multizona_elaboradora_madre_v43';
-const MOTHER_ELABORATORS_STORAGE='panaderia_elaboradoras_habilitadas_multizona_v43';
-const HOT_SPOT_MASTER_STORAGE='miga_hot_spot_master_by_elaborator_v671';
-const MOTHER_ZONE_STORAGE='panaderia_multizona_elaboradora_zone_v45';
-const FIREBASE_ADMIN_EMAIL='admin@miga-panaderia.app';
-let motherAdminMode=false;
-let adminRole=''; // '' | 'branch' | 'master'
-let adminBranchCode='';
-let enabledElaborators=[];
-let motherBranchCode='';
-try{
- const savedMother=localStorage.getItem(MOTHER_BRANCH_STORAGE);
- if(savedMother&&branchCatalog[savedMother])motherBranchCode=savedMother;
-}catch(e){}
-let motherZoneId='';
-try{
- const savedMotherZone=localStorage.getItem(MOTHER_ZONE_STORAGE);
- if(savedMotherZone&&zoneCatalog[savedMotherZone])motherZoneId=savedMotherZone;
-}catch(e){}
-let motherDateISO='';
-let motherSelectedBranches=[];
-
-/* ===================== PRESENCIA ELABORADORAS · CICLO PRODUCCIÓN ===================== */
-const PRESENCE_STORAGE_PREFIX='panaderia_presence_checklist_v90_';
-let presenceBranchCode='';
-let presenceDateISO='';
-let presenceShift='am';
-let presenceSearchText='';
-const presenceSaveTimers={};
-let presenceCloudAvailable=true;
-let presenceCloudMessage='';
-
-function presenceStorageKey(code){
- return PRESENCE_STORAGE_PREFIX+String(code||'').padStart(3,'0');
-}
-function normalizePresenceBoolMap(data){
- const out={};
- if(!data||typeof data!=='object')return out;
- Object.entries(data).forEach(([article,value])=>{
-   const art=safeArticle(article);
-   if(!art)return;
-   if(value===true||value===1||value==='1'||value==='true')out[art]=true;
- });
- return out;
-}
-function normalizePresenceData(data){
- const out={};
- if(!data||typeof data!=='object')return out;
- Object.entries(data).forEach(([date,raw])=>{
-   if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !raw || typeof raw!=='object')return;
-   const row={
-     am:normalizePresenceBoolMap(raw.am),
-     pm:normalizePresenceBoolMap(raw.pm),
-     amAbsent:normalizePresenceBoolMap(raw.amAbsent),
-     pmAbsent:normalizePresenceBoolMap(raw.pmAbsent)
-   };
-   // Presente y Ausente son estados mutuamente excluyentes.
-   Object.keys(row.am).forEach(art=>delete row.amAbsent[art]);
-   Object.keys(row.pm).forEach(art=>delete row.pmAbsent[art]);
-   if(Object.keys(row.am).length||Object.keys(row.pm).length||Object.keys(row.amAbsent).length||Object.keys(row.pmAbsent).length)out[date]=row;
- });
- return out;
-}
-function loadPresenceLocal(code){
- try{
-   const raw=localStorage.getItem(presenceStorageKey(code));
-   return raw?normalizePresenceData(JSON.parse(raw)):{};
- }catch(e){return {}}
-}
-function storePresenceLocal(code,data){
- const clean=normalizePresenceData(data);
- try{localStorage.setItem(presenceStorageKey(code),JSON.stringify(clean))}catch(e){}
- return clean;
-}
-function allPresenceLocal(){
- const out={};
- allBranchCodes().forEach(code=>{
-   const data=loadPresenceLocal(code);
-   if(Object.keys(data).length)out[code]=data;
- });
- return out;
-}
-function presenceAllowedBranches(){
- if(isMasterAdmin())return allBranchCodes();
- const code=normalizeBranch(state.branch);
- return code&&branchCatalog[code]?[code]:[];
-}
-function presenceDateKeyFromDate(d){
- return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function presenceParseDate(value){
- const d=new Date(String(value||'')+'T12:00:00');
- return Number.isNaN(d.getTime())?null:d;
-}
-function presenceFormatDate(d){
- return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
-}
-function presenceBranchState(code){
- code=normalizeBranch(code);
- if(code===normalizeBranch(state.branch))return state;
- return loadLocalFor(code) || null;
-}
-function presenceProductionRange(code){
- const cfg=presenceBranchState(code) || {};
- const startRaw=cfg.startDate || state.startDate || ORIGINAL.startDate || '2026-08-10';
- const start=presenceParseDate(startRaw) || new Date('2026-08-10T12:00:00');
- let days=Math.round(Number(cfg.params?.days ?? state.params?.days ?? 35));
- if(!Number.isFinite(days)||days<1)days=35;
- const end=new Date(start);end.setDate(end.getDate()+days-1);
- return {start,end,days,startRaw:presenceDateKeyFromDate(start),endRaw:presenceDateKeyFromDate(end)};
+ const target=document.getElementById('checklistConfigParams');
+ if(target){target.innerHTML='';target.style.display='none';target.setAttribute('aria-hidden','true')}
 }
 function presenceDateInRange(date,range){
  const d=presenceParseDate(date);if(!d)return false;
@@ -9840,11 +9754,10 @@ function presenceRowsForDate(code,date){
    }
    byArticle.set(art,{...ref,article:art,sources:[source]});
  };
- // Las referencias de Punto Caliente vienen del padrón central del Administrador General y dependen
- // de la elaboradora elegida por esta sucursal. Se incorporan al Checklist, sin entrar al padrón.
- const selectedElaborator=normalizeBranch(cfg.elaboratorCode||'');
- (selectedElaborator?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selectedElaborator):[]).forEach(ref=>addSource(ref,'checklist-hotspot'));
- // Las referencias que no son de elaboración se controlan solo en Checklist y se administran desde Parámetros Suc.
+ // Punto Caliente se resuelve automáticamente según los destinos configurados en Plan Elaboradora.
+ // La sucursal no elige ni configura la elaboradora: el Checklist toma las referencias que correspondan.
+ hotSpotsForBranch(code).forEach(ref=>addSource(ref,'checklist-hotspot'));
+ // Las referencias no elaboradas se configuran exclusivamente desde Administrador General y solo afectan al Checklist.
  (Array.isArray(cfg.checklistExtraRefs)?cfg.checklistExtraRefs:[]).forEach(ref=>addSource(ref,'checklist-special'));
  return Array.from(byArticle.values()).sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
 }
@@ -10447,7 +10360,7 @@ function toggleElaboratorEnabled(code){
  renderMotherBranchChecks();
  renderMotherTable();
  renderElaboratorManager();
- if(isMasterAdmin()){renderAdminWhatsapp();renderAdminHotSpotRefs();}
+ if(isMasterAdmin()){renderAdminWhatsapp();renderAdminHotSpotRefs();renderAdminChecklistExtraRefs();}
 }
 function toggleElaboratorManager(){
  if(!isMasterAdmin())return;
@@ -10531,7 +10444,7 @@ function updateMotherAdminUI(){
  const presenceTab=document.getElementById('presenceTabBtn');
  if(presenceTab)presenceTab.classList.remove('presence-admin-hidden');
  if(document.getElementById('presenceCalendar'))renderPresenceSheet();
- if(isMasterAdmin())populateEmergencyRestoreSelectors();
+ if(isMasterAdmin()){populateEmergencyRestoreSelectors();renderAdminChecklistExtraRefs();}
 }
 async function toggleMotherAdmin(){
  if(motherAdminMode){
@@ -10838,6 +10751,7 @@ function toggleMotherBranch(code,checked){
  motherSelectedBranches.sort((a,b)=>Number(a)-Number(b));
  saveMotherSelection();
  renderMotherTable();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
 function selectAllMotherBranches(on){
  if(!isMasterAdmin())return;
@@ -10845,6 +10759,7 @@ function selectAllMotherBranches(on){
  saveMotherSelection();
  renderMotherBranchChecks();
  renderMotherTable();
+ if(document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
 function changeMotherDate(iso){
  motherDateISO=iso;
