@@ -1,4 +1,4 @@
-# MIGA · Multizona v71 · Referencias centralizadas y arranque corregido
+# MIGA · Multizona v71.1 · WhatsApp, Punto Caliente y Checklist por zona
 
 Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día) + referencias especiales de Checklist**.
 
@@ -9,18 +9,20 @@ Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día) + re
 - Se conservan la tipografía y la estructura multizona de Firebase/Firestore y GitHub Pages.
 - No se modifican ventas Prisma, fórmulas, sugeridos, coeficientes, cronogramas ni reglas de cálculo del padrón original.
 
-## Referencias especiales de Checklist · v71
+## Referencias especiales de Checklist · v71.1
 - **Punto Caliente:** se administra exclusivamente desde **Administrador General → Punto Caliente por elaboradora**. Cada referencia se asigna a una elaboradora habilitada.
 - **Asignación automática:** el Checklist identifica qué elaboradora abastece a cada sucursal usando la configuración de destinos de **Plan Elaboradora**. La sucursal no debe seleccionar ni configurar una elaboradora.
-- **Referencias no elaboradas:** se administran exclusivamente desde **Administrador General → Referencias exclusivas de Checklist · No elaboración**, seleccionando la sucursal correspondiente.
+- **Referencias no elaboradas:** se administran exclusivamente desde **Administrador General → Referencias exclusivas de Checklist · No elaboración**, seleccionando la zona correspondiente; se aplican a todas las sucursales de esa zona.
 - Ambos tipos se incorporan a la lista habitual del Checklist y se diferencian con sus etiquetas. Si el artículo ya existe en el padrón o en otra referencia, el Checklist conserva una sola fila y añade la clasificación correspondiente.
 - Las referencias especiales no se muestran como cuadros de configuración en Parámetros Suc, no se agregan al padrón original y no intervienen en los cálculos de producción.
-- Las referencias de Punto Caliente se guardan en la configuración global sincronizada por Firebase. Las referencias exclusivas de Checklist se guardan en la configuración de la sucursal que selecciona el Administrador General.
+- Las referencias de Punto Caliente se guardan en la configuración global sincronizada por Firebase. Las referencias exclusivas de Checklist se guardan en la configuración central por zona y se sincronizan por Firebase.
 - Si hay referencias de Punto Caliente heredadas de la versión anterior, se conservan durante la migración. Las referencias se muestran solo a las sucursales que figuran explícitamente como destinos de su elaboradora.
 
-## Corrección v71
-- Se restauraron las funciones base del Checklist de Presencia que faltaban en el paquete anterior y podían interrumpir la carga inicial.
-- El progreso de inicio ahora se ejecuta independientemente del render inicial y registra cualquier error en consola, evitando que el loader quede clavado en 10%.
+## Corrección v71.1
+- Se restauraron las constantes y variables del módulo Plan Elaboradora que faltaban en el paquete anterior. Esto recupera la lectura de elaboradoras habilitadas, los destinos, los teléfonos de WhatsApp y el padrón de Punto Caliente.
+- La lista de teléfonos también recupera los códigos guardados aunque una elaboradora no esté actualmente habilitada.
+- Las referencias exclusivas del Checklist ahora se administran por zona, se sincronizan como configuración central y se incluyen automáticamente en el Checklist de todas las sucursales de esa zona.
+- Se migran una sola vez las referencias exclusivas que estuvieran guardadas en configuraciones individuales de sucursal, evitando que reaparezcan tras eliminarlas.
 
 ## Estructura
 - `index.html`

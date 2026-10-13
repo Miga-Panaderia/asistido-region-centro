@@ -5441,10 +5441,10 @@ button,input,select,textarea{font-family:inherit}
       <section class="admin-card master-admin-only" id="adminChecklistExtraCard">
         <div class="admin-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST · NO ELABORACIÓN</div>
         <div class="admin-help" style="margin-top:0">
-          Administrá estas referencias desde el Administrador General. Elegí la sucursal a la que corresponden; se incorporan únicamente a su Checklist, diferenciadas de las referencias tradicionales, sin formar parte del padrón ni de los cálculos.
+          Administrá estas referencias por <b>zona</b>. Se incorporan al Checklist de todas las sucursales de la zona, diferenciadas de las referencias tradicionales, sin formar parte del padrón ni de los cálculos.
         </div>
         <div class="admin-hotspot-form" style="margin-top:8px">
-          <label class="admin-field admin-wide"><span>Sucursal a configurar</span><select id="adminChecklistExtraBranch" onchange="resetParamChecklistRefForm();renderAdminChecklistExtraRefs()"></select></label>
+          <label class="admin-field admin-wide"><span>Zona a configurar</span><select id="adminChecklistExtraZone" onchange="resetParamChecklistRefForm();renderAdminChecklistExtraRefs()"></select></label>
           <label class="admin-field"><span>Artículo</span><input id="paramExtraArticle" inputmode="numeric" maxlength="7" placeholder="Ej. 0602553"></label>
           <label class="admin-field admin-wide"><span>Descripción</span><input id="paramExtraDescription" maxlength="120" placeholder="Descripción de la referencia"></label>
           <label class="admin-field"><span>Marca</span><input id="paramExtraBrand" maxlength="60" placeholder="Marca (opcional)"></label>
@@ -6487,7 +6487,7 @@ function normalizeStateArticles(obj){
  obj.sales=normalizedSales;
 
  obj.salesRows=(obj.salesRows||[]).map(r=>({...r,article:safeArticle(r.article)})).filter(r=>r.article);
- // Las referencias especiales pertenecen a la configuración de cada sucursal.
+ // Se conservan los campos antiguos únicamente para migrar referencias heredadas a los padrones centrales.
  obj.hotSpotRefs=normalizeSpecialRefList(obj.hotSpotRefs,true);
  obj.checklistExtraRefs=normalizeSpecialRefList(obj.checklistExtraRefs,false);
  obj.elaboratorCode=normalizeBranch(obj.elaboratorCode||'');
@@ -7460,7 +7460,10 @@ function renderAdminWhatsapp(){
  const box=document.getElementById('adminWhatsappList');
  if(!box)return;
  const stored=loadElaboratorWhatsapp();
- const codes=(enabledElaborators&&enabledElaborators.length?enabledElaborators:loadEnabledElaborators())
+ const configured=(enabledElaborators&&enabledElaborators.length?enabledElaborators:loadEnabledElaborators());
+ const storedCodes=Object.keys(stored||{}).filter(code=>branchCatalog[code]);
+ const hotspotCodes=loadHotSpotMaster().map(ref=>normalizeBranch(ref.elaboratorCode)).filter(code=>branchCatalog[code]);
+ const codes=[...new Set([...configured,...storedCodes,...hotspotCodes])]
    .filter(code=>branchCatalog[code])
    .sort((a,b)=>Number(a)-Number(b));
 
@@ -8513,6 +8516,7 @@ function firebaseSystemSnapshot(){
    MOTHER_ELABORATORS_STORAGE,
    HOT_SPOT_MASTER_STORAGE,
    ELABORATOR_WHATSAPP_STORAGE,
+   CHECKLIST_ZONE_EXTRA_STORAGE,
    ACTIVE_ZONES_STORAGE,
    ...zoneOrder.map(eventNextCycleKey)
  ];
@@ -8535,6 +8539,7 @@ function firebaseApplySystemSnapshot(storage){
      MOTHER_ELABORATORS_STORAGE,
      HOT_SPOT_MASTER_STORAGE,
      ELABORATOR_WHATSAPP_STORAGE,
+     CHECKLIST_ZONE_EXTRA_STORAGE,
      ACTIVE_ZONES_STORAGE,
      ...zoneOrder.map(eventNextCycleKey),
      ...allBranchCodes().map(code=>motherSelectionKey(code))
@@ -8594,6 +8599,7 @@ function firebaseBuildUploadPayload(){
 
 function firebaseApplyFullPayload(payload){
  if(!payload || typeof payload!=='object')return;
+ let checklistZoneExtraMigrationChanged=false;
  firebaseCloudApplying=true;
  try{
    const zoneRefs=payload.zoneRefs||{};
@@ -8614,12 +8620,14 @@ function firebaseApplyFullPayload(payload){
    Object.entries(payload.presence||{}).forEach(([code,data])=>{if(branchCatalog[code])storePresenceLocal(code,data||{})});
    salesSourceFile=String(payload.salesSourceFile||'Firebase');
    firebaseApplySystemSnapshot(payload.system||{});
+   checklistZoneExtraMigrationChanged=migrateLegacyChecklistExtraRefsToZones({markerKey:CHECKLIST_ZONE_EXTRA_CLOUD_MIGRATED_STORAGE,syncCloud:false});
 
    const code=state.branch;
    const meta=branchCatalog[code]||{code,name:''};
    const next=loadLocalFor(code)||makeBranchState(code,meta.name||'');
    state=attachSalesToState(next,code);
    recalc();
+   if(checklistZoneExtraMigrationChanged&&document.getElementById('presenceChecklist'))renderPresenceSheet();
 
    const status=document.getElementById('branchFileStatus');
    if(status && Object.keys(salesWorkbook).length){
@@ -8628,6 +8636,7 @@ function firebaseApplyFullPayload(payload){
  }finally{
    firebaseCloudApplying=false;
  }
+ if(checklistZoneExtraMigrationChanged&&isMasterAdmin()&&firebaseCloudInitialized)firebaseQueueSystemSync();
 }
 
 async function firebaseInitialUpload(){
@@ -9434,7 +9443,6 @@ async function adminReplaceReferences(file){
 
 /* ===================== REFERENCIAS DE CHECKLIST · REVISIÓN V67.1 ===================== */
 const SPECIAL_REF_DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-const paramChecklistRefEditing={branch:'',article:''};
 let adminHotSpotEditing={article:'',elaboratorCode:''};
 let hotSpotMigrationPendingSync=false;
 function specialRefCanEdit(){return canEditCurrentBranch()}
@@ -9539,6 +9547,7 @@ function renderAdminHotSpotRefs(){
  if(current&&allCodes.includes(current))select.value=current;
  else if(!adminHotSpotEditing.article)select.value=enabled[0]||'';
  if(!enabled.length){adminHotSpotSetStatus('Primero habilitá al menos una sucursal elaboradora desde Plan Elaboradora.');}
+ else if(!adminHotSpotEditing.article){adminHotSpotSetStatus('');}
  const rows=list.map(item=>{
    const elabLabel=item.elaboratorCode?(item.elaboratorCode+' · '+(branchCatalog[item.elaboratorCode]?.name||'')+(enabled.includes(item.elaboratorCode)?'':' (no habilitada)')):'Sin asignar';
    return `<tr><td>${esc(elabLabel)}</td><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td><div class="specialrefs-actions"><button type="button" class="specialrefs-btn" onclick="editAdminHotSpotRef('${escAttr(item.elaboratorCode)}','${escAttr(item.article)}')">Editar / asignar</button><button type="button" class="specialrefs-btn danger" onclick="deleteAdminHotSpotRef('${escAttr(item.elaboratorCode)}','${escAttr(item.article)}')">Eliminar</button></div></td></tr>`;
@@ -9605,48 +9614,110 @@ function paramChecklistRefSetStatus(message,good=false){
  box.textContent=message||'';
  box.style.color=good?'#21623f':(message?'#9a2e2e':'');
 }
-function adminChecklistExtraBranchCode(){return normalizeBranch(document.getElementById('adminChecklistExtraBranch')?.value||'')}
-function adminChecklistExtraState(code){
- code=normalizeBranch(code||'');
- if(!code)return null;
- if(code===normalizeBranch(state.branch))return state;
- return loadRawLocalFor(code)||makeBranchState(code,branchCatalog[code]?.name||'');
+let paramChecklistRefEditing={zoneId:'',article:''};
+function adminChecklistExtraZoneId(){
+ const value=String(document.getElementById('adminChecklistExtraZone')?.value||'');
+ return zoneCatalog[value]?value:'';
+}
+function normalizeChecklistZoneExtraMap(data){
+ const source=data&&typeof data==='object'?data:{};
+ const out={};
+ zoneOrder.forEach(zoneId=>{out[zoneId]=normalizeSpecialRefList(source[zoneId],false)});
+ return out;
+}
+function loadChecklistZoneExtraMap(){
+ try{
+   const raw=localStorage.getItem(CHECKLIST_ZONE_EXTRA_STORAGE);
+   if(raw!==null)return normalizeChecklistZoneExtraMap(JSON.parse(raw));
+ }catch(e){}
+ return normalizeChecklistZoneExtraMap({});
+}
+function storeChecklistZoneExtraMap(data,{syncCloud=true}={}){
+ const normalized=normalizeChecklistZoneExtraMap(data);
+ try{localStorage.setItem(CHECKLIST_ZONE_EXTRA_STORAGE,JSON.stringify(normalized))}
+ catch(e){return null}
+ if(syncCloud&&!firebaseCloudApplying)firebaseQueueSystemSync();
+ return normalized;
+}
+function checklistZoneExtraRefsForBranch(code){
+ const zoneId=branchZoneId(code);
+ if(!zoneId||!zoneCatalog[zoneId])return [];
+ return loadChecklistZoneExtraMap()[zoneId]||[];
+}
+function migrateLegacyChecklistExtraRefsToZones({markerKey=CHECKLIST_ZONE_EXTRA_MIGRATED_STORAGE,syncCloud=true}={}){
+ try{if(localStorage.getItem(markerKey)==='1')return false}catch(e){}
+ const map=loadChecklistZoneExtraMap();
+ let changed=false;
+ allBranchCodes().forEach(code=>{
+   const zoneId=branchZoneId(code);
+   if(!zoneId||!zoneCatalog[zoneId])return;
+   const candidates=[];
+   const rawBranchState=loadRawLocalFor(code);
+   if(rawBranchState)candidates.push(rawBranchState);
+   if(normalizeBranch(state?.branch)===normalizeBranch(code))candidates.push(state);
+   if(!candidates.some(item=>Array.isArray(item?.checklistExtraRefs)&&item.checklistExtraRefs.length))return;
+   const list=Array.isArray(map[zoneId])?map[zoneId].slice():[];
+   candidates.forEach(branchState=>{
+     (Array.isArray(branchState?.checklistExtraRefs)?branchState.checklistExtraRefs:[]).forEach(ref=>{
+       const article=safeArticle(ref?.article||ref?.code);
+       const description=String(ref?.description||'').trim();
+       if(!article||!description)return;
+       const index=list.findIndex(item=>safeArticle(item.article)===article);
+       if(index<0){
+         list.push({article,description,brand:String(ref.brand||'').trim(),aptitude:String(ref.aptitude||'').trim(),um:String(ref.um||'').trim(),schedule:[1,1,1,1,1,1,1]});
+         changed=true;
+       }else{
+         const existing=list[index];
+         ['description','brand','aptitude','um'].forEach(key=>{
+           if(!String(existing[key]||'').trim()&&String(ref[key]||'').trim()){
+             existing[key]=String(ref[key]).trim();changed=true;
+           }
+         });
+       }
+     });
+   });
+   map[zoneId]=normalizeSpecialRefList(list,false);
+ });
+ if(!storeChecklistZoneExtraMap(map,{syncCloud:false}))return false;
+ try{localStorage.setItem(markerKey,'1')}catch(e){}
+ if(changed&&syncCloud&&!firebaseCloudApplying&&isMasterAdmin()&&firebaseCloudInitialized)firebaseQueueSystemSync();
+ return changed;
 }
 function resetParamChecklistRefForm(){
- paramChecklistRefEditing={branch:'',article:''};
+ paramChecklistRefEditing={zoneId:'',article:''};
  ['paramExtraArticle','paramExtraDescription','paramExtraBrand','paramExtraAptitude','paramExtraUm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
  const btn=document.getElementById('paramExtraSaveBtn');if(btn)btn.textContent='＋ Agregar al Checklist';
  const cancel=document.getElementById('paramExtraCancelBtn');if(cancel)cancel.style.display='none';
 }
 function saveParamChecklistRef(){
  if(!isMasterAdmin()){paramChecklistRefSetStatus('Solo el Administrador General puede modificar estas referencias.');return}
- const code=adminChecklistExtraBranchCode();
- if(!code){paramChecklistRefSetStatus('Seleccioná una sucursal.');return}
- const targetState=adminChecklistExtraState(code);
- if(!targetState){paramChecklistRefSetStatus('No se pudo cargar la configuración de la sucursal.');return}
+ const zoneId=adminChecklistExtraZoneId();
+ if(!zoneId){paramChecklistRefSetStatus('Seleccioná una zona.');return}
  const get=id=>String(document.getElementById(id)?.value||'').trim();
  const value={article:safeArticle(get('paramExtraArticle')),description:get('paramExtraDescription'),brand:get('paramExtraBrand'),aptitude:get('paramExtraAptitude'),um:get('paramExtraUm'),schedule:[1,1,1,1,1,1,1]};
  if(!value.article){paramChecklistRefSetStatus('Ingresá un código de artículo válido.');return}
  if(!value.description){paramChecklistRefSetStatus('La descripción es obligatoria.');return}
- if((targetState.products||[]).some(p=>safeArticle(p.article)===value.article)){paramChecklistRefSetStatus('La referencia ya pertenece al padrón original; no se puede duplicar aquí.');return}
- const current=Array.isArray(targetState.checklistExtraRefs)?targetState.checklistExtraRefs.slice():[];
- const editing=paramChecklistRefEditing.branch===code?paramChecklistRefEditing.article:'';
- if(current.some(item=>safeArticle(item.article)===value.article&&safeArticle(item.article)!==safeArticle(editing))){paramChecklistRefSetStatus('Ese artículo ya está cargado en Referencias exclusivas de Checklist.');return}
+ if(loadZoneReferences(zoneId).some(p=>safeArticle(p.article)===value.article)){
+   paramChecklistRefSetStatus('La referencia ya pertenece al padrón original de la zona; no se puede duplicar aquí.');return;
+ }
+ const map=loadChecklistZoneExtraMap();
+ const current=Array.isArray(map[zoneId])?map[zoneId].slice():[];
+ const editing=paramChecklistRefEditing.zoneId===zoneId?paramChecklistRefEditing.article:'';
+ if(current.some(item=>safeArticle(item.article)===value.article&&safeArticle(item.article)!==safeArticle(editing))){paramChecklistRefSetStatus('Ese artículo ya está cargado en las referencias exclusivas de Checklist de esta zona.');return}
  const index=editing?current.findIndex(item=>safeArticle(item.article)===safeArticle(editing)):-1;
  if(index>=0)current[index]=value;else current.push(value);
- targetState.checklistExtraRefs=normalizeSpecialRefList(current,false);
- if(!persistState(targetState)){paramChecklistRefSetStatus('No se pudo guardar la configuración de la sucursal.');return}
+ map[zoneId]=normalizeSpecialRefList(current,false);
+ if(!storeChecklistZoneExtraMap(map)){paramChecklistRefSetStatus('No se pudo guardar la configuración de la zona.');return}
  resetParamChecklistRefForm();
  renderAdminChecklistExtraRefs();
- paramChecklistRefSetStatus(index>=0?'Referencia actualizada y sincronizada.':'Referencia agregada al Checklist y sincronizada.',true);
- if(code===normalizeBranch(state.branch)&&document.getElementById('presenceChecklist'))renderPresenceSheet();
+ paramChecklistRefSetStatus(index>=0?'Referencia actualizada y sincronizada para la zona.':'Referencia agregada al Checklist de la zona y sincronizada.',true);
+ if(branchZoneId(state.branch)===zoneId&&document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
 function editParamChecklistRef(article){
  if(!isMasterAdmin())return;
- const code=adminChecklistExtraBranchCode();
- const targetState=adminChecklistExtraState(code);if(!targetState)return;
- const item=(targetState.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
- paramChecklistRefEditing={branch:code,article:safeArticle(item.article)};
+ const zoneId=adminChecklistExtraZoneId();if(!zoneId)return;
+ const item=(loadChecklistZoneExtraMap()[zoneId]||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ paramChecklistRefEditing={zoneId,article:safeArticle(item.article)};
  document.getElementById('paramExtraArticle').value=item.article;
  document.getElementById('paramExtraDescription').value=item.description||'';
  document.getElementById('paramExtraBrand').value=item.brand||'';
@@ -9658,40 +9729,70 @@ function editParamChecklistRef(article){
 }
 function deleteParamChecklistRef(article){
  if(!isMasterAdmin())return;
- const code=adminChecklistExtraBranchCode();
- const targetState=adminChecklistExtraState(code);if(!targetState)return;
- const item=(targetState.checklistExtraRefs||[]).find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
- if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de las referencias exclusivas de Checklist de la sucursal '+code+'?'))return;
- targetState.checklistExtraRefs=(targetState.checklistExtraRefs||[]).filter(x=>safeArticle(x.article)!==safeArticle(article));
- if(!persistState(targetState)){paramChecklistRefSetStatus('No se pudo guardar la eliminación.');return}
- if(paramChecklistRefEditing.branch===code&&paramChecklistRefEditing.article===safeArticle(article))resetParamChecklistRefForm();
+ const zoneId=adminChecklistExtraZoneId();if(!zoneId)return;
+ const map=loadChecklistZoneExtraMap();
+ const current=Array.isArray(map[zoneId])?map[zoneId].slice():[];
+ const item=current.find(x=>safeArticle(x.article)===safeArticle(article));if(!item)return;
+ if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de las referencias exclusivas de Checklist de la zona '+zoneName(zoneId)+'?'))return;
+ map[zoneId]=current.filter(x=>safeArticle(x.article)!==safeArticle(article));
+ if(!storeChecklistZoneExtraMap(map)){paramChecklistRefSetStatus('No se pudo guardar la eliminación.');return}
+ if(paramChecklistRefEditing.zoneId===zoneId&&paramChecklistRefEditing.article===safeArticle(article))resetParamChecklistRefForm();
  renderAdminChecklistExtraRefs();
- paramChecklistRefSetStatus('Referencia eliminada y sincronizada.',true);
- if(code===normalizeBranch(state.branch)&&document.getElementById('presenceChecklist'))renderPresenceSheet();
+ paramChecklistRefSetStatus('Referencia eliminada de la zona y sincronizada.',true);
+ if(branchZoneId(state.branch)===zoneId&&document.getElementById('presenceChecklist'))renderPresenceSheet();
 }
 function renderParamChecklistExtraTable(canEdit=true){
  const target=document.getElementById('adminChecklistExtraTable');if(!target)return;
- const code=adminChecklistExtraBranchCode();
- const branchState=adminChecklistExtraState(code);
- const list=(Array.isArray(branchState?.checklistExtraRefs)?branchState.checklistExtraRefs:[]).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
- if(!code){target.innerHTML='<div class="specialrefs-empty">Seleccioná una sucursal para consultar sus referencias.</div>';return}
- if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias exclusivas de Checklist cargadas para la sucursal '+esc(code)+'.</div>';return}
+ const zoneId=adminChecklistExtraZoneId();
+ const list=(Array.isArray(loadChecklistZoneExtraMap()[zoneId])?loadChecklistZoneExtraMap()[zoneId]:[]).slice().sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'})||safeArticle(a.article).localeCompare(safeArticle(b.article)));
+ if(!zoneId){target.innerHTML='<div class="specialrefs-empty">Seleccioná una zona para consultar sus referencias.</div>';return}
+ if(!list.length){target.innerHTML='<div class="specialrefs-empty">No hay referencias exclusivas de Checklist cargadas para la zona '+esc(zoneName(zoneId)||zoneId)+'.</div>';return}
  target.innerHTML=`<table class="specialrefs-table"><thead><tr><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${list.map(item=>`<tr><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td><div class="specialrefs-actions"><button type="button" class="specialrefs-btn" ${canEdit?'':'disabled'} onclick="editParamChecklistRef('${escAttr(item.article)}')">Editar</button><button type="button" class="specialrefs-btn danger" ${canEdit?'':'disabled'} onclick="deleteParamChecklistRef('${escAttr(item.article)}')">Eliminar</button></div></td></tr>`).join('')}</tbody></table>`;
 }
 function renderAdminChecklistExtraRefs(){
- const select=document.getElementById('adminChecklistExtraBranch');
+ const select=document.getElementById('adminChecklistExtraZone');
  const target=document.getElementById('adminChecklistExtraTable');
  if(!select||!target)return;
- const current=normalizeBranch(select.value||state.branch||'');
- const codes=allBranchCodes();
- select.innerHTML=codes.map(code=>`<option value="${escAttr(code)}">${esc(code)} · ${esc(branchCatalog[code]?.name||'')}</option>`).join('');
- select.value=codes.includes(current)?current:(codes[0]||'');
+ if(!window.MigaFirebase?.isAdmin?.())migrateLegacyChecklistExtraRefsToZones({markerKey:CHECKLIST_ZONE_EXTRA_MIGRATED_STORAGE,syncCloud:false});
+ const current=String(select.value||'');
+ const preferred=branchZoneId(state?.branch)||currentZoneId||zoneOrder[0]||'';
+ const zones=zoneOrder.filter(zoneId=>zoneCatalog[zoneId]);
+ select.innerHTML=zones.map(zoneId=>`<option value="${escAttr(zoneId)}">${esc(zoneName(zoneId)||zoneId)}</option>`).join('');
+ select.value=zones.includes(current)?current:(zones.includes(preferred)?preferred:(zones[0]||''));
  renderParamChecklistExtraTable(isMasterAdmin());
 }
 function renderChecklistSpecialParams(){
  const target=document.getElementById('checklistConfigParams');
  if(target){target.innerHTML='';target.style.display='none';target.setAttribute('aria-hidden','true')}
 }
+
+/* ===================== PLAN ELABORADORA ===================== */
+const MOTHER_SELECTION_PREFIX='panaderia_multizona_elaboradora_dest_';
+const MOTHER_BRANCH_STORAGE='panaderia_multizona_elaboradora_madre_v43';
+const MOTHER_ELABORATORS_STORAGE='panaderia_elaboradoras_habilitadas_multizona_v43';
+const HOT_SPOT_MASTER_STORAGE='miga_hot_spot_master_by_elaborator_v671';
+const MOTHER_ZONE_STORAGE='panaderia_multizona_elaboradora_zone_v45';
+const FIREBASE_ADMIN_EMAIL='admin@miga-panaderia.app';
+const CHECKLIST_ZONE_EXTRA_STORAGE='miga_checklist_exclusive_refs_by_zone_v71';
+const CHECKLIST_ZONE_EXTRA_MIGRATED_STORAGE='miga_checklist_exclusive_refs_migrated_local_v71';
+const CHECKLIST_ZONE_EXTRA_CLOUD_MIGRATED_STORAGE='miga_checklist_exclusive_refs_migrated_cloud_v71';
+let motherAdminMode=false;
+let adminRole=''; // '' | 'branch' | 'master'
+let adminBranchCode='';
+let enabledElaborators=[];
+let motherBranchCode='';
+try{
+ const savedMother=localStorage.getItem(MOTHER_BRANCH_STORAGE);
+ if(savedMother&&branchCatalog[savedMother])motherBranchCode=savedMother;
+}catch(e){}
+let motherZoneId='';
+try{
+ const savedMotherZone=localStorage.getItem(MOTHER_ZONE_STORAGE);
+ if(savedMotherZone&&zoneCatalog[savedMotherZone])motherZoneId=savedMotherZone;
+}catch(e){}
+let motherDateISO='';
+let motherSelectedBranches=[];
+
 /* ===================== PRESENCIA ELABORADORAS · CICLO PRODUCCIÓN ===================== */
 const PRESENCE_STORAGE_PREFIX='panaderia_presence_checklist_v90_';
 let presenceBranchCode='';
@@ -9846,8 +9947,8 @@ function presenceRowsForDate(code,date){
  // Punto Caliente se resuelve automáticamente según los destinos configurados en Plan Elaboradora.
  // La sucursal no elige ni configura la elaboradora: el Checklist toma las referencias que correspondan.
  hotSpotsForBranch(code).forEach(ref=>addSource(ref,'checklist-hotspot'));
- // Las referencias no elaboradas se configuran exclusivamente desde Administrador General y solo afectan al Checklist.
- (Array.isArray(cfg.checklistExtraRefs)?cfg.checklistExtraRefs:[]).forEach(ref=>addSource(ref,'checklist-special'));
+ // Las referencias no elaboradas se configuran desde Administrador General por zona y solo afectan al Checklist.
+ checklistZoneExtraRefsForBranch(code).forEach(ref=>addSource(ref,'checklist-special'));
  return Array.from(byArticle.values()).sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
 }
 function presenceShiftMap(code,date,shift){
@@ -10565,8 +10666,13 @@ async function toggleMotherAdmin(){
    motherAdminMode=true;adminRole='master';adminBranchCode='';unlockedBranches.add(state.branch);
    if(!enabledElaborators.length)enabledElaborators=loadEnabledElaborators();
    updateMotherAdminUI();populateBranchSelector();
-   if(firebaseCloudInitialized)await firebasePullAll(true);
-   else firebaseSetStatus('✅ Administrador General autenticado.<br>⚠ Firebase todavía está vacío.','pending');
+   if(firebaseCloudInitialized){
+     const pulled=await firebasePullAll(true);
+     if(!pulled)migrateLegacyChecklistExtraRefsToZones({markerKey:CHECKLIST_ZONE_EXTRA_MIGRATED_STORAGE,syncCloud:false});
+   }else{
+     migrateLegacyChecklistExtraRefsToZones({markerKey:CHECKLIST_ZONE_EXTRA_MIGRATED_STORAGE,syncCloud:false});
+     firebaseSetStatus('✅ Administrador General autenticado.<br>⚠ Firebase todavía está vacío.','pending');
+   }
    return;
  }catch(e){
    const ec=String(e?.code||'');
