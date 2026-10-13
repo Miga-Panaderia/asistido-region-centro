@@ -4206,6 +4206,7 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 .presence-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 7px;border:1px solid #e1e6e9;border-radius:8px;background:#fff;min-width:0;max-width:100%;box-sizing:border-box}.presence-item.present{border-color:#c4e5d1;background:#fbfffc}
 .presence-item-main{min-width:0;max-width:100%;overflow:hidden}.presence-item-code{font-size:8px;font-weight:800;color:#91a0a7;margin-bottom:1px}.presence-item-name{font-size:10px;font-weight:800;color:#17394f;line-height:1.15;white-space:normal;overflow-wrap:anywhere}
 .presence-item-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.presence-item-meta span{display:inline-flex;align-items:center;padding:1px 5px;border-radius:999px;background:#f3f0e3;color:#6f612e;font-size:7px;font-weight:800}
+.presence-item-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.presence-source-badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:999px;font-size:7px;line-height:1.25;font-weight:900;letter-spacing:.15px;white-space:normal}.presence-source-badge.hot{background:#fff0bf;border:1px solid #e4c66e;color:#75520a}.presence-source-badge.extra{background:#e5f1ff;border:1px solid #b7d3f1;color:#205d8d}
 .presence-item-check{display:flex;align-items:center;gap:6px}.presence-item-label{font-size:8px;font-weight:800;color:#1b9b63}.presence-item:not(.present) .presence-item-label{color:#b34d4d}
 .presence-switch{position:relative;display:inline-flex;width:36px;height:20px}.presence-switch input{position:absolute;opacity:0;pointer-events:none}.presence-slider{position:absolute;inset:0;border-radius:999px;background:#e3e6e8;border:1px solid #c3cacf}.presence-slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .15s}.presence-switch input:checked + .presence-slider{background:#1ab26b;border-color:#169b5e}.presence-switch input:checked + .presence-slider:before{transform:translateX(15px)}
 .presence-readonly-note{font-size:8px;color:#7a6b40;background:#fff7e0;border:1px solid #e1c888;padding:5px 7px;border-radius:7px}.presence-admin-hidden{display:none!important}
@@ -5416,7 +5417,7 @@ button,input,select,textarea{font-family:inherit}
 
       
       <section class="admin-card master-admin-only" id="adminHotSpotCard">
-        <div class="admin-card-title">🔥 PUNTOS CALIENTES POR ELABORADORA</div>
+        <div class="admin-card-title">🔥 PUNTO CALIENTE POR ELABORADORA</div>
         <div class="admin-help" style="margin-top:0">
           El Administrador General mantiene este padrón central. Cada sucursal selecciona en <b>Parámetros Suc</b> la elaboradora que la abastece; las referencias asignadas a esa elaboradora se incorporan automáticamente al <b>Checklist original</b>, sin modificar el padrón ni los cálculos.
         </div>
@@ -9503,10 +9504,10 @@ function renderAdminHotSpotRefs(){
    const elabLabel=item.elaboratorCode?(item.elaboratorCode+' · '+(branchCatalog[item.elaboratorCode]?.name||'')+(enabled.includes(item.elaboratorCode)?'':' (no habilitada)')):'Sin asignar';
    return `<tr><td>${esc(elabLabel)}</td><td>${esc(item.article)}</td><td>${esc(item.description)}</td><td>${esc(item.brand||'—')}</td><td>${esc(item.aptitude||'—')}</td><td>${esc(item.um||'—')}</td><td><div class="specialrefs-actions"><button type="button" class="specialrefs-btn" onclick="editAdminHotSpotRef('${escAttr(item.elaboratorCode)}','${escAttr(item.article)}')">Editar / asignar</button><button type="button" class="specialrefs-btn danger" onclick="deleteAdminHotSpotRef('${escAttr(item.elaboratorCode)}','${escAttr(item.article)}')">Eliminar</button></div></td></tr>`;
  }).join('');
- table.innerHTML=list.length?`<table class="specialrefs-table"><thead><tr><th>Elaboradora</th><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="specialrefs-empty">No hay puntos calientes cargados. Agregalos y asigná cada referencia a una elaboradora.</div>';
+ table.innerHTML=list.length?`<table class="specialrefs-table"><thead><tr><th>Elaboradora</th><th>Artículo</th><th>Descripción</th><th>Marca</th><th>Aptitud</th><th>U/M</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="specialrefs-empty">No hay referencias de Punto Caliente cargadas. Agregalas y asigná cada referencia a una elaboradora.</div>';
 }
 function saveAdminHotSpotRef(){
- if(!isMasterAdmin()){adminHotSpotSetStatus('Solo el Administrador General puede administrar los puntos calientes.');return}
+ if(!isMasterAdmin()){adminHotSpotSetStatus('Solo el Administrador General puede administrar las referencias de Punto Caliente.');return}
  const value=adminHotSpotFormValues();
  if(!value.elaboratorCode||!loadEnabledElaborators().includes(value.elaboratorCode)){adminHotSpotSetStatus('Seleccioná una elaboradora habilitada.');return}
  if(!value.article){adminHotSpotSetStatus('Ingresá un código de artículo válido.');return}
@@ -9520,7 +9521,7 @@ function saveAdminHotSpotRef(){
  if(index>=0)list[index]={...value};else list.push({...value});
  list=storeHotSpotMasterLocal(list);
  resetAdminHotSpotForm();
- adminHotSpotSetStatus(index>=0?'Punto caliente actualizado y sincronizado.':'Punto caliente agregado y sincronizado.',true);
+ adminHotSpotSetStatus(index>=0?'Referencia de Punto Caliente actualizada y sincronizada.':'Referencia de Punto Caliente agregada y sincronizada.',true);
  firebaseQueueSystemSync();
  renderAdminHotSpotRefs();
  renderChecklistSpecialParams();
@@ -9552,10 +9553,10 @@ function deleteAdminHotSpotRef(elaboratorCode,article){
  const key=normalizeBranch(elaboratorCode||'')+'|'+safeArticle(article);
  const item=loadHotSpotMaster({migrateLegacy:true}).find(x=>(x.elaboratorCode+'|'+x.article)===key);
  if(!item)return;
- if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de los puntos calientes?'))return;
+ if(!confirm('¿Eliminar '+item.article+' · '+item.description+' de las referencias de Punto Caliente?'))return;
  storeHotSpotMasterLocal(loadHotSpotMaster().filter(x=>(x.elaboratorCode+'|'+x.article)!==key));
  if(adminHotSpotEditing.article===item.article&&adminHotSpotEditing.elaboratorCode===item.elaboratorCode)resetAdminHotSpotForm();
- adminHotSpotSetStatus('Punto caliente eliminado.',true);
+ adminHotSpotSetStatus('Referencia de Punto Caliente eliminada.',true);
  firebaseQueueSystemSync();
  renderAdminHotSpotRefs();renderChecklistSpecialParams();
  if(document.getElementById('presenceChecklist'))renderPresenceSheet();
@@ -9637,14 +9638,14 @@ function renderChecklistSpecialParams(){
  const hotRefs=selected?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selected):[];
  const allCodes=[...new Set([...enabled,...(selected&&!enabled.includes(selected)?[selected]:[])])].sort((a,b)=>Number(a)-Number(b));
  const options='<option value="">Seleccionar elaboradora…</option>'+allCodes.map(code=>`<option value="${escAttr(code)}" ${selected===code?'selected':''}>${esc(code)} · ${esc(branchCatalog[code]?.name||'')}${enabled.includes(code)?'':' (no habilitada)'}</option>`).join('');
- const preview=selected?(hotRefs.length?`<ul class="checklist-hotspot-preview">${hotRefs.map(ref=>`<li><b>${esc(ref.article)}</b> · ${esc(ref.description)}${ref.brand?' · '+esc(ref.brand):''}</li>`).join('')}</ul>`:'<div class="checklist-config-note">La elaboradora seleccionada no tiene puntos calientes asignados.</div>'):'<div class="checklist-config-note">Seleccioná una elaboradora para incorporar sus puntos calientes al Checklist.</div>';
+ const preview=selected?(hotRefs.length?`<ul class="checklist-hotspot-preview">${hotRefs.map(ref=>`<li><b>${esc(ref.article)}</b> · ${esc(ref.description)}${ref.brand?' · '+esc(ref.brand):''}</li>`).join('')}</ul>`:'<div class="checklist-config-note">La elaboradora seleccionada no tiene referencias de Punto Caliente asignadas.</div>'):'<div class="checklist-config-note">Seleccioná una elaboradora para incorporar sus referencias de Punto Caliente al Checklist.</div>';
  target.innerHTML=`<div class="checklist-config-header"><div><div class="checklist-config-title">CONFIGURACIÓN DEL CHECKLIST</div><div class="checklist-config-subtitle">Las referencias de elaboración se administran desde Administrador General. Las referencias que no son de elaboración se registran aquí, por sucursal.</div></div></div>
  <div class="checklist-config-grid">
    <section class="checklist-config-card">
      <div class="checklist-config-card-title">🏭 ELABORADORA QUE ABASTECE A ESTA SUCURSAL</div>
      <label class="checklist-config-field"><span>Seleccionar elaboradora</span><select id="branchChecklistElaboratorSelect" ${canEdit?'':'disabled'} onchange="saveBranchChecklistElaborator(this.value)">${options}</select></label>
-     <div class="checklist-config-note">Las referencias de Punto Caliente de la elaboradora elegida se suman automáticamente al Checklist original, sin duplicar artículos ni afectar los cálculos.</div>
-     <div class="checklist-config-preview-title">PUNTOS CALIENTES QUE SE INCORPORAN (${hotRefs.length})</div>${preview}
+     <div class="checklist-config-note">Las referencias de Punto Caliente de la elaboradora elegida se suman automáticamente al Checklist original. Se muestran junto a las tradicionales, con una etiqueta distintiva, sin duplicar artículos ni afectar los cálculos.</div>
+     <div class="checklist-config-preview-title">REFERENCIAS DE PUNTO CALIENTE QUE SE INCORPORAN (${hotRefs.length})</div>${preview}
    </section>
    <section class="checklist-config-card">
      <div class="checklist-config-card-title">☑ REFERENCIAS EXCLUSIVAS DE CHECKLIST · NO ELABORACIÓN</div>
@@ -9826,21 +9827,25 @@ function presenceRowsForDate(code,date){
    return p.schedule.some(v=>Number(v)>0);
  }).forEach(p=>{
    const art=safeArticle(p.article);if(!art||byArticle.has(art))return;
-   byArticle.set(art,{...p,article:art});
+   byArticle.set(art,{...p,article:art,sources:[]});
  });
- // Los puntos calientes vienen del padrón central del Administrador General y dependen
- // de la elaboradora elegida por esta sucursal. Se suman al Checklist sin entrar al padrón.
+ const addSource=(ref,source)=>{
+   const art=safeArticle(ref?.article);if(!art)return;
+   const existing=byArticle.get(art);
+   if(existing){
+     const sources=Array.isArray(existing.sources)?existing.sources.slice():(existing.source?[existing.source]:[]);
+     if(!sources.includes(source))sources.push(source);
+     existing.sources=sources;
+     return;
+   }
+   byArticle.set(art,{...ref,article:art,sources:[source]});
+ };
+ // Las referencias de Punto Caliente vienen del padrón central del Administrador General y dependen
+ // de la elaboradora elegida por esta sucursal. Se incorporan al Checklist, sin entrar al padrón.
  const selectedElaborator=normalizeBranch(cfg.elaboratorCode||'');
- (selectedElaborator?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selectedElaborator):[]).forEach(ref=>{
-   const art=safeArticle(ref.article);if(!art||byArticle.has(art))return;
-   byArticle.set(art,{...ref,article:art,source:'checklist-hotspot'});
- });
- // Las referencias que no son de elaboración también se controlan en Checklist,
- // pero quedan documentadas y administradas desde Parámetros Suc.
- (Array.isArray(cfg.checklistExtraRefs)?cfg.checklistExtraRefs:[]).forEach(ref=>{
-   const art=safeArticle(ref.article);if(!art||byArticle.has(art))return;
-   byArticle.set(art,{...ref,article:art,source:'checklist-special'});
- });
+ (selectedElaborator?loadHotSpotMaster().filter(ref=>ref.elaboratorCode===selectedElaborator):[]).forEach(ref=>addSource(ref,'checklist-hotspot'));
+ // Las referencias que no son de elaboración se controlan solo en Checklist y se administran desde Parámetros Suc.
+ (Array.isArray(cfg.checklistExtraRefs)?cfg.checklistExtraRefs:[]).forEach(ref=>addSource(ref,'checklist-special'));
  return Array.from(byArticle.values()).sort((a,b)=>String(a.description||'').localeCompare(String(b.description||''),'es',{sensitivity:'base'}) || safeArticle(a.article).localeCompare(safeArticle(b.article)));
 }
 function presenceShiftMap(code,date,shift){
@@ -9964,7 +9969,7 @@ function presenceFilteredRows(code,date){
  const q=String(presenceSearchText||'').trim().toLowerCase();
  if(!q)return rows;
  return rows.filter(item=>{
-   const hay=[safeArticle(item.article),item.description||'',item.brand||'',item.aptitude||'',item.um||''].join(' ').toLowerCase();
+   const hay=[safeArticle(item.article),item.description||'',item.brand||'',item.aptitude||'',item.um||'',presenceReferenceType(item)].join(' ').toLowerCase();
    return hay.includes(q);
  });
 }
@@ -10114,6 +10119,13 @@ function renderPresenceChecklistStats(){
  const total=presenceShiftTotals(presenceBranchCode,presenceDateISO,presenceShift,allRows);
  statsBox.innerHTML=`<span><strong>${visibleRows.length}</strong> referencias visibles</span><span><strong>${total.present}</strong> presentes</span><span><strong>${total.absent||0}</strong> ausentes</span><span><strong>${total.missing}</strong> sin marcar</span>`;
 }
+function presenceReferenceType(item){
+ const sources=Array.isArray(item?.sources)?item.sources:(item?.source?[item.source]:[]);
+ const labels=[];
+ if(sources.includes('checklist-hotspot'))labels.push('PUNTO CALIENTE');
+ if(sources.includes('checklist-special'))labels.push('NO ELABORACIÓN');
+ return labels.length?labels.join(' + '):'TRADICIONAL';
+}
 function renderPresenceChecklist(){
  const box=document.getElementById('presenceChecklist');
  const empty=document.getElementById('presenceChecklistEmpty');
@@ -10145,10 +10157,16 @@ function renderPresenceChecklist(){
  box.innerHTML=rows.map(item=>{
    const art=safeArticle(item.article);
    const checked=!!map[art];const absent=!!absentMap[art];
+   const sources=Array.isArray(item.sources)?item.sources:(item.source?[item.source]:[]);
+   const sourceTags=[
+     sources.includes('checklist-hotspot')?'<span class="presence-source-badge hot">🔥 PUNTO CALIENTE</span>':'',
+     sources.includes('checklist-special')?'<span class="presence-source-badge extra">CHECKLIST · NO ELABORACIÓN</span>':''
+   ].filter(Boolean).join('');
    return `<div class="presence-item ${checked?'present':''}${absent?' absent':''}">
      <div class="presence-item-main">
        <div class="presence-item-code">${art}</div>
        <div class="presence-item-name">${esc(item.description||'')}</div>
+       ${sourceTags?`<div class="presence-item-tags">${sourceTags}</div>`:''}
        <div class="presence-item-meta">
          <span>${esc(item.brand||'Sin marca')}</span>
          <span>${esc(item.aptitude||'')}</span>
@@ -11051,7 +11069,7 @@ function presenceExportDataset(){
        detail.push({
          date,day:d.toLocaleDateString('es-AR',{weekday:'long'}),
          shift:shift==='am'?'Mañana':'Tarde',article:art,
-         description:item.description||'',brand:item.brand||'',
+         description:item.description||'',type:presenceReferenceType(item),brand:item.brand||'',
          aptitude:item.aptitude||'',um:item.um||'',status
        });
      });
@@ -11090,7 +11108,7 @@ function buildPresenceXlsx(data){
  const lastSummaryRow=r;
  summaryRows.push(`<row r="${r}">${xlsxCellXml('ACUMULADO',r,1,6,true)}${xlsxCellXml('',r,2,6,true)}${xlsxCellXml('',r,3,6,true)}${xlsxCellXml('',r,4,6,true)}${xlsxCellXml(data.cyclePct,r,5,8,false)}${xlsxCellXml(data.daily[0]?.refs||0,r,6,6,false)}</row>`);
 
- const detailHeaders=['Fecha','Día','Turno','Artículo','Descripción','Marca','Aptitud','U/M','Estado'];
+ const detailHeaders=['Fecha','Día','Turno','Artículo','Descripción','Tipo de referencia','Marca','Aptitud','U/M','Estado'];
  const detailRows=[];
  let dr=1;
  detailRows.push(`<row r="${dr}" ht="25" customHeight="1">${xlsxCellXml('DETALLE CONTROL DE PRESENCIA',dr,1,1,true)}</row>`);dr++;
@@ -11101,8 +11119,8 @@ function buildPresenceXlsx(data){
  detailRows.push(`<row r="${dr}" ht="22" customHeight="1">${detailHeaders.map((h,i)=>xlsxCellXml(h,dr,i+1,4,true)).join('')}</row>`);dr++;
  data.detail.forEach(item=>{
    const styleStatus=item.status==='PRESENTE'?9:item.status==='AUSENTE'?10:11;
-   const values=[item.date,item.day,item.shift,item.article,item.description,item.brand,item.aptitude,item.um,item.status];
-   const cells=values.map((v,i)=>xlsxCellXml(v,dr,i+1,i===8?styleStatus:0,true)).join('');
+   const values=[item.date,item.day,item.shift,item.article,item.description,item.type,item.brand,item.aptitude,item.um,item.status];
+   const cells=values.map((v,i)=>xlsxCellXml(v,dr,i+1,i===9?styleStatus:0,true)).join('');
    detailRows.push(`<row r="${dr}">${cells}</row>`);dr++;
  });
  const detailLastRow=Math.max(detailHeaderRow,dr-1);
@@ -11123,10 +11141,10 @@ function buildPresenceXlsx(data){
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
  <sheetViews><sheetView workbookViewId="0"><pane ySplit="${detailHeaderRow}" topLeftCell="A${detailHeaderRow+1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
  <sheetFormatPr defaultRowHeight="15"/>
- <cols><col min="1" max="1" width="13" customWidth="1"/><col min="2" max="3" width="12" customWidth="1"/><col min="4" max="4" width="12" customWidth="1"/><col min="5" max="5" width="38" customWidth="1"/><col min="6" max="6" width="18" customWidth="1"/><col min="7" max="8" width="11" customWidth="1"/><col min="9" max="9" width="14" customWidth="1"/></cols>
+ <cols><col min="1" max="1" width="13" customWidth="1"/><col min="2" max="3" width="12" customWidth="1"/><col min="4" max="4" width="12" customWidth="1"/><col min="5" max="5" width="38" customWidth="1"/><col min="6" max="6" width="24" customWidth="1"/><col min="7" max="7" width="18" customWidth="1"/><col min="8" max="9" width="11" customWidth="1"/><col min="10" max="10" width="14" customWidth="1"/></cols>
  <sheetData>${detailRows.join('')}</sheetData>
- <autoFilter ref="A${detailHeaderRow}:I${detailLastRow}"/>
- <mergeCells count="3"><mergeCell ref="A1:I1"/><mergeCell ref="A2:I2"/><mergeCell ref="A3:I3"/></mergeCells>
+ <autoFilter ref="A${detailHeaderRow}:J${detailLastRow}"/>
+ <mergeCells count="3"><mergeCell ref="A1:J1"/><mergeCell ref="A2:J2"/><mergeCell ref="A3:J3"/></mergeCells>
  <pageMargins left="0.25" right="0.25" top="0.35" bottom="0.35" header="0.1" footer="0.1"/>
  <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0" paperSize="9"/>
 </worksheet>`;
