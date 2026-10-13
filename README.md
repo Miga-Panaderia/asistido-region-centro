@@ -1,4 +1,4 @@
-# MIGA · Multizona v71.1 · WhatsApp, Punto Caliente y Checklist por zona
+# MIGA · Multizona v71.2 · Limpieza de cronogramas
 
 Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día) + referencias especiales de Checklist**.
 
@@ -31,3 +31,10 @@ Base funcional: **MIGA v64 (alertas inmediatas) + v64.1 (ausencia por día) + re
 - `assets/miga-avatar.png`
 - `config/sucursales.js`
 - `firebase/firestore.rules`
+
+
+## Mejora v71.2 · Limpiar cronogramas
+- Cada referencia del padrón tiene un botón de limpieza de línea junto al botón **✓ 7/7**. Borra los siete indicadores de días de esa referencia, sin eliminar el artículo del padrón.
+- Se agregó **Borrar todos los 1** sobre el padrón para limpiar los días marcados de todas las referencias de la sucursal de una sola vez.
+- Ambas acciones piden confirmación, requieren acceso autorizado a la sucursal y guardan los cambios mediante el mecanismo existente de sincronización.
+- Estas acciones solo limpian los valores del cronograma; no eliminan referencias, no alteran las ventas ni cambian los cálculos ajenos al cronograma.

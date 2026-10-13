@@ -3923,51 +3923,41 @@ body.firebase-branch-online #branchCloudLoginBtn{display:none !important}
 }
 
 /* =========================================================
-   V72 - CRONOGRAMA · MARCAR SEMANA COMPLETA
+   V72 - CRONOGRAMA · MARCAR SEMANA COMPLETA + LIMPIEZA
    ========================================================= */
+.patron-cronograma-toolbar{
+  width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;
+  gap:8px;margin:0 0 4px;padding:5px 7px;border:1px solid #cbd3d9;background:#f6f8f9;
+  color:#405563;font-size:10px;line-height:1.3;
+}
+.patron-cronograma-toolbar button{
+  flex:0 0 auto;min-height:23px;padding:3px 8px;border:1px solid #bd7777;border-radius:3px;
+  background:#fff2f2;color:#8c2929;font-size:10px;font-weight:800;cursor:pointer;
+}
+.patron-cronograma-toolbar button:hover{background:#ffe3e3;border-color:#a94c4c}
 .patron .week-fill{
-  width:52px;
-  min-width:52px;
-  text-align:center;
-  padding:0 2px;
+  width:76px;min-width:76px;text-align:center;padding:0 2px;
 }
 .patron .week-fill-head{
-  width:52px;
-  min-width:52px;
-  text-align:center;
-  background:#315a73;
+  width:76px;min-width:76px;text-align:center;background:#315a73;
 }
+.patron .week-actions{display:flex;align-items:center;justify-content:center;gap:2px;white-space:nowrap}
 .patron .week-fill-btn{
-  width:45px;
-  height:18px;
-  padding:0 3px;
-  border:1px solid #7b8b94;
-  background:#f7f9fa;
-  color:#214456;
-  font-size:9px;
-  line-height:16px;
-  font-weight:800;
-  cursor:pointer;
+  width:42px;height:18px;padding:0 2px;border:1px solid #7b8b94;background:#f7f9fa;color:#214456;
+  font-size:9px;line-height:16px;font-weight:800;cursor:pointer;
 }
-.patron .week-fill-btn:hover{
-  background:#e8f2ed;
-  border-color:#217346;
+.patron .week-clear-btn{
+  width:23px;height:18px;padding:0;border:1px solid #bd7777;border-radius:2px;background:#fff2f2;
+  color:#8c2929;font-size:11px;line-height:15px;font-weight:900;cursor:pointer;
 }
-.patron .week-fill-btn.complete{
-  background:#d9eee3;
-  border-color:#217346;
-  color:#145530;
-}
+.patron .week-fill-btn:hover{background:#e8f2ed;border-color:#217346}
+.patron .week-clear-btn:hover{background:#ffe3e3;border-color:#a94c4c}
+.patron .week-fill-btn.complete{background:#d9eee3;border-color:#217346;color:#145530}
 @media(max-width:700px){
-  .patron .week-fill,
-  .patron .week-fill-head{
-    width:48px;
-    min-width:48px;
-  }
-  .patron .week-fill-btn{
-    width:42px;
-    font-size:9px;
-  }
+  .patron-cronograma-toolbar{align-items:flex-start;flex-direction:column}
+  .patron .week-fill,.patron .week-fill-head{width:72px;min-width:72px}
+  .patron .week-fill-btn{width:40px;font-size:9px}
+  .patron .week-clear-btn{width:22px}
 }
 
 /* =========================================================
@@ -11746,11 +11736,11 @@ function renderPatron(){
    <td class="bto"><span class="patron-master-value center">${esc(p.bto)}</span></td>`;
    for(let d=0;d<7;d++)rows+=`<td class="day ${p.schedule[d]?'sched-on':'sched-off'}" onclick="toggleSchedule(${i},${d},this)">${p.schedule[d]?'1':''}</td>`;
    const fullWeek=(p.schedule||[]).slice(0,7).every(v=>n(v)?1:0);
-   rows+=`<td class="week-fill"><button type="button" class="week-fill-btn ${fullWeek?'complete':''}" onclick="fillScheduleWeek(${i},this)" title="Marcar lunes a domingo">✓ 7/7</button></td>`;
+   rows+=`<td class="week-fill"><div class="week-actions"><button type="button" class="week-fill-btn ${fullWeek?'complete':''}" onclick="fillScheduleWeek(${i},this)" title="Marcar lunes a domingo">✓ 7/7</button><button type="button" class="week-clear-btn" onclick="clearScheduleRow(${i},this)" title="Borrar línea completa: quitar todos los 1 de esta referencia" aria-label="Borrar línea completa">×</button></div></td>`;
    rows+='</tr>';
  });
- document.getElementById('patronSheet').innerHTML=`<table class="excel-table patron"><thead>
- <tr><th class="art" rowspan="2">Articulo</th><th class="desc" rowspan="2">Descripción</th><th class="brand" rowspan="2">Marca</th><th class="apt" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto" rowspan="2">Bto</th><th class="cron-head" colspan="7">CRONOGRAMA</th><th class="week-fill-head" rowspan="2">SEM.</th></tr>
+ document.getElementById('patronSheet').innerHTML=`<div class="patron-cronograma-toolbar"><span>Los botones de limpieza quitan los valores <b>1</b> del cronograma, pero no eliminan los artículos del padrón.</span><button type="button" onclick="clearAllSchedules()" title="Quitar todos los 1 de todas las referencias">🧹 Borrar todos los 1</button></div><table class="excel-table patron"><thead>
+ <tr><th class="art" rowspan="2">Articulo</th><th class="desc" rowspan="2">Descripción</th><th class="brand" rowspan="2">Marca</th><th class="apt" rowspan="2">Aptitud</th><th class="um" rowspan="2">U/M</th><th class="bto" rowspan="2">Bto</th><th class="cron-head" colspan="7">CRONOGRAMA</th><th class="week-fill-head" rowspan="2">ACCIONES</th></tr>
  <tr class="cron-days">${DOW_SHORT.map(x=>`<th class="day">${x}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 function editProduct(i,k,v){
@@ -11802,6 +11792,40 @@ function fillScheduleWeek(i,button){
  }
  if(button)button.classList.add('complete');
 
+ scheduleCronogramaSave();
+}
+function clearScheduleRow(i,button){
+ if(!requireBranchCloudAccess())return;
+ const product=state.products[i];
+ if(!product)return;
+ const hasOn=(product.schedule||[]).slice(0,7).some(v=>n(v)?1:0);
+ if(!hasOn)return;
+ const article=String(product.article||'').trim();
+ const description=String(product.description||'').trim();
+ if(!confirm('¿Borrar todos los 1 del cronograma de '+article+(description?' · '+description:'')+'? El artículo seguirá en el padrón.'))return;
+ product.schedule=[0,0,0,0,0,0,0];
+ markCronogramaDirty(i);
+ const row=button?.closest('tr');
+ if(row){
+   row.querySelectorAll('td.day').forEach(cell=>paintScheduleCell(cell,false));
+   refreshScheduleWeekButton(row,product);
+ }
+ scheduleCronogramaSave();
+}
+function clearAllSchedules(){
+ if(!requireBranchCloudAccess())return;
+ const activeCount=state.products.filter(product=>(product.schedule||[]).slice(0,7).some(v=>n(v)?1:0)).length;
+ if(!activeCount){alert('No hay valores 1 para borrar en los cronogramas de esta sucursal.');return;}
+ if(!confirm('¿Borrar todos los 1 del cronograma de las referencias que tienen días marcados ('+activeCount+')? Los artículos seguirán en el padrón; solo se limpiarán los siete días de recepción.'))return;
+ state.products.forEach((product,i)=>{
+   product.schedule=[0,0,0,0,0,0,0];
+   markCronogramaDirty(i);
+ });
+ document.querySelectorAll('#patronSheet tbody tr').forEach(row=>{
+   row.querySelectorAll('td.day').forEach(cell=>paintScheduleCell(cell,false));
+   const btn=row.querySelector('.week-fill-btn');
+   if(btn)btn.classList.remove('complete');
+ });
  scheduleCronogramaSave();
 }
 
