@@ -6330,7 +6330,7 @@ function runStartupLoader(){
    setStartupState(x.p,x.s,x.d);
    setTimeout(next,650);
  };
- setStartupState(4,'Iniciando sistema…','Preparando entorno local');
+ setStartupState(10,'Leyendo configuración…','Preparando datos de trabajo');
  setTimeout(next,420);
 }
 
@@ -9692,6 +9692,95 @@ function renderChecklistSpecialParams(){
  const target=document.getElementById('checklistConfigParams');
  if(target){target.innerHTML='';target.style.display='none';target.setAttribute('aria-hidden','true')}
 }
+/* ===================== PRESENCIA ELABORADORAS · CICLO PRODUCCIÓN ===================== */
+const PRESENCE_STORAGE_PREFIX='panaderia_presence_checklist_v90_';
+let presenceBranchCode='';
+let presenceDateISO='';
+let presenceShift='am';
+let presenceSearchText='';
+const presenceSaveTimers={};
+let presenceCloudAvailable=true;
+let presenceCloudMessage='';
+
+function presenceStorageKey(code){
+ return PRESENCE_STORAGE_PREFIX+String(code||'').padStart(3,'0');
+}
+function normalizePresenceBoolMap(data){
+ const out={};
+ if(!data||typeof data!=='object')return out;
+ Object.entries(data).forEach(([article,value])=>{
+   const art=safeArticle(article);
+   if(!art)return;
+   if(value===true||value===1||value==='1'||value==='true')out[art]=true;
+ });
+ return out;
+}
+function normalizePresenceData(data){
+ const out={};
+ if(!data||typeof data!=='object')return out;
+ Object.entries(data).forEach(([date,raw])=>{
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !raw || typeof raw!=='object')return;
+   const row={
+     am:normalizePresenceBoolMap(raw.am),
+     pm:normalizePresenceBoolMap(raw.pm),
+     amAbsent:normalizePresenceBoolMap(raw.amAbsent),
+     pmAbsent:normalizePresenceBoolMap(raw.pmAbsent)
+   };
+   // Presente y Ausente son estados mutuamente excluyentes.
+   Object.keys(row.am).forEach(art=>delete row.amAbsent[art]);
+   Object.keys(row.pm).forEach(art=>delete row.pmAbsent[art]);
+   if(Object.keys(row.am).length||Object.keys(row.pm).length||Object.keys(row.amAbsent).length||Object.keys(row.pmAbsent).length)out[date]=row;
+ });
+ return out;
+}
+function loadPresenceLocal(code){
+ try{
+   const raw=localStorage.getItem(presenceStorageKey(code));
+   return raw?normalizePresenceData(JSON.parse(raw)):{};
+ }catch(e){return {}}
+}
+function storePresenceLocal(code,data){
+ const clean=normalizePresenceData(data);
+ try{localStorage.setItem(presenceStorageKey(code),JSON.stringify(clean))}catch(e){}
+ return clean;
+}
+function allPresenceLocal(){
+ const out={};
+ allBranchCodes().forEach(code=>{
+   const data=loadPresenceLocal(code);
+   if(Object.keys(data).length)out[code]=data;
+ });
+ return out;
+}
+function presenceAllowedBranches(){
+ if(isMasterAdmin())return allBranchCodes();
+ const code=normalizeBranch(state.branch);
+ return code&&branchCatalog[code]?[code]:[];
+}
+function presenceDateKeyFromDate(d){
+ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function presenceParseDate(value){
+ const d=new Date(String(value||'')+'T12:00:00');
+ return Number.isNaN(d.getTime())?null:d;
+}
+function presenceFormatDate(d){
+ return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function presenceBranchState(code){
+ code=normalizeBranch(code);
+ if(code===normalizeBranch(state.branch))return state;
+ return loadLocalFor(code) || null;
+}
+function presenceProductionRange(code){
+ const cfg=presenceBranchState(code) || {};
+ const startRaw=cfg.startDate || state.startDate || ORIGINAL.startDate || '2026-08-10';
+ const start=presenceParseDate(startRaw) || new Date('2026-08-10T12:00:00');
+ let days=Math.round(Number(cfg.params?.days ?? state.params?.days ?? 35));
+ if(!Number.isFinite(days)||days<1)days=35;
+ const end=new Date(start);end.setDate(end.getDate()+days-1);
+ return {start,end,days,startRaw:presenceDateKeyFromDate(start),endRaw:presenceDateKeyFromDate(end)};
+}
 function presenceDateInRange(date,range){
  const d=presenceParseDate(date);if(!d)return false;
  return d>=range.start&&d<=range.end;
@@ -12814,9 +12903,17 @@ populateZoneSelector();
 populateBranchSelector();
 populateNeutralAccess();
 setStartupState(10,'Leyendo configuración…','Preparando datos de trabajo');
-recalc();
-initMobileTouchScrolling();
+// Iniciar el progreso independientemente del render inicial para que un error de una vista
+// no deje la pantalla de carga clavada en 10%.
 runStartupLoader();
+try{
+ recalc();
+}catch(startupError){
+ console.error('Error al preparar la interfaz inicial de MIGA:',startupError);
+ const detail=document.getElementById('startupBranch');
+ if(detail)detail.textContent='Recuperando la interfaz';
+}
+try{initMobileTouchScrolling()}catch(startupTouchError){console.warn('Inicialización táctil:',startupTouchError)}
 monthlyBackupReminder();
 </script>
 
